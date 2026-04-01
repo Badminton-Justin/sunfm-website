@@ -29,14 +29,14 @@ const videoTestimonials = [
     quote:
       "He made things seem doable rather than overwhelming. Jeff is incredibly easy to work with and he's truly become a friend. With his help, I've achieved my goal weight and I'm still going strong.",
   },
-  // {
-  //   videoUrl: `${R2_BASE}/Kanth_Edited.mp4`,
-  //   name: "Kanth",
-  //   role: "",
-  //   result: "Discipline and Strength Building",
-  //   quote:
-  //     "Before working with Jeff, I was never disciplined. Now, it has changed significantly for my workouts and diet. Thank you Jeff, thank you for everything.",
-  // },
+  {
+    videoUrl: `${R2_BASE}/Kanth_Edited.mp4`,
+    name: "Kanth",
+    role: "",
+    result: "Discipline and Strength Building",
+    quote:
+      "Before working with Jeff, I was never disciplined. Now, it has changed significantly for my workouts and diet. Thank you Jeff, thank you for everything.",
+  },
   {
     videoUrl: `${R2_BASE}/Josh_Edited.mp4`,
     name: "Josh",
@@ -61,14 +61,14 @@ const videoTestimonials = [
     quote:
       "Jeff is very detail oriented. The workouts were much more fun and I saw a lot of results. He was able to balance out my body and keep me consistent.",
   },
-  // {
-  //   videoUrl: `${R2_BASE}/Karson_Edited.mp4`,
-  //   name: "Karson",
-  //   role: "",
-  //   result: "Improved Functional Strength in his life",
-  //   quote:
-  //     "Before Jeff, I went to the gym once a week. After, I consistently go to the gym twice a week. My strength has gotten a lot better and my body has gotten a lot more toned.",
-  // },
+  {
+    videoUrl: `${R2_BASE}/Karson_Edited.mp4`,
+    name: "Karson",
+    role: "",
+    result: "Improved Functional Strength in his life",
+    quote:
+      "Before Jeff, I went to the gym once a week. After, I consistently go to the gym twice a week. My strength has gotten a lot better and my body has gotten a lot more toned.",
+  },
 ];
 
 export default function Testimonials() {
