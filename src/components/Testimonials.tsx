@@ -7,6 +7,7 @@ const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
 const videoTestimonials = [
   {
     videoUrl: `${R2_BASE}/Sneha_Edited.mp4`,
+    posterUrl: `${R2_BASE}/Sneha_Edited_Poster.jpg`,
     name: "Sneha",
     role: "",
     result: "Improved Structured and General Pain",
@@ -15,6 +16,7 @@ const videoTestimonials = [
   },
   {
     videoUrl: `${R2_BASE}/Marshall_Edited.mp4`,
+    posterUrl: `${R2_BASE}/Marshall_Edited_Poster.jpg`,
     name: "Marshall",
     role: "",
     result: "Pain Free & Functional Strength",
@@ -23,6 +25,7 @@ const videoTestimonials = [
   },
   {
     videoUrl: `${R2_BASE}/Cristina_Edited.mp4`,
+    posterUrl: `${R2_BASE}/Cristina_Edited_Poster.jpg`,
     name: "Cristina",
     role: "",
     result: "Achieved Dream Weight",
@@ -31,6 +34,7 @@ const videoTestimonials = [
   },
   {
     videoUrl: `${R2_BASE}/Kanth_Edited.mp4`,
+    posterUrl: `${R2_BASE}/Kanth_Edited_Poster.jpg`,
     name: "Kanth",
     role: "",
     result: "Discipline and Strength Building",
@@ -39,6 +43,7 @@ const videoTestimonials = [
   },
   {
     videoUrl: `${R2_BASE}/Josh_Edited.mp4`,
+    posterUrl: `${R2_BASE}/Josh_Edited_Poster.jpg`,
     name: "Josh",
     role: "",
     result: "Consistency and Health Longevity",
@@ -47,6 +52,7 @@ const videoTestimonials = [
   },
   {
     videoUrl: `${R2_BASE}/Chen_Edited.mp4`,
+    posterUrl: `${R2_BASE}/Chen_Edited_Poster.jpg`,
     name: "Chen",
     role: "",
     result: "Cured Neck and Low Back Pain",
@@ -94,9 +100,10 @@ export default function Testimonials() {
                 <div className="w-full sm:w-[200px] shrink-0">
                   <video
                     src={t.videoUrl}
+                    poster={t.posterUrl}
                     controls
                     playsInline
-                    preload="metadata"
+                    preload="none"
                     className="w-full aspect-[9/16] rounded-2xl shadow-lg object-cover bg-black"
                   />
                 </div>

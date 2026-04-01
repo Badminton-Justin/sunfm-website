@@ -3,6 +3,7 @@ const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
 const videoTestimonials = [
   {
     videoUrl: `${R2_BASE}/Cristina_Edited.mp4`,
+    posterUrl: `${R2_BASE}/Cristina_Edited_Poster.jpg`,
     name: "Cristina",
     title: "",
     description: "",
@@ -36,13 +37,11 @@ export default function VideoTestimonials() {
               <div className="w-full max-w-[280px] shrink-0">
                 <video
                   src={t.videoUrl}
+                  poster={t.posterUrl}
                   controls
                   playsInline
-                  preload="metadata"
+                  preload="none"
                   className="w-full aspect-[9/16] rounded-2xl shadow-lg object-cover bg-black"
-                  onLoadedMetadata={(e) => {
-                    e.currentTarget.currentTime = 0.5;
-                  }}
                 />
               </div>
 
