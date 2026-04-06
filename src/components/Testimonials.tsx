@@ -12,7 +12,7 @@ const videoTestimonials = [
     posterUrl: `${R2_BASE}/Sneha_Edited_Poster.jpg`,
     name: "Sneha",
     role: "",
-    result: "Improved Structured and General Pain",
+    result: "Structured Health Lifestyle",
     quote:
       "My body feels like a well-oiled machine and I feel stronger than ever before. Jeff makes the entire journey very enjoyable. He has been the best investment in my fitness journey and I highly recommend him.",
   },
@@ -66,7 +66,7 @@ const videoTestimonials = [
     posterUrl: `${R2_BASE}/Curtis_Edited_Poster.jpg`,
     name: "Curtis",
     role: "",
-    result: "Improved Flexibility and Muscle Imbalance",
+    result: "Flexibility and Strength",
     quote:
       "Jeff is very detail oriented. The workouts were much more fun and I saw a lot of results. He was able to balance out my body and keep me consistent.",
   },
@@ -75,7 +75,7 @@ const videoTestimonials = [
     posterUrl: `${R2_BASE}/Karson_Edited_Poster.jpg`,
     name: "Karson",
     role: "",
-    result: "Improved Functional Strength in his life",
+    result: "Functional Strength for Life",
     quote:
       "Before Jeff, I went to the gym once a week. After, I consistently go to the gym twice a week. My strength has gotten a lot better and my body has gotten a lot more toned.",
   },
