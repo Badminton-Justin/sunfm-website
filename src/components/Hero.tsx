@@ -128,11 +128,11 @@ export default function Hero() {
           <div className="flex justify-center">
             <div className="relative w-64 sm:w-72 md:w-80 lg:w-96 aspect-[3/4] overflow-hidden rounded-2xl shadow-xl">
               <Image
-                src="/images/jeffrey-headshot.JPG"
+                src="/images/jeffrey-headshot-final.jpg"
                 alt="Jeffrey Sun - Personal Trainer"
                 fill
-                className="object-cover"
-                style={{ objectPosition: '65% top' }}
+                className="object-cover scale-125"
+                style={{ objectPosition: '65% 15%' }}
                 priority
               />
             </div>
