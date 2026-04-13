@@ -13,7 +13,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="min-h-screen flex items-end relative bg-[#F5F2ED] overflow-hidden">
+    <section className="min-h-screen flex items-center md:items-end relative bg-[#F5F2ED] overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-y-0 right-0 w-full md:w-[45%] z-0">
         <Image
@@ -24,19 +24,19 @@ export default function Hero() {
           style={{ objectPosition: '65% 15%' }}
           priority
         />
-        {/* Mobile: strong overlay for text readability with image peeking through at bottom. Desktop: fade from left only */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#F5F2ED]/90 via-[#F5F2ED]/80 to-[#F5F2ED]/40 md:bg-none md:bg-gradient-to-r md:from-[#F5F2ED] md:via-transparent md:to-transparent" />
+        {/* Mobile: dark overlay for white text. Desktop: beige fade from left */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/30 md:bg-none md:bg-gradient-to-r md:from-[#F5F2ED] md:via-transparent md:to-transparent" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-16 md:pb-24 pt-32 md:pt-40">
         <div className="max-w-2xl">
           {/* Credential line */}
-          <p className="hero-enter hero-enter-1 text-xs md:text-sm text-gray-500 tracking-[0.15em] uppercase mb-8 font-medium">
+          <p className="hero-enter hero-enter-1 text-xs md:text-sm text-white/70 md:text-gray-500 tracking-[0.15em] uppercase mb-6 md:mb-8 font-medium">
             12,000+ Sessions &bull; 107+ Clients &bull; South Bay Area
           </p>
 
           {/* Headline - massive display type */}
-          <h1 className="text-display-lg text-[#1a1a1a] mb-8">
+          <h1 className="text-display-lg text-white md:text-[#1a1a1a] mb-6 md:mb-8">
             <span className="hero-enter hero-enter-2 inline-block highlight">Move Better.</span>
             <br />
             <span className="hero-enter hero-enter-3 inline-block">Feel Stronger.</span>
@@ -45,7 +45,7 @@ export default function Hero() {
           </h1>
 
           {/* Subheadline */}
-          <p className="hero-enter hero-enter-4 text-lg md:text-xl text-gray-500 mb-10 max-w-lg leading-relaxed">
+          <p className="hero-enter hero-enter-4 text-lg md:text-xl text-white/80 md:text-gray-500 mb-8 md:mb-10 max-w-lg leading-relaxed">
             Hi, I&apos;m Jeffrey Sun, a personal trainer in San Jose serving
             the South Bay Area. I help busy professionals eliminate pain,
             build functional strength, and train for health longevity - not
@@ -65,7 +65,7 @@ export default function Hero() {
               Book Your Free Consultation
             </a>
 
-            <div className="flex items-center gap-2 text-sm text-gray-400">
+            <div className="flex items-center gap-2 text-sm text-white/60 md:text-gray-400">
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <svg
