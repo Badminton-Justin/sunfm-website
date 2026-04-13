@@ -24,8 +24,8 @@ export default function Hero() {
           style={{ objectPosition: '65% 15%' }}
           priority
         />
-        {/* Mobile: lighter gradient so image is visible in all browsers. Desktop: fade from left only */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#F5F2ED] via-[#F5F2ED]/50 to-transparent md:from-[#F5F2ED] md:via-transparent md:to-transparent" />
+        {/* Mobile: strong overlay for text readability with image peeking through at bottom. Desktop: fade from left only */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F5F2ED]/90 via-[#F5F2ED]/80 to-[#F5F2ED]/40 md:bg-none md:bg-gradient-to-r md:from-[#F5F2ED] md:via-transparent md:to-transparent" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-16 md:pb-24 pt-32 md:pt-40">
