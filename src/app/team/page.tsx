@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     description:
       "Meet the coaches at Sun Functional Movement in San Jose.",
     type: "website",
+    url: "https://www.sunfm.fitness/team",
     images: [{ url: "https://www.sunfm.fitness/images/jeffrey-hero.jpg" }],
   },
 };

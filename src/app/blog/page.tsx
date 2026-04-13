@@ -5,18 +5,18 @@ import CategoryFilter from "@/components/blog/CategoryFilter";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title:
-    "Blog | Sun Functional Movement — Fitness, Nutrition & Wellness Tips",
+  title: "Fitness, Nutrition & Wellness Blog - SunFM",
   description:
     "Expert articles on functional movement training, nutrition, and wellness from personal trainer Jeffrey Sun in San Jose. Practical tips for busy professionals.",
   alternates: {
     canonical: "https://www.sunfm.fitness/blog",
   },
   openGraph: {
-    title: "Blog | Sun Functional Movement",
+    title: "Fitness, Nutrition & Wellness Blog - SunFM",
     description:
       "Expert articles on functional movement training, nutrition, and wellness.",
     type: "website",
+    url: "https://www.sunfm.fitness/blog",
     images: [{ url: "https://www.sunfm.fitness/images/jeffrey-headshot-final.jpg" }],
   },
 };

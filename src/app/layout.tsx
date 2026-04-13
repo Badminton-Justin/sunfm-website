@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Personal Trainer San Jose | Sun Functional Movement",
   description:
-    "Personal trainer in San Jose & South Bay Area. Jeffrey Sun helps busy professionals eliminate pain, build functional strength, and train for health longevity.",
+    "Personal trainer in San Jose & South Bay. Jeffrey Sun helps busy professionals eliminate pain, build functional strength, and train for longevity.",
   keywords: [
     "personal trainer San Jose",
     "personal trainer South Bay",

@@ -13,7 +13,7 @@ export default function Breadcrumbs({
   category?: string;
   postTitle?: string;
 }) {
-  const baseUrl = "https://sunfm.fitness";
+  const baseUrl = "https://www.sunfm.fitness";
   const crumbs: Crumb[] = [{ label: "Blog", href: "/blog" }];
 
   if (category) {

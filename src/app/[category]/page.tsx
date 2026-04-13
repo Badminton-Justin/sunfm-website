@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${label} Tips for Busy Professionals - SunFM Blog`,
       description: `Expert ${label.toLowerCase()} articles for busy professionals in San Jose.`,
       type: "website",
+      url: `https://www.sunfm.fitness/${category}`,
       images: [{ url: "https://www.sunfm.fitness/images/jeffrey-headshot-final.jpg" }],
     },
   };
