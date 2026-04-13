@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonicalUrl = `https://www.sunfm.fitness/${category}/${slug}`;
 
   return {
-    title: `${post.title} | Sun Functional Movement Blog`,
+    title: `${post.title} - SunFM`,
     description: post.description,
     alternates: {
       canonical: canonicalUrl,

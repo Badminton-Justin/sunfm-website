@@ -40,6 +40,9 @@ export default function Footer() {
     { name: "How It Works", href: "#how-it-works" },
     { name: "Testimonials", href: "#testimonials" },
     { name: "Blog", href: "/blog" },
+    { name: "Training Articles", href: "/training" },
+    { name: "Nutrition Tips", href: "/nutrition" },
+    { name: "Wellness", href: "/wellness" },
     { name: "Book Now", href: "#apply" },
   ];
 

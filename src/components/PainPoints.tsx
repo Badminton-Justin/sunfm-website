@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
 import { useReveal } from "@/hooks/useReveal";
 
@@ -71,6 +72,22 @@ export default function PainPoints() {
           >
             Start Your Transformation
           </a>
+
+          {/* Internal links to relevant blog content */}
+          <div className="mt-10 pt-8 border-t border-black/10">
+            <p className="text-sm text-gray-400 uppercase tracking-wider mb-3">Related reading</p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
+              <Link href="/training/functional-movement-exercises-for-desk-workers" className="text-sm text-gray-600 hover:text-[#CB4538] transition-colors underline underline-offset-4">
+                Exercises for desk workers
+              </Link>
+              <Link href="/training/strength-training-for-longevity-beginners-guide-over-30" className="text-sm text-gray-600 hover:text-[#CB4538] transition-colors underline underline-offset-4">
+                Strength training after 30
+              </Link>
+              <Link href="/wellness/personal-training-for-stress-relief-bay-area" className="text-sm text-gray-600 hover:text-[#CB4538] transition-colors underline underline-offset-4">
+                Training for stress relief
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

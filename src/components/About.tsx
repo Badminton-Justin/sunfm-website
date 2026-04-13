@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import MeetTeamLink from "@/components/MeetTeamLink";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import { useReveal } from "@/hooks/useReveal";
@@ -130,8 +131,20 @@ export default function About() {
               </div>
             </div>
 
-            <div className="mt-10">
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 sm:gap-6">
               <MeetTeamLink />
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-[#1a1a1a] font-semibold hover:text-[#CB4538] transition-colors underline underline-offset-4"
+              >
+                Read the blog
+              </Link>
+              <Link
+                href="/nutrition/meal-prep-for-busy-professionals"
+                className="inline-flex items-center gap-2 text-gray-500 font-medium hover:text-[#CB4538] transition-colors underline underline-offset-4 text-sm"
+              >
+                Nutrition tips
+              </Link>
             </div>
           </div>
         </div>
