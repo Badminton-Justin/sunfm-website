@@ -56,7 +56,7 @@ export default function StickyCTA() {
             scrollToApply(e);
             trackEvent("cta_click", { button_text: "Book Free Consultation", section: "sticky_cta" });
           }}
-          className="flex items-center justify-center w-full btn-secondary py-3"
+          className="block w-full text-center btn-secondary py-3"
         >
           Book Free Consultation
         </a>
