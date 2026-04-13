@@ -148,8 +148,8 @@ export default function ApplicationForm() {
     "Other",
   ];
 
-  const inputClasses = "w-full px-0 py-4 bg-transparent border-0 border-b border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-[#FFD140] transition-colors text-base";
-  const selectClasses = "w-full px-0 py-4 bg-transparent border-0 border-b border-white/20 text-white focus:outline-none focus:border-[#FFD140] transition-colors text-base appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%23999%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_0_center]";
+  const inputClasses = "w-full px-4 py-3.5 bg-white/[0.07] border border-white/15 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#FFD140]/50 focus:border-[#FFD140]/50 transition-all text-base";
+  const selectClasses = "w-full px-4 py-3.5 bg-white/[0.07] border border-white/15 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#FFD140]/50 focus:border-[#FFD140]/50 transition-all text-base appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%23999%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_0.75rem_center]";
 
   return (
     <section id="apply" className="bg-[#0f0f0f] relative overflow-hidden">
@@ -213,10 +213,10 @@ export default function ApplicationForm() {
 
           {/* Form */}
           {submitStatus !== "success" && (
-            <form onSubmit={handleSubmit} className="space-y-2">
+            <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name */}
               <div>
-                <label htmlFor="name" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                <label htmlFor="name" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                   Full Name *
                 </label>
                 <input
@@ -234,9 +234,9 @@ export default function ApplicationForm() {
               </div>
 
               {/* Email and Phone */}
-              <div className="grid md:grid-cols-2 gap-x-8">
+              <div className="grid md:grid-cols-2 gap-x-8 gap-y-5">
                 <div>
-                  <label htmlFor="email" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                  <label htmlFor="email" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                     Email *
                   </label>
                   <input
@@ -253,7 +253,7 @@ export default function ApplicationForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                  <label htmlFor="phone" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                     Phone Number *
                   </label>
                   <input
@@ -273,7 +273,7 @@ export default function ApplicationForm() {
 
               {/* Age */}
               <div className="max-w-[200px]">
-                <label htmlFor="age" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                <label htmlFor="age" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                   Age
                 </label>
                 <input
@@ -293,7 +293,7 @@ export default function ApplicationForm() {
 
               {/* Primary Goal */}
               <div>
-                <label htmlFor="goal" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                <label htmlFor="goal" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                   What&apos;s your primary goal? *
                 </label>
                 <select
@@ -328,7 +328,7 @@ export default function ApplicationForm() {
 
               {/* Experience level */}
               <div>
-                <label htmlFor="experience" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                <label htmlFor="experience" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                   How experienced are you with exercise? *
                 </label>
                 <select
@@ -352,7 +352,7 @@ export default function ApplicationForm() {
 
               {/* Current Routine */}
               <div>
-                <label htmlFor="currentRoutine" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                <label htmlFor="currentRoutine" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                   Do you have a current exercise routine?
                 </label>
                 <textarea
@@ -370,7 +370,7 @@ export default function ApplicationForm() {
 
               {/* Motivation */}
               <div>
-                <label htmlFor="motivation" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                <label htmlFor="motivation" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                   What made you want to start personal training?
                 </label>
                 <textarea
@@ -388,7 +388,7 @@ export default function ApplicationForm() {
 
               {/* Injuries/Pain */}
               <div>
-                <label htmlFor="injuries" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                <label htmlFor="injuries" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                   Any current injuries or areas of pain?
                 </label>
                 <textarea
@@ -406,7 +406,7 @@ export default function ApplicationForm() {
 
               {/* How did you hear about us */}
               <div>
-                <label htmlFor="referral" className="block text-white/70 text-xs uppercase tracking-wider mb-1">
+                <label htmlFor="referral" className="block text-white/70 text-xs uppercase tracking-wider mb-2">
                   How did you hear about SunFM? *
                 </label>
                 <select
