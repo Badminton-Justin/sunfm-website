@@ -11,6 +11,11 @@ import {
 } from "@/lib/blog";
 import ProgressBar from "@/components/blog/ProgressBar";
 import RelatedPosts from "@/components/blog/RelatedPosts";
+import YouTubeEmbed from "@/components/blog/YouTubeEmbed";
+
+const mdxComponents = {
+  YouTube: YouTubeEmbed,
+};
 
 interface Props {
   params: Promise<{ category: string; slug: string }>;
@@ -188,7 +193,7 @@ export default async function ArticlePage({ params }: Props) {
           {/* Article body */}
           <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-10">
             <div className="prose prose-lg max-w-none prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-headings:font-bold prose-headings:text-black prose-p:text-gray-700 prose-p:text-lg prose-p:leading-[1.8] prose-li:text-gray-700 prose-li:text-lg prose-a:text-[#CB4538] prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-[#FFD140] prose-blockquote:border-l-4 prose-blockquote:text-gray-600 prose-img:rounded-xl prose-strong:text-black prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-hr:my-8">
-              <MDXRemote source={post.content} />
+              <MDXRemote source={post.content} components={mdxComponents} />
             </div>
           </div>
 
