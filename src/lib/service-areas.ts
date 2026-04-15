@@ -260,8 +260,8 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "Most of my Cupertino clients work at Apple or used to. The rest are at Seagate, legacy semiconductor companies, or one of the smaller engineering shops tucked into the Main Street side of the city. Cupertino has a very specific work culture, and after hundreds of sessions with clients from this city, I can tell you what shows up physically.",
-      "It's long hours at a desk and high mental stress, with basically no meaningful time for the body. Long commutes on top of that. Dinner is usually the cafeteria, or rushed at 9 PM when they finally get home. What's interesting is that these are also some of the most motivated and coachable clients I work with. Cupertino engineers tend to apply the same rigor to training that they apply to their work, once they decide it matters.",
+      "A lot of my Cupertino clients work at Apple, or used to. Apple Park is right there, and after hundreds of sessions with folks from that world I've picked up on some patterns.",
+      "Long hours at a desk with not much time left for the body. A commute added on top. Dinner often ends up being the cafeteria, or something rushed at 9 PM. The upside is that Apple clients tend to be some of the most coachable I work with. They apply the same rigor to training that they apply to their work, once they decide it matters.",
     ],
     sections: [
       {
