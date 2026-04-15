@@ -28,7 +28,7 @@ export default function ServiceAreaHero({ area }: { area: ServiceArea }) {
           src="/images/jeffrey-headshot-final.jpg"
           alt=""
           fill
-          className="object-cover"
+          className="object-cover hero-image-settle"
           style={{ objectPosition: "50% 20%" }}
           priority
         />
@@ -43,21 +43,25 @@ export default function ServiceAreaHero({ area }: { area: ServiceArea }) {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="lg:max-w-[60%]">
-          <p className="text-xs md:text-sm tracking-[0.25em] uppercase text-[#FFD140] font-medium mb-6">
+          <p className="hero-enter hero-enter-1 text-xs md:text-sm tracking-[0.25em] uppercase text-[#FFD140] font-medium mb-6">
             {area.heroTag}
           </p>
 
           <h1 className="text-display-lg mb-8">
-            {headlineWithoutCity}{" "}
-            <span className="highlight">{cityWord}</span>
+            <span className="hero-enter hero-enter-2 inline-block">
+              {headlineWithoutCity}
+            </span>{" "}
+            <span className="hero-enter hero-enter-3 inline-block highlight">
+              {cityWord}
+            </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-white/70 leading-relaxed mb-10">
+          <p className="hero-enter hero-enter-3 text-lg md:text-xl text-white/70 leading-relaxed mb-10">
             {area.heroSubheadline}
           </p>
 
           {/* Quick facts row */}
-          <div className="grid grid-cols-2 gap-4 md:gap-6 mb-10">
+          <div className="hero-enter hero-enter-4 grid grid-cols-2 gap-4 md:gap-6 mb-10">
             {area.quickFacts.map((fact) => (
               <div
                 key={fact.label}
@@ -73,7 +77,7 @@ export default function ServiceAreaHero({ area }: { area: ServiceArea }) {
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="hero-enter hero-enter-5 flex flex-col sm:flex-row gap-3 sm:gap-4">
             <TrackedCTALink
               href="/#apply"
               section={`service_area_${area.slug}_hero`}
