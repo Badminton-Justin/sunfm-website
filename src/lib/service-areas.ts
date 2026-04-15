@@ -185,9 +185,9 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "Sunnyvale is a short drive from my studio in San Jose, usually seven to ten minutes on 85 when traffic cooperates. A lot of my clients come from here.",
-      "A fair number are in dual-career households with kids. One parent might be working at LinkedIn, Apple, Yahoo, or one of the smaller semiconductor shops, and the other is usually holding something comparable down somewhere else. Sleep isn't great. Their own bodies have been on the back burner for a few years while they put everyone else's needs first. For a lot of them, training is the first thing they've done just for themselves in longer than they'd like to admit.",
-      "If that sounds familiar, you're in good company.",
+      "Sunnyvale is a short drive from the studio, usually seven to ten minutes on 85 when traffic cooperates.",
+      "A lot of my Sunnyvale clients are fitting training in around jobs and families. We schedule around school drop-off, standups, whatever the week looks like. Two sessions a week at a sustainable pace is where most of them end up, and that's enough for real progress when it's consistent.",
+      "If that's the kind of structure you're looking for, this is built around it.",
     ],
     sections: [
       {
@@ -260,8 +260,8 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "A lot of my Cupertino clients work at Apple, or used to. Apple Park is right there, and after hundreds of sessions with folks from that world I've picked up on some patterns.",
-      "Long hours at a desk with not much time left for the body. A commute added on top. Dinner often ends up being the cafeteria, or something rushed at 9 PM. The upside is that Apple clients tend to be some of the most coachable I work with. They apply the same rigor to training that they apply to their work, once they decide it matters.",
+      "Cupertino is about fifteen minutes from the studio, 280 into 880 on a good day.",
+      "Apple is right there, and a good number of my Cupertino clients work there or used to. What they're typically coming in for is training that actually addresses years of desk work. Careful mobility first, compound strength built slowly, and no rush to pile on intensity. It's the kind of work that compounds over months, not the kind that tries to change everything in six weeks.",
     ],
     sections: [
       {
@@ -340,8 +340,8 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "Santa Clara has changed a lot in the last five years. The rise of Nvidia has brought in a younger, high-intensity tech workforce that trains differently than engineers at older companies. The 49ers at Levi's Stadium pull in a different kind of client again. And mixed in with all of that is the steadier workforce of the University, healthcare systems, and families who've been here for a generation.",
-      "I train people from across that mix. The common thread is that Santa Clara is high-pressure, high-motion, and light on free time. My clients here tend to want results, and they want them packaged into the smallest time commitment that will actually work.",
+      "Santa Clara is close to the studio. Five to ten minutes on 880 or 101 depending on where you start.",
+      "A lot of my Santa Clara clients want real training that doesn't eat half of their week. Two focused, well-programmed sessions tend to outperform three unfocused ones, especially when the rest of the day is already full. That's usually how we build from the start.",
     ],
     sections: [
       {
@@ -418,8 +418,8 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "Mountain View is where I see the most Googlers, which is unsurprising given that the Googleplex is here. But my Mountain View clients come from further afield than just Google. I've trained engineers from X (Alphabet's moonshot division), Waymo, multiple well-funded startups on Castro Street, and a handful of folks from the Computer History Museum area.",
-      "The common thread is a very particular kind of tech worker. Smart, overthinking, slightly exhausted, and used to Google's on-campus gyms but wanting something different. That last piece is what's unusual about Mountain View clients. The campus gyms are actually decent. But something about training on your employer's property, with coworkers present, never quite lets the stress drop. A lot of my Mountain View clients are specifically looking for training that's completely separate from work.",
+      "Mountain View is fifteen to twenty minutes from the studio via 85 South. Mid-day and early-morning slots have the easiest commute.",
+      "Google is in Mountain View, and a number of my clients work there. Many of them have access to on-campus gyms at work but come in here because they want training that's genuinely separate from their workday. That separation matters, and it's part of what makes the work stick.",
     ],
     sections: [
       {
@@ -498,8 +498,8 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "Los Gatos is about five minutes south of my studio on 17. It's my shortest commute after Campbell, and the client mix here is genuinely distinct from everywhere else I serve. Los Gatos has become the home of a particular kind of tech money over the last decade, especially since Netflix set up headquarters on Winchester. My Los Gatos clients tend to be executives, directors, and senior ICs at the bigger tech companies, plus longtime residents whose families have been here since well before Silicon Valley had that name.",
-      "What happens when those two groups walk into the same studio is interesting. The newer arrivals are often used to the Netflix-style performance culture, which means they want to train hard and see measurable progress. The longer-term residents are usually looking for something different. Their goal is to stay strong and stay independent and keep enjoying the life they've built here.",
+      "Los Gatos is about five minutes up Highway 17 from the studio.",
+      "A lot of my Los Gatos clients are fitting training in alongside other things they already love. Cycling up the local hills, hiking Saint Joseph's, tennis, whatever the outlet is. The job of strength work in that mix is to support those activities, not compete with them. That's how the programming's built.",
     ],
     sections: [
       {
@@ -578,8 +578,8 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "Saratoga is one of my quieter markets, in the sense that the pace of life there is different from everywhere else in the South Bay. People stay in Saratoga. Some of my Saratoga clients have lived in the same house for three decades. The demographic skews older, wealthier, and more settled than the tech cities just north, which means the training conversation is usually pretty different from what I have with a thirty-five-year-old engineer in Mountain View.",
-      "The drive from downtown Saratoga to my studio is about ten minutes, depending on whether you take Saratoga-Sunnyvale Road or head down 85. Both work. Most of my Saratoga clients take the surface streets through Prospect Road because the drive is more pleasant and usually just as quick.",
+      "Saratoga is ten minutes from the studio via Saratoga-Sunnyvale Road or 85 North. The surface streets through Prospect Road tend to be a more pleasant drive and about the same time.",
+      "A lot of my Saratoga clients come in with something specific they're working on. An old injury flaring up, a drop in strength they want to reverse, or just the goal of staying strong and moving well as they get older. The training is patient and individualized. Nothing rushed.",
     ],
     sections: [
       {
@@ -659,8 +659,8 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "Los Altos sits between Mountain View and Saratoga geographically but has its own character. The money here is old by Silicon Valley standards. Plenty of my Los Altos clients are second-generation tech. Parents who were at Sun or Oracle in the eighties, kids who went to Stanford and are now running product at a company I've definitely heard of.",
-      "The drive from downtown Los Altos to the studio is fifteen minutes on 85 South on a normal day. A bit slower during commute. Most of my Los Altos clients come in during the middle of their workday, which makes sense given how much of that population works flexibly or has enough seniority that the schedule is theirs to arrange.",
+      "Los Altos is about fifteen minutes from the studio via 85 South on a normal day. A bit slower during commute hours.",
+      "A lot of my Los Altos clients book mid-day windows that fit between meetings. The training is methodical, tracked, and built to compound over months and years. Year one is usually about undoing the slow accumulation of damage from years of desk work. Year two is where things really start to change.",
     ],
     sections: [
       {
@@ -739,8 +739,8 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "Milpitas is ten to fifteen minutes up 880 from the studio. A lot of my clients come from here, many of them working in hardware and manufacturing roles. Tesla's Fremont facility is just north of the city.",
-      "A fair number of my Milpitas clients are balancing demanding careers with caring for parents, raising kids, or both. When that's the life situation, training has to fit around whatever energy is left after everyone else has been taken care of.",
+      "Milpitas is ten to fifteen minutes up 880 from the studio.",
+      "A lot of my Milpitas clients are balancing demanding careers with family responsibilities. Training has to fit around real life. Not five sessions a week. Not hours of prep. Two focused sessions with programming to do on your own in between is usually where we land.",
     ],
     sections: [
       {
@@ -818,8 +818,8 @@ export const serviceAreas: Record<string, ServiceArea> = {
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
-      "Campbell is one of my easier commutes. My studio sits about five to eight minutes from downtown Campbell, depending on where you start. For a lot of Campbell residents, it's faster to come to my studio than it is to get across town to 24 Hour Fitness.",
-      "The client mix here is different from the rest of the South Bay. Campbell is more residential and small-business oriented than the tech-heavy cities around it. I've trained local restaurant owners, physical therapists, teachers, a few longtime Campbell residents who've been in the same house since the eighties, and a handful of tech folks who moved to Campbell specifically to get away from the intensity of Mountain View or Cupertino.",
+      "Campbell is one of the shortest commutes to the studio. Usually under five minutes from downtown.",
+      "Some of my Campbell clients have lived in the area a long time, others moved here more recently. The common thread across the group is wanting patient, durable training rather than something that burns hot for a few weeks and fades. Consistency and longevity over any six-week transformation.",
     ],
     sections: [
       {
