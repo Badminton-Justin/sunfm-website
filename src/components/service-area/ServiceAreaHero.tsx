@@ -22,17 +22,25 @@ export default function ServiceAreaHero({ area }: { area: ServiceArea }) {
       {/* Right-side portrait on lg+ */}
       <div
         aria-hidden="true"
-        className="absolute inset-y-0 right-0 w-[45%] z-0 hidden lg:block"
+        className="absolute inset-y-0 right-0 w-[55%] z-0 hidden lg:block"
       >
         <Image
           src="/images/jeffrey-headshot-final.jpg"
           alt=""
           fill
           className="object-cover hero-image-settle"
-          style={{ objectPosition: "50% 20%" }}
+          style={{ objectPosition: "60% 20%" }}
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a1a] via-[#1a1a1a]/80 to-[#1a1a1a]/20" />
+        {/* Long, soft fade so the image merges into the section's dark bg
+            on the left with no visible seam. */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to right, #1a1a1a 0%, rgba(26,26,26,0.95) 20%, rgba(26,26,26,0.55) 45%, rgba(26,26,26,0.15) 75%, rgba(26,26,26,0) 100%)",
+          }}
+        />
       </div>
 
       {/* Accent glow */}
