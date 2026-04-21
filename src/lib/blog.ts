@@ -10,6 +10,7 @@ export interface Post {
   date: string;
   author: string;
   image: string;
+  imageAlt?: string;
   tags: string[];
   content: string;
   readTime: number;
@@ -48,6 +49,7 @@ export function getAllPosts(): Post[] {
         date: data.date,
         author: data.author,
         image: data.image || "",
+        imageAlt: data.imageAlt,
         tags: data.tags || [],
         content,
         readTime: calculateReadTime(content),

@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
               url: `https://www.sunfm.fitness${post.image}`,
               width: 1200,
               height: 630,
-              alt: post.title,
+              alt: post.imageAlt || post.title,
             },
           ]
         : [],
@@ -247,7 +247,7 @@ export default async function ArticlePage({ params }: Props) {
             <div className="mb-8 rounded-2xl overflow-hidden shadow-sm">
               <Image
                 src={post.image}
-                alt={post.title}
+                alt={post.imageAlt || post.title}
                 width={heroDims.width}
                 height={heroDims.height}
                 priority

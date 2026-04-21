@@ -74,6 +74,7 @@ export default function PostCard({
       source={source}
       slug={post.slug}
       category={post.category}
+      ariaLabel={post.title}
       className="group block bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow"
     >
       <div className="aspect-[16/9] relative bg-gradient-to-br from-[#FFD140]/20 to-[#CB4538]/10">
