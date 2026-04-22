@@ -101,7 +101,7 @@ export default function Header() {
               src={isDark ? "/images/logo-white.png" : "/images/logo.png"}
               alt="SunFM"
               width={isDark ? 1200 : 240}
-              height={isDark ? 538 : 90}
+              height={isDark ? 541 : 90}
               className={isDark ? "h-11 w-auto" : "h-20 w-auto"}
               priority
             />
