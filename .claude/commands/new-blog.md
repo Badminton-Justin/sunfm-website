@@ -144,7 +144,7 @@ The MDX renderer supports `<YouTube id="..." title="..." />`. Existing posts emb
 
 Never invent IDs. The workflow is WebSearch → pick candidates → verify via YouTube's oEmbed endpoint before embedding.
 
-1. **Find candidates.** For each drill, WebSearch the exact drill name + "youtube demonstration" or a descriptive variant (e.g., "banded ankle distraction youtube squat university"). Extract the `v=<ID>` parameter from each result URL — these are the candidate video IDs. Prefer credible channels (Squat University, named PTs, rehab clinics, known fitness brands) over aggregator channels.
+1. **Find candidates.** For each drill, WebSearch the exact drill name + "youtube demonstration" or a descriptive variant (e.g., "banded ankle distraction youtube physical therapist"). Extract the `v=<ID>` parameter from each result URL — these are the candidate video IDs. Prefer credible channels (named PTs, rehab clinics, known fitness brands) over aggregator channels. Channels already used on the site and known credible: The Barbell Physio, [P]rehab, Mike Boyle Strength & Conditioning, AskDoctorJo, Dani Winks Flexibility, Pursuit Physical Therapy, Jeff Nippard, Jeremy Ethier, HNL Movement, The Active Life, Hinge Health, Sports Rehab Expert. **Excluded — do not use:** Squat University (Aaron Horschig) and Joel Seedman / Advanced Human Performance. Applies to YouTube embeds AND prose/external-link citations to their domains (squatuniversity.com, advancedhumanperformance.com).
 
 2. **Verify each ID exists** via YouTube's oEmbed endpoint. This also returns the actual title and author, so you can confirm the video matches the drill:
    ```bash
