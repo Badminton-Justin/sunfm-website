@@ -1,0 +1,97 @@
+backend:
+  name: github
+  repo: Boots-and-Buddies/sunfm-website
+  branch: main
+  base_url: https://www.sunfm.fitness
+  auth_endpoint: api/auth
+
+# PR workflow: every save opens a pull request rather than committing
+# straight to main. Lets the repo owner review before publish.
+publish_mode: editorial_workflow
+
+# Where the CMS commits images, and the URL prefix it writes into markdown.
+media_folder: public/images/blog
+public_folder: /images/blog
+
+site_url: https://www.sunfm.fitness
+display_url: https://www.sunfm.fitness
+logo_url: https://www.sunfm.fitness/images/logo.png
+
+# Shared field schema reused across the three category collections. The only
+# difference between them is the folder path and the default category value.
+_field_definitions:
+  - &title { name: title, label: Title, widget: string, hint: "60 chars or fewer. Front-load the primary keyword." }
+  - &description { name: description, label: Description, widget: text, hint: "1–2 sentences. Shows up as the meta description and on category pages." }
+  - &date { name: date, label: Date, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, default: "" }
+  - &author { name: author, label: Author, widget: string, default: "Jeffrey Sun" }
+  - &image { name: image, label: Hero image, widget: image, hint: "Used as the OG/social preview image and the hero banner on the post page." }
+  - &imageAlt { name: imageAlt, label: Hero image alt text, widget: string, required: false, hint: "Describe what the image actually shows. Skip the post title." }
+  - &tags { name: tags, label: Tags, widget: list, hint: "5–7 short keywords. Reuse existing tags when they apply." }
+  - &body { name: body, label: Body, widget: markdown, hint: "Use the YouTube button to embed a demo video. Hard-wrap is fine; the renderer collapses newlines." }
+
+collections:
+  - name: training
+    label: Training posts
+    label_singular: Training post
+    folder: src/content/blog/training
+    create: true
+    delete: false
+    extension: mdx
+    format: frontmatter
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    sortable_fields: [date, title]
+    fields:
+      - *title
+      - *description
+      - { name: category, label: Category, widget: hidden, default: training }
+      - *date
+      - *author
+      - *image
+      - *imageAlt
+      - *tags
+      - *body
+
+  - name: nutrition
+    label: Nutrition posts
+    label_singular: Nutrition post
+    folder: src/content/blog/nutrition
+    create: true
+    delete: false
+    extension: mdx
+    format: frontmatter
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    sortable_fields: [date, title]
+    fields:
+      - *title
+      - *description
+      - { name: category, label: Category, widget: hidden, default: nutrition }
+      - *date
+      - *author
+      - *image
+      - *imageAlt
+      - *tags
+      - *body
+
+  - name: wellness
+    label: Wellness posts
+    label_singular: Wellness post
+    folder: src/content/blog/wellness
+    create: true
+    delete: false
+    extension: mdx
+    format: frontmatter
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    sortable_fields: [date, title]
+    fields:
+      - *title
+      - *description
+      - { name: category, label: Category, widget: hidden, default: wellness }
+      - *date
+      - *author
+      - *image
+      - *imageAlt
+      - *tags
+      - *body
