@@ -1,0 +1,53 @@
+name: IndexNow ping
+
+# Notifies Bing and Yandex to crawl the site when content changes, so new
+# and updated posts get picked up in minutes instead of waiting for the
+# next organic crawl. IndexNow is an open, unauthenticated protocol — the
+# key is public and hosted at /<key>.txt on the domain, so this workflow
+# needs no secrets. (Google does not use IndexNow; this is for Bing/Yandex,
+# which matter for the desktop "near me" traffic this site already sees.)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/content/**"
+      - "src/app/**"
+      - "public/llms.txt"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Vercel to deploy the new content
+        run: sleep 90
+
+      - name: Submit current sitemap URLs to IndexNow
+        run: |
+          set -euo pipefail
+          HOST="www.sunfm.fitness"
+          KEY="cf24bdc6ff229de3c09f8bfc0f48c697"
+
+          payload=$(curl -fsS "https://$HOST/sitemap.xml" \
+            | grep -oE '<loc>[^<]+</loc>' \
+            | sed -E 's#</?loc>##g' \
+            | jq -R . \
+            | jq -s --arg host "$HOST" --arg key "$KEY" \
+                '{host: $host, key: $key, keyLocation: ("https://" + $host + "/" + $key + ".txt"), urlList: .}')
+
+          count=$(echo "$payload" | jq '.urlList | length')
+          echo "Submitting $count URLs to IndexNow"
+
+          code=$(curl -s -o /tmp/indexnow_resp.txt -w "%{http_code}" \
+            -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d "$payload")
+
+          echo "IndexNow responded HTTP $code"
+          cat /tmp/indexnow_resp.txt || true
+          # IndexNow returns 200 or 202 on success; treat anything else as failure
+          case "$code" in
+            200|202) echo "OK" ;;
+            *) echo "IndexNow submission failed"; exit 1 ;;
+          esac

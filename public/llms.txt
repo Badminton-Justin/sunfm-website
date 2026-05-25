@@ -2,6 +2,8 @@
 
 > Personal training studio in San Jose, CA focused on health longevity for busy professionals.
 
+> Full article text for AI ingestion is available at https://www.sunfm.fitness/llms-full.txt
+
 ## About
 Sun Functional Movement (SunFM) is a personal training business founded by Jeffrey Sun, an ACE Certified Personal Trainer with a B.S. in Human Biology from UC Santa Cruz. Based in San Jose, SunFM serves clients across the South Bay Area including Sunnyvale, Cupertino, Santa Clara, Mountain View, and Campbell — both in-person and online.
 

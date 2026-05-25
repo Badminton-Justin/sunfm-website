@@ -158,6 +158,11 @@ export default async function ArticlePage({ params }: Props) {
         width: 512,
         height: 512,
       },
+      sameAs: [
+        "https://www.instagram.com/jeffsunfitness/",
+        "https://www.yelp.com/biz/sun-functional-movement-san-jose",
+        "https://maps.app.goo.gl/XyrnsHXu9K1xYqXw5",
+      ],
     },
   };
 
