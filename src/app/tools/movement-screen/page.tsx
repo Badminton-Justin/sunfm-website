@@ -6,14 +6,14 @@ import MovementScreen from "@/components/movement-screen/MovementScreen";
 const canonical = "https://www.sunfm.fitness/tools/movement-screen";
 
 export const metadata: Metadata = {
-  title: "The Movement Screen · Sun Functional Movement",
+  title: "Free Movement Screen: Find Your Tightest Joint in 5 Minutes",
   description:
-    "A 12-question mobility self-assessment from a San Jose personal trainer. Find your tightest areas and get personalized drills.",
+    "Score your hips, shoulders, T-spine, hamstrings, ankles, and core in 5 minutes. Free, no email. Get a 1-week program built around your tightest areas.",
   alternates: { canonical },
   openGraph: {
-    title: "The Movement Screen — 2-minute mobility diagnostic",
+    title: "Free Movement Screen: Find Your Tightest Joint in 5 Minutes",
     description:
-      "Score your shoulder, thoracic, hip, hamstring, ankle, and core mobility on six axes. Personalized drill recommendations included.",
+      "Score your shoulder, thoracic, hip, hamstring, ankle, and core mobility on six axes. Free, no email, with personalized drills for your weakest areas.",
     type: "website",
     url: canonical,
     images: [
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Movement Screen — 2-minute mobility diagnostic",
+    title: "Free Movement Screen: Find Your Tightest Joint in 5 Minutes",
     description:
-      "Score your mobility on six axes. Personalized drill recommendations included.",
+      "Score your mobility on six axes in 5 minutes. Free, no email, personalized drills included.",
   },
 };
 
