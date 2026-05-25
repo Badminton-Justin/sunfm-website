@@ -36,12 +36,12 @@ export default function Footer() {
   ];
 
   const quickLinks = [
-    { name: "About", href: "#about" },
-    { name: "How It Works", href: "#how-it-works" },
-    { name: "Testimonials", href: "#testimonials" },
+    { name: "About", href: "/#about" },
+    { name: "How It Works", href: "/#how-it-works" },
+    { name: "Testimonials", href: "/#testimonials" },
     { name: "Movement Screen", href: "/tools/movement-screen" },
     { name: "Blog", href: "/blog" },
-    { name: "Book Now", href: "#apply" },
+    { name: "Book Now", href: "/#apply" },
   ];
 
   return (

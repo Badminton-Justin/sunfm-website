@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import TrackedCTALink from "@/components/TrackedCTALink";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Our Team | Sun Functional Movement",
@@ -79,6 +80,7 @@ export default function TeamPage() {
   ];
 
   return (
+    <>
     <main className="min-h-screen bg-[#EEEADA]">
       {/* Header */}
       <header className="bg-[#EEEADA] py-6 border-b border-black/10">
@@ -281,15 +283,8 @@ export default function TeamPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-[#3D3D3D] py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} Sun Functional Movement. All
-            rights reserved.
-          </p>
-        </div>
-      </footer>
     </main>
+    <Footer />
+    </>
   );
 }

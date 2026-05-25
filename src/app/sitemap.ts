@@ -18,12 +18,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const categories = getAllCategories();
   const serviceAreas = getAllServiceAreas();
 
+  // A post's freshness is its last-updated date if it has one, otherwise its
+  // publish date. Using `updated` lets a content edit re-signal crawl priority.
+  const postDate = (post: (typeof posts)[number]) =>
+    new Date(post.updated || post.date);
+
   // For /blog and /<category>, the page's "freshness" is the freshness of
-  // its newest post. getAllPosts() is sorted desc by date so [0] is newest.
-  const latestPostDate = posts.length > 0 ? new Date(posts[0].date) : HOMEPAGE_LAST_MODIFIED;
+  // its newest post.
+  const latestPostDate =
+    posts.length > 0
+      ? new Date(Math.max(...posts.map((p) => postDate(p).getTime())))
+      : HOMEPAGE_LAST_MODIFIED;
   const latestPostByCategory: Record<string, Date> = {};
   for (const post of posts) {
-    const d = new Date(post.date);
+    const d = postDate(post);
     if (!latestPostByCategory[post.category] || d > latestPostByCategory[post.category]) {
       latestPostByCategory[post.category] = d;
     }
@@ -45,7 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const postPages: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${baseUrl}/${post.category}/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: postDate(post),
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));

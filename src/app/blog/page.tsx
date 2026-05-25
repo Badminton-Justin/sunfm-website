@@ -4,6 +4,7 @@ import PostCard from "@/components/blog/PostCard";
 import CategoryFilter from "@/components/blog/CategoryFilter";
 import Link from "next/link";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import TrackedCTALink from "@/components/TrackedCTALink";
 
 export const metadata: Metadata = {
@@ -91,6 +92,7 @@ export default function BlogPage() {
         </div>
       </div>
       </main>
+      <Footer />
     </>
   );
 }

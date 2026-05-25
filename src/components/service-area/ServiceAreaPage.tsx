@@ -2,13 +2,16 @@ import Link from "next/link";
 import Image from "next/image";
 import RevealWrapper from "@/components/RevealWrapper";
 import TrackedCTALink from "@/components/TrackedCTALink";
+import Footer from "@/components/Footer";
 import ServiceAreaHero from "./ServiceAreaHero";
 import ServiceAreaFAQ from "./ServiceAreaFAQ";
 import ServiceAreaMap from "./ServiceAreaMap";
 import ServiceAreaSchema from "./ServiceAreaSchema";
-import type { ServiceArea } from "@/lib/service-areas";
+import { getAllServiceAreas, type ServiceArea } from "@/lib/service-areas";
 
 export default function ServiceAreaPage({ area }: { area: ServiceArea }) {
+  const nearbyAreas = getAllServiceAreas().filter((a) => a.slug !== area.slug);
+
   return (
     <>
       <ServiceAreaSchema area={area} />
@@ -204,6 +207,49 @@ export default function ServiceAreaPage({ area }: { area: ServiceArea }) {
           </section>
         )}
 
+        {/* Nearby cities */}
+        <section className="py-20 md:py-24 bg-[#EEEADA]">
+          <RevealWrapper className="max-w-5xl mx-auto px-4 sm:px-6">
+            <p className="text-xs tracking-[0.25em] uppercase text-gray-500 font-medium mb-4 reveal">
+              Nearby areas
+            </p>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#1a1a1a] mb-10 reveal reveal-delay-1">
+              Personal training in other South Bay cities
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {nearbyAreas.map((a, i) => (
+                <Link
+                  key={a.slug}
+                  href={a.urlPath}
+                  className={`group flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-white border border-black/10 hover:border-[#CB4538] hover:bg-[#CB4538]/5 transition-colors reveal reveal-delay-${Math.min(i + 1, 5)}`}
+                >
+                  <span className="text-sm md:text-base font-semibold text-[#1a1a1a] leading-tight">
+                    {a.city}
+                    <span className="block text-xs font-normal text-gray-500">
+                      Personal trainer
+                    </span>
+                  </span>
+                  <span className="flex-shrink-0 text-gray-400 group-hover:text-[#CB4538] transition-colors">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </RevealWrapper>
+        </section>
+
         {/* Final CTA */}
         <section className="py-24 md:py-32 bg-[#1a1a1a] text-white overflow-hidden relative">
           <div
@@ -236,6 +282,7 @@ export default function ServiceAreaPage({ area }: { area: ServiceArea }) {
           </RevealWrapper>
         </section>
       </main>
+      <Footer />
     </>
   );
 }

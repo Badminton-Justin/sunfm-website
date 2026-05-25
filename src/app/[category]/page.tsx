@@ -11,6 +11,7 @@ import CategoryFilter from "@/components/blog/CategoryFilter";
 import Breadcrumbs from "@/components/blog/Breadcrumbs";
 import Link from "next/link";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import TrackedCTALink from "@/components/TrackedCTALink";
 
 interface Props {
@@ -110,6 +111,7 @@ export default async function CategoryPage({ params }: Props) {
         </div>
       </div>
       </main>
+      <Footer />
     </>
   );
 }

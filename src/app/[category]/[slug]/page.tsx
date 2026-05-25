@@ -13,6 +13,7 @@ import RelatedPosts from "@/components/blog/RelatedPosts";
 import YouTubeEmbed from "@/components/blog/YouTubeEmbed";
 import MDXImage from "@/components/blog/MDXImage";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import TrackedCTALink from "@/components/TrackedCTALink";
 import TrackedNavLink from "@/components/TrackedNavLink";
 import TrackedMDXLink from "@/components/blog/TrackedMDXLink";
@@ -302,6 +303,7 @@ export default async function ArticlePage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         />
       </main>
+      <Footer />
     </BlogProvider>
   );
 }
