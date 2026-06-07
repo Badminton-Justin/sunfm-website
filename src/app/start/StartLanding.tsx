@@ -201,7 +201,7 @@ export default function StartLanding() {
             />
           </Link>
           <div className="text-right">
-            <p className="hidden sm:block text-xs text-gray-500 leading-tight mb-0.5">
+            <p className="text-xs text-gray-500 leading-tight mb-0.5">
               1401 Parkmoor Ave, San Jose
             </p>
             <div className="flex items-center gap-2 justify-end text-sm leading-tight">
