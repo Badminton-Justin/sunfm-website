@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "brand_name": "Sun Functional Movement",
+  "website_url": "https://www.sunfm.fitness",
+  "extracted_at": "2026-06-07",
+  "voice": {
+    "formal_casual": 7,
+    "rational_emotional": 5,
+    "playful_serious": 4,
+    "bold_subtle": 7,
+    "traditional_innovative": 5,
+    "expert_accessible": 7,
+    "descriptors": ["plainspoken", "opinionated", "credible"]
+  },
+  "colors": {
+    "primary": "#CB4538",
+    "secondary": ["#FFD140", "#1a1a1a"],
+    "forbidden": ["bright neon", "candy colors", "kids' palette", "extreme bodybuilder reds"],
+    "background": "#F5F2ED",
+    "text": "#1a1a1a"
+  },
+  "typography": {
+    "heading_font": "system sans-serif",
+    "body_font": "system sans-serif",
+    "pairing_descriptor": "modern, clean, mobile-first"
+  },
+  "imagery": {
+    "style": "real client photography, training-focused, no stock",
+    "subjects": ["studio coaching moments", "client lifting", "mobility drills", "founder Jeffrey Sun coaching"],
+    "composition": "honest, candid, gym-real, natural lighting, San Jose studio",
+    "forbidden": ["fake smiling stock models", "before/after weight-loss imagery", "extreme bodybuilder physiques", "cheesy stock photos", "yoga retreat aesthetics", "sunset beach training"]
+  },
+  "aesthetic": {
+    "mood_keywords": ["grounded", "durable", "honest"],
+    "texture": "minimal",
+    "negative_space": "generous"
+  },
+  "brand_values": ["movement quality over volume", "longevity over peaks", "honesty over hype"],
+  "target_audience": {
+    "age_range": "30-60",
+    "profession": "busy Bay Area professionals (tech, healthcare, finance) who sit too much",
+    "pain_points": ["chronic desk-job pain (back/neck/hips)", "fear of training while in pain or injured", "stalled progress on generic gym programs", "lack of time for trial-and-error"],
+    "aspirations": ["train without breaking down", "stay strong for decades", "fix root cause not symptoms", "feel athletic in everyday life"]
+  },
+  "trust_signals": {
+    "review_count": 107,
+    "sessions_delivered": "12,000+",
+    "certifications": ["ACE-certified"],
+    "background": "Stanford Human Biology, former EMT",
+    "location": "1401 Parkmoor Ave, San Jose, CA 95126"
+  },
+  "current_offer": "Free home workout set with every new client signup through June 30, 2026",
+  "primary_cta": "Request my free consultation",
+  "landing_page_paid": "https://www.sunfm.fitness/start"
+}
