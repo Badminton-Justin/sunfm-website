@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
+import { captureAttribution } from "@/lib/attribution";
 
 const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
 
@@ -153,14 +154,38 @@ export default function StartLanding() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [showVideoTestimonials, setShowVideoTestimonials] = useState(false);
   const hasStarted = useRef(false);
   const successRef = useRef<HTMLDivElement>(null);
+  const videoSectionRef = useRef<HTMLDivElement>(null);
+  const attributionRef = useRef<Record<string, string>>({});
+
+  useEffect(() => {
+    attributionRef.current = captureAttribution();
+  }, []);
 
   useEffect(() => {
     if (submitStatus === "success" && successRef.current) {
       successRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [submitStatus]);
+
+  // Lazy-load video testimonials: don't fetch video metadata until the
+  // carousel section is close to entering the viewport.
+  useEffect(() => {
+    if (!videoSectionRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowVideoTestimonials(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px 0px" }
+    );
+    observer.observe(videoSectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Hide the mobile sticky CTA when the form itself is visible on screen.
   useEffect(() => {
@@ -201,6 +226,8 @@ export default function StartLanding() {
 
     trackEvent("form_submit_attempt", { source: "start_page" });
 
+    const attribution = attributionRef.current;
+
     try {
       const response = await fetch("/api/submit-form", {
         method: "POST",
@@ -219,6 +246,8 @@ export default function StartLanding() {
           referral: "google-ads",
           referralDetails: "Submitted from /start landing page",
           contactMethod: "email",
+          attribution,
+          landingPage: "/start",
         }),
       });
 
@@ -363,6 +392,7 @@ export default function StartLanding() {
                         id="name"
                         name="name"
                         required
+                        autoComplete="name"
                         value={formData.name}
                         onChange={handleChange}
                         onFocus={() => handleFieldFocus("name")}
@@ -381,6 +411,8 @@ export default function StartLanding() {
                         id="email"
                         name="email"
                         required
+                        autoComplete="email"
+                        inputMode="email"
                         value={formData.email}
                         onChange={handleChange}
                         onFocus={() => handleFieldFocus("email")}
@@ -399,6 +431,8 @@ export default function StartLanding() {
                         id="phone"
                         name="phone"
                         required
+                        autoComplete="tel"
+                        inputMode="tel"
                         value={formData.phone}
                         onChange={handleChange}
                         onFocus={() => handleFieldFocus("phone")}
@@ -516,8 +550,8 @@ export default function StartLanding() {
         </div>
       </section>
 
-      {/* Video testimonials — carousel */}
-      <section className="bg-[#F5F2ED] py-12">
+      {/* Video testimonials — carousel (lazy-loaded) */}
+      <section ref={videoSectionRef} className="bg-[#F5F2ED] py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-6">
             <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">Hear from my clients</p>
@@ -526,15 +560,24 @@ export default function StartLanding() {
             {VIDEO_TESTIMONIALS.map((t) => (
               <div key={t.name} className="flex-none w-[70%] sm:w-[280px] snap-start">
                 <div className="aspect-[9/16] rounded-2xl overflow-hidden bg-black shadow-xl mb-3">
-                  <video
-                    controls
-                    playsInline
-                    preload="metadata"
-                    poster={`${R2_BASE}/${t.poster}`}
-                    className="w-full h-full object-cover"
-                  >
-                    <source src={`${R2_BASE}/${t.video}`} type="video/mp4" />
-                  </video>
+                  {showVideoTestimonials ? (
+                    <video
+                      controls
+                      playsInline
+                      preload="metadata"
+                      poster={`${R2_BASE}/${t.poster}`}
+                      className="w-full h-full object-cover"
+                    >
+                      <source src={`${R2_BASE}/${t.video}`} type="video/mp4" />
+                    </video>
+                  ) : (
+                    <img
+                      src={`${R2_BASE}/${t.poster}`}
+                      alt={`${t.name} testimonial preview`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  )}
                 </div>
                 <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
                 <p className="text-xs text-gray-500">{t.result}</p>
@@ -619,6 +662,9 @@ export default function StartLanding() {
             <a href="tel:+14087614963" className="hover:text-white transition-colors">
               (408) 761-4963
             </a>
+            <Link href="/privacy" className="hover:text-white transition-colors">
+              Privacy
+            </Link>
             <Link href="/" className="hover:text-white transition-colors">
               Full site
             </Link>

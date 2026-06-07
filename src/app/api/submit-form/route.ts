@@ -15,6 +15,22 @@ interface FormData {
   referral: string;
   referralDetails: string;
   contactMethod: string;
+  attribution?: Record<string, string>;
+  landingPage?: string;
+}
+
+function formatAttribution(
+  attribution: Record<string, string> | undefined,
+  landingPage: string | undefined
+): string {
+  const parts: string[] = [];
+  if (landingPage) parts.push(`landing: ${landingPage}`);
+  if (attribution) {
+    for (const [key, value] of Object.entries(attribution)) {
+      if (value) parts.push(`${key}: ${value}`);
+    }
+  }
+  return parts.length > 0 ? parts.join(" | ") : "(none)";
 }
 
 const transporter = nodemailer.createTransport({
@@ -38,6 +54,11 @@ export async function POST(request: Request) {
       );
     }
 
+    const attributionSummary = formatAttribution(
+      data.attribution,
+      data.landingPage
+    );
+
     if (process.env.CONSULTATION_SHEETS_WEBHOOK_URL) {
       await fetch(process.env.CONSULTATION_SHEETS_WEBHOOK_URL, {
         method: "POST",
@@ -55,6 +76,14 @@ export async function POST(request: Request) {
           motivation: data.motivation || "",
           injuries: data.injuries || "",
           howTheyHeard: data.referral + (data.referralDetails ? ` — ${data.referralDetails}` : ""),
+          attribution: attributionSummary,
+          landingPage: data.landingPage || "",
+          gclid: data.attribution?.gclid || "",
+          utmSource: data.attribution?.utm_source || "",
+          utmMedium: data.attribution?.utm_medium || "",
+          utmCampaign: data.attribution?.utm_campaign || "",
+          utmTerm: data.attribution?.utm_term || "",
+          utmContent: data.attribution?.utm_content || "",
           submittedAt: new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }),
         }),
       });
@@ -102,6 +131,8 @@ Motivation: ${data.motivation || "Not provided"}
 Injuries/Pain: ${data.injuries || "None"}
 
 How they heard about SunFM: ${data.referral}${data.referralDetails ? ` — ${data.referralDetails}` : ""}
+
+Attribution: ${attributionSummary}
       `.trim(),
     });
 

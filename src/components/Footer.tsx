@@ -189,10 +189,18 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-white/5 mt-16 pt-8">
+        <div className="border-t border-white/5 mt-16 pt-8 flex flex-col sm:flex-row gap-3 sm:gap-6 sm:items-center sm:justify-between">
           <p className="text-white/20 text-xs">
             &copy; {currentYear} Sun Functional Movement. All rights reserved.
           </p>
+          <TrackedNavLink
+            href="/privacy"
+            section="footer"
+            linkText="Privacy Policy"
+            className="text-white/40 hover:text-white/70 transition-colors text-xs"
+          >
+            Privacy Policy
+          </TrackedNavLink>
         </div>
       </div>
     </footer>

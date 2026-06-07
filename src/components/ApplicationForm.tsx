@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { trackEvent } from "@/lib/analytics";
+import { captureAttribution } from "@/lib/attribution";
 import { useReveal } from "@/hooks/useReveal";
 
 interface FormData {
@@ -40,7 +41,12 @@ export default function ApplicationForm() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const successRef = useRef<HTMLDivElement>(null);
   const hasStarted = useRef(false);
+  const attributionRef = useRef<Record<string, string>>({});
   const revealRef = useReveal<HTMLDivElement>(0.1);
+
+  useEffect(() => {
+    attributionRef.current = captureAttribution();
+  }, []);
 
   const handleFieldFocus = (fieldName: string) => {
     if (!hasStarted.current) {
@@ -90,7 +96,11 @@ export default function ApplicationForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          attribution: attributionRef.current,
+          landingPage: "/",
+        }),
       });
 
       if (response.ok) {
