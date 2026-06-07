@@ -171,8 +171,8 @@ export default function StartLanding() {
                 </div>
               </div>
 
-              {/* Founder line */}
-              <div className="flex items-center gap-3 text-sm text-gray-600">
+              {/* Founder line + studio address */}
+              <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
                 <Image
                   src="/images/jeffrey-headshot-final.jpg"
                   alt="Jeffrey Sun"
@@ -185,6 +185,9 @@ export default function StartLanding() {
                   Founded by <strong className="text-[#1a1a1a]">Jeffrey Sun</strong>, ACE-certified personal trainer
                 </span>
               </div>
+              <p className="text-xs text-gray-500 pl-[52px]">
+                Studio at 1401 Parkmoor Ave, San Jose &nbsp;·&nbsp; Online + in-person sessions
+              </p>
             </div>
 
             {/* Right: form */}
@@ -351,18 +354,18 @@ export default function StartLanding() {
             {[
               {
                 num: "1",
-                title: "Book your free consultation",
-                desc: "Quick form, takes 30 seconds. Jeff reaches out within 24 hours to schedule.",
+                title: "Tell us what you&apos;re working with",
+                desc: "30-second form. Jeff personally responds, usually within a few hours, to set up a time that fits your schedule.",
               },
               {
                 num: "2",
-                title: "Meet in person or online",
-                desc: "1-hour session at our San Jose studio or via video call. Movement assessment, short workout, and a real conversation about your goals.",
+                title: "Movement screen + short workout",
+                desc: "1 hour at our San Jose studio (1401 Parkmoor Ave) or online. We pinpoint where you&apos;re tight or compensating, run a short session so you feel how we coach, and map out where your body actually needs work.",
               },
               {
                 num: "3",
-                title: "Decide if it&apos;s a fit",
-                desc: "If working together makes sense, you pick a package. If not, you walk away with a clear sense of what to do next. No pressure either way.",
+                title: "Train together — or don&apos;t",
+                desc: "If it&apos;s a fit, we plan from there. If not, you leave with a clear next step for your body. No high-pressure pitch, no obligation either way.",
               },
             ].map((step) => (
               <div key={step.num} className="text-center">
@@ -377,22 +380,43 @@ export default function StartLanding() {
         </div>
       </section>
 
-      {/* Video testimonial */}
+      {/* Video testimonials */}
       <section className="bg-white py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
-            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">Hear from a client</p>
+            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">Hear from clients</p>
           </div>
-          <div className="aspect-video rounded-2xl overflow-hidden bg-black shadow-xl">
-            <video
-              controls
-              playsInline
-              preload="metadata"
-              poster={`${R2_BASE}/Marshall_Edited_Poster.jpg`}
-              className="w-full h-full object-cover"
-            >
-              <source src={`${R2_BASE}/Marshall_Edited.mp4`} type="video/mp4" />
-            </video>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <div className="aspect-video rounded-2xl overflow-hidden bg-black shadow-xl mb-3">
+                <video
+                  controls
+                  playsInline
+                  preload="metadata"
+                  poster={`${R2_BASE}/Marshall_Edited_Poster.jpg`}
+                  className="w-full h-full object-cover"
+                >
+                  <source src={`${R2_BASE}/Marshall_Edited.mp4`} type="video/mp4" />
+                </video>
+              </div>
+              <p className="text-sm font-semibold text-[#1a1a1a]">Marshall</p>
+              <p className="text-xs text-gray-500">4-year client · Pain-free strength</p>
+            </div>
+            <div>
+              <div className="aspect-video rounded-2xl overflow-hidden bg-black shadow-xl mb-3">
+                <video
+                  controls
+                  playsInline
+                  preload="metadata"
+                  poster={`${R2_BASE}/Sneha_Edited_Poster.jpg`}
+                  className="w-full h-full object-cover"
+                >
+                  <source src={`${R2_BASE}/Sneha_Edited.mp4`} type="video/mp4" />
+                </video>
+              </div>
+              <p className="text-sm font-semibold text-[#1a1a1a]">Sneha</p>
+              <p className="text-xs text-gray-500">Structured health lifestyle</p>
+            </div>
           </div>
         </div>
       </section>
@@ -416,7 +440,7 @@ export default function StartLanding() {
                       trackEvent("faq_open", { question: item.q, source: "start_page" });
                     }
                   }}
-                  className="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-[#F5F2ED] transition-colors"
+                  className="w-full px-5 py-4 text-left flex items-center justify-between transition-colors"
                 >
                   <span className="font-semibold text-[#1a1a1a]">{item.q}</span>
                   <svg
