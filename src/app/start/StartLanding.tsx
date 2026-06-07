@@ -255,6 +255,9 @@ export default function StartLanding() {
                 <div className="bg-white border border-black/5 rounded-full px-4 py-2 text-gray-700 font-medium">
                   ACE-certified
                 </div>
+                <div className="bg-white border border-black/5 rounded-full px-4 py-2 text-gray-700 font-medium">
+                  Mobility-first
+                </div>
               </div>
 
               {/* Founder line */}
