@@ -53,21 +53,9 @@ const TEXT_TESTIMONIALS = [
 ];
 
 function LaunchBanner() {
-  // Start dismissed=true so returning users (who already dismissed) don't see a flash.
-  // First-time users see the banner appear right after hydration.
-  const [dismissed, setDismissed] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
-    const isDismissed = localStorage.getItem("sunfm-launch-banner-dismissed") === "true";
-    setDismissed(isDismissed);
-    if (!isDismissed) {
-      trackEvent("banner_impression", { campaign: "launch_offer_june" });
-    }
+    trackEvent("banner_impression", { campaign: "launch_offer_june" });
   }, []);
-
-  if (!mounted || dismissed) return null;
 
   const scrollToForm = () => {
     trackEvent("banner_click", { campaign: "launch_offer_june" });
@@ -79,34 +67,15 @@ function LaunchBanner() {
     }
   };
 
-  const handleDismiss = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setDismissed(true);
-    localStorage.setItem("sunfm-launch-banner-dismissed", "true");
-    trackEvent("banner_dismiss", { campaign: "launch_offer_june" });
-  };
-
   return (
     <div className="bg-[#FFD140] text-[#1a1a1a]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={scrollToForm}
-          className="flex-1 text-center text-sm sm:text-base font-medium hover:underline focus:underline focus:outline-none"
-        >
-          <strong>Launch offer:</strong> Free home workout set with every new client signup through June 30
-        </button>
-        <button
-          type="button"
-          onClick={handleDismiss}
-          aria-label="Dismiss launch offer"
-          className="flex-shrink-0 text-[#1a1a1a]/50 hover:text-[#1a1a1a] p-1 -mr-1"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={scrollToForm}
+        className="block w-full max-w-6xl mx-auto px-4 sm:px-6 py-2.5 text-center text-sm sm:text-base font-medium hover:underline focus:underline focus:outline-none"
+      >
+        <strong>Launch offer:</strong> Free home workout set with every new client signup through June 30
+      </button>
     </div>
   );
 }
@@ -382,7 +351,7 @@ export default function StartLanding() {
               ) : (
                 <>
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
-                  <p className="text-sm text-gray-500 mb-6">1 hour, no obligation. I&apos;ll personally respond, usually within a few hours.</p>
+                  <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Launch offer:</strong> Free home workout set with every new client signup through June 30.</p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
