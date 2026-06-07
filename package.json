@@ -23,6 +23,7 @@
     "next": "^15.5.9",
     "next-mdx-remote": "^6.0.0",
     "nodemailer": "^7.0.13",
+    "posthog-js": "^1.382.0",
     "qrcode": "^1.5.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

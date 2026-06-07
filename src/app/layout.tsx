@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { PostHogProvider } from "@/providers/PostHogProvider";
+import { PostHogPageView } from "@/providers/PostHogPageView";
 import "./globals.css";
 
 const siteUrl = "https://www.sunfm.fitness";
@@ -55,7 +57,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased overflow-x-hidden">{children}</body>
+      <body className="antialiased overflow-x-hidden">
+        <PostHogProvider>
+          <PostHogPageView />
+          {children}
+        </PostHogProvider>
+      </body>
       <GoogleAnalytics gaId="G-FVFDW7GH4Y" />
     </html>
   );
