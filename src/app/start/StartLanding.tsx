@@ -116,10 +116,10 @@ export default function StartLanding() {
 
   return (
     <div className="min-h-screen bg-[#F5F2ED]">
-      {/* Minimal header — logo + phone only, no nav */}
+      {/* Minimal header — logo + Book CTA + secondary phone, no nav */}
       <header className="bg-white border-b border-black/5">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
             <Image
               src="/images/full-logo-transparent.png"
               alt="Sun FM"
@@ -129,13 +129,30 @@ export default function StartLanding() {
               priority
             />
           </Link>
-          <a
-            href="tel:+14087614963"
-            onClick={() => trackEvent("cta_click", { button_text: "Phone", section: "start_header" })}
-            className="text-sm font-medium text-[#1a1a1a] hover:text-[#CB4538] transition-colors"
-          >
-            <span className="hidden sm:inline">Call </span>(408) 761-4963
-          </a>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <a
+              href="tel:+14087614963"
+              onClick={() => trackEvent("cta_click", { button_text: "Phone", section: "start_header" })}
+              className="hidden sm:inline text-xs sm:text-sm text-gray-500 hover:text-[#1a1a1a] transition-colors"
+            >
+              (408) 761-4963
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                trackEvent("cta_click", { button_text: "Book Free Consultation", section: "start_header" });
+                const form = document.getElementById("start-form");
+                if (form) {
+                  form.scrollIntoView({ behavior: "smooth", block: "center" });
+                  const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement | null;
+                  setTimeout(() => nameInput?.focus(), 600);
+                }
+              }}
+              className="bg-[#CB4538] hover:bg-[#a83829] text-white text-sm font-semibold px-4 sm:px-5 py-2.5 rounded-lg transition-colors"
+            >
+              Book Free Consultation
+            </button>
+          </div>
         </div>
       </header>
 
@@ -188,7 +205,7 @@ export default function StartLanding() {
             </div>
 
             {/* Right: form */}
-            <div className="bg-white rounded-2xl shadow-xl border border-black/5 p-6 sm:p-8 lg:sticky lg:top-8">
+            <div id="start-form" className="bg-white rounded-2xl shadow-xl border border-black/5 p-6 sm:p-8 lg:sticky lg:top-8 scroll-mt-24">
               {submitStatus === "success" ? (
                 <div ref={successRef} className="py-8 text-center">
                   <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -203,8 +220,8 @@ export default function StartLanding() {
                 </div>
               ) : (
                 <>
-                  <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Book your free consultation</h2>
-                  <p className="text-sm text-gray-500 mb-6">1 hour, no obligation. We&apos;ll reply within 24 hours.</p>
+                  <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
+                  <p className="text-sm text-gray-500 mb-6">1 hour, no obligation. We&apos;ll reach out within 24 hours to schedule a time that works.</p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -289,7 +306,7 @@ export default function StartLanding() {
                       disabled={isSubmitting}
                       className="w-full bg-[#CB4538] hover:bg-[#a83829] disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-lg transition-colors text-base"
                     >
-                      {isSubmitting ? "Sending..." : "Book my free consultation"}
+                      {isSubmitting ? "Sending..." : "Request my free consultation"}
                     </button>
 
                     {submitStatus === "error" && (
@@ -450,17 +467,22 @@ export default function StartLanding() {
             type="button"
             onClick={() => {
               trackEvent("cta_click", { button_text: "Scroll to form", section: "start_closing" });
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              const form = document.getElementById("start-form");
+              if (form) {
+                form.scrollIntoView({ behavior: "smooth", block: "center" });
+              } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
             }}
             className="bg-[#CB4538] hover:bg-[#a83829] text-white font-semibold px-8 py-4 rounded-lg transition-colors text-base"
           >
-            Book my free consultation
+            Request my free consultation
           </button>
         </div>
       </section>
 
       {/* Minimal footer */}
-      <footer className="bg-[#0f0f0f] text-white/60 py-8 text-sm">
+      <footer className="bg-[#0f0f0f] text-white/60 py-8 text-sm pb-24 lg:pb-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row gap-4 sm:gap-6 items-center justify-between">
           <p>&copy; {new Date().getFullYear()} Sun Functional Movement. All rights reserved.</p>
           <div className="flex items-center gap-6">
@@ -473,6 +495,27 @@ export default function StartLanding() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile sticky CTA — hidden on desktop where form is always visible */}
+      {submitStatus !== "success" && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-black/10 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+          <button
+            type="button"
+            onClick={() => {
+              trackEvent("cta_click", { button_text: "Sticky Book CTA", section: "start_sticky_mobile" });
+              const form = document.getElementById("start-form");
+              if (form) {
+                form.scrollIntoView({ behavior: "smooth", block: "center" });
+                const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement | null;
+                setTimeout(() => nameInput?.focus(), 600);
+              }
+            }}
+            className="w-full bg-[#CB4538] hover:bg-[#a83829] text-white font-semibold py-3 rounded-lg transition-colors text-base"
+          >
+            Book Free Consultation
+          </button>
+        </div>
+      )}
     </div>
   );
 }
