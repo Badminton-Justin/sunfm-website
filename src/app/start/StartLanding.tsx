@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
@@ -31,54 +31,82 @@ const FAQ_ITEMS = [
 ];
 
 const VIDEO_TESTIMONIALS = [
-  {
-    name: "Marshall",
-    result: "4-year client · Pain-free strength",
-    poster: "Marshall_Edited_Poster.jpg",
-    video: "Marshall_Edited.mp4",
-  },
-  {
-    name: "Sneha",
-    result: "Structured health lifestyle",
-    poster: "Sneha_Edited_Poster.jpg",
-    video: "Sneha_Edited.mp4",
-  },
-  {
-    name: "Cristina",
-    result: "Achieved goal weight",
-    poster: "Cristina_Edited_Poster.jpg",
-    video: "Cristina_Edited.mp4",
-  },
-  {
-    name: "Kanth",
-    result: "Discipline and strength",
-    poster: "Kanth_Edited_Poster.jpg",
-    video: "Kanth_Edited.mp4",
-  },
+  { name: "Marshall", result: "4-year client · Pain-free strength", poster: "Marshall_Edited_Poster.jpg", video: "Marshall_Edited.mp4" },
+  { name: "Sneha", result: "Structured health lifestyle", poster: "Sneha_Edited_Poster.jpg", video: "Sneha_Edited.mp4" },
+  { name: "Cristina", result: "Achieved goal weight", poster: "Cristina_Edited_Poster.jpg", video: "Cristina_Edited.mp4" },
+  { name: "Kanth", result: "Discipline and strength", poster: "Kanth_Edited_Poster.jpg", video: "Kanth_Edited.mp4" },
+  { name: "Josh", result: "3+ years consistent", poster: "Josh_Edited_Poster.jpg", video: "Josh_Edited.mp4" },
+  { name: "Chen", result: "Cured neck and back pain", poster: "Chen_Edited_Poster.jpg", video: "Chen_Edited.mp4" },
+  { name: "Curtis", result: "Flexibility and strength", poster: "Curtis_Edited_Poster.jpg", video: "Curtis_Edited.mp4" },
+  { name: "Karson", result: "Functional strength for life", poster: "Karson_Edited_Poster.jpg", video: "Karson_Edited.mp4" },
 ];
 
 const TEXT_TESTIMONIALS = [
-  {
-    quote: "I originally only planned to do sessions for a few months, and now it's been 4 years. Sessions with Jeff are really great and I'd recommend them to anyone.",
-    name: "Marshall",
-    result: "Pain-free strength",
-  },
-  {
-    quote: "My body feels like a well-oiled machine and I feel stronger than ever before. He has been the best investment in my fitness journey and I highly recommend him.",
-    name: "Sneha",
-    result: "Structured health lifestyle",
-  },
-  {
-    quote: "He made things seem doable rather than overwhelming. Jeff is incredibly easy to work with and he's truly become a friend. With his help, I've achieved my goal weight and I'm still going strong.",
-    name: "Cristina",
-    result: "Achieved goal weight",
-  },
-  {
-    quote: "Before working with Jeff, I was never disciplined. Now, it has changed significantly for my workouts and diet. Thank you Jeff, thank you for everything.",
-    name: "Kanth",
-    result: "Discipline and strength",
-  },
+  { quote: "I originally only planned to do sessions for a few months, and now it's been 4 years. Sessions with Jeff are really great and I'd recommend them to anyone.", name: "Marshall", result: "Pain-free strength" },
+  { quote: "My body feels like a well-oiled machine and I feel stronger than ever before. He has been the best investment in my fitness journey and I highly recommend him.", name: "Sneha", result: "Structured health lifestyle" },
+  { quote: "He made things seem doable rather than overwhelming. Jeff is incredibly easy to work with and he's truly become a friend. With his help, I've achieved my goal weight and I'm still going strong.", name: "Cristina", result: "Achieved goal weight" },
+  { quote: "Before working with Jeff, I was never disciplined. Now, it has changed significantly for my workouts and diet. Thank you Jeff, thank you for everything.", name: "Kanth", result: "Discipline and strength" },
+  { quote: "Working with Jeff completely changed the way that I train. His programs have helped me stay consistent for over 3 years. I would highly recommend working with Jeff.", name: "Josh", result: "3+ years consistent" },
+  { quote: "Jeff helps me move out of my comfort zone. He really understands what I would like to achieve.", name: "Chen", result: "Cured neck and back pain" },
+  { quote: "Jeff is very detail oriented. The workouts were much more fun and I saw a lot of results. He was able to balance out my body and keep me consistent.", name: "Curtis", result: "Flexibility and strength" },
+  { quote: "Before Jeff, I went to the gym once a week. After, I consistently go to the gym twice a week. My strength has gotten a lot better and my body has gotten a lot more toned.", name: "Karson", result: "Functional strength for life" },
 ];
+
+function Carousel({ children, ariaLabel }: { children: ReactNode; ariaLabel: string }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    const el = scrollRef.current;
+    const scrollAmount = el.clientWidth * 0.6;
+    if (direction === "right") {
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (el.scrollLeft >= maxScroll - 10) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        el.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+    } else {
+      if (el.scrollLeft <= 10) {
+        el.scrollTo({ left: el.scrollWidth - el.clientWidth, behavior: "smooth" });
+      } else {
+        el.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+      }
+    }
+    trackEvent("testimonial_carousel_nav", { direction, source: "start_page" });
+  };
+
+  return (
+    <div className="relative">
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      >
+        {children}
+      </div>
+      <button
+        type="button"
+        onClick={() => scroll("left")}
+        aria-label={`Previous ${ariaLabel}`}
+        className="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white shadow-lg border border-black/10 items-center justify-center hover:bg-[#CB4538] hover:text-white hover:border-[#CB4538] transition-all z-10"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        onClick={() => scroll("right")}
+        aria-label={`Next ${ariaLabel}`}
+        className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white shadow-lg border border-black/10 items-center justify-center hover:bg-[#CB4538] hover:text-white hover:border-[#CB4538] transition-all z-10"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  );
+}
 
 const STAR = (
   <svg className="w-4 h-4 text-[#FFD140]" fill="currentColor" viewBox="0 0 20 20">
@@ -238,9 +266,9 @@ export default function StartLanding() {
                 Train without breaking down.
               </h1>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
-                For busy professionals over 30 who want to feel strong, move
-                well, and stay that way for the long run. Mobility, strength
-                for longevity, and undoing what desk work does to your body.
+                For busy professionals who want to feel strong, move well,
+                and stay that way for the long run. Mobility, strength for
+                longevity, and undoing what desk work does to your body.
               </p>
 
               {/* Trust pills */}
@@ -387,9 +415,6 @@ export default function StartLanding() {
                       </p>
                     )}
 
-                    <p className="text-xs text-gray-500 text-center pt-1">
-                      No spam. No high-pressure sales. Just a conversation.
-                    </p>
                   </form>
                 </>
               )}
@@ -398,31 +423,29 @@ export default function StartLanding() {
         </div>
       </section>
 
-      {/* Text testimonials — horizontal carousel */}
-      <section className="bg-white py-16">
+      {/* Text testimonials — carousel */}
+      <section className="bg-white py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">What my clients say</p>
           </div>
-          <div className="-mx-4 sm:-mx-6">
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth px-4 sm:px-6 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              {TEXT_TESTIMONIALS.map((t) => (
-                <div
-                  key={t.name}
-                  className="flex-none w-[85%] sm:w-[420px] snap-start bg-[#F5F2ED] rounded-2xl p-6 sm:p-8"
-                >
-                  <div className="flex gap-0.5 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i}>{STAR}</span>
-                    ))}
-                  </div>
-                  <p className="text-gray-800 leading-relaxed mb-5">&ldquo;{t.quote}&rdquo;</p>
-                  <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
-                  <p className="text-xs text-gray-500">{t.result}</p>
+          <Carousel ariaLabel="written testimonial">
+            {TEXT_TESTIMONIALS.map((t) => (
+              <div
+                key={t.name}
+                className="flex-none w-[85%] sm:w-[420px] snap-start bg-[#F5F2ED] rounded-2xl p-6 sm:p-8"
+              >
+                <div className="flex gap-0.5 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i}>{STAR}</span>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+                <p className="text-gray-800 leading-relaxed mb-5">&ldquo;{t.quote}&rdquo;</p>
+                <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
+                <p className="text-xs text-gray-500">{t.result}</p>
+              </div>
+            ))}
+          </Carousel>
         </div>
       </section>
 
@@ -463,33 +486,31 @@ export default function StartLanding() {
         </div>
       </section>
 
-      {/* Video testimonials — horizontal carousel */}
-      <section className="bg-[#F5F2ED] py-16">
+      {/* Video testimonials — carousel */}
+      <section className="bg-[#F5F2ED] py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">Hear from my clients</p>
           </div>
-          <div className="-mx-4 sm:-mx-6">
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth px-4 sm:px-6 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              {VIDEO_TESTIMONIALS.map((t) => (
-                <div key={t.name} className="flex-none w-[70%] sm:w-[280px] snap-start">
-                  <div className="aspect-[9/16] rounded-2xl overflow-hidden bg-black shadow-xl mb-3">
-                    <video
-                      controls
-                      playsInline
-                      preload="metadata"
-                      poster={`${R2_BASE}/${t.poster}`}
-                      className="w-full h-full object-cover"
-                    >
-                      <source src={`${R2_BASE}/${t.video}`} type="video/mp4" />
-                    </video>
-                  </div>
-                  <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
-                  <p className="text-xs text-gray-500">{t.result}</p>
+          <Carousel ariaLabel="video testimonial">
+            {VIDEO_TESTIMONIALS.map((t) => (
+              <div key={t.name} className="flex-none w-[70%] sm:w-[280px] snap-start">
+                <div className="aspect-[9/16] rounded-2xl overflow-hidden bg-black shadow-xl mb-3">
+                  <video
+                    controls
+                    playsInline
+                    preload="metadata"
+                    poster={`${R2_BASE}/${t.poster}`}
+                    className="w-full h-full object-cover"
+                  >
+                    <source src={`${R2_BASE}/${t.video}`} type="video/mp4" />
+                  </video>
                 </div>
-              ))}
-            </div>
-          </div>
+                <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
+                <p className="text-xs text-gray-500">{t.result}</p>
+              </div>
+            ))}
+          </Carousel>
         </div>
       </section>
 
