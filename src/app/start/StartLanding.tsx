@@ -116,10 +116,10 @@ export default function StartLanding() {
 
   return (
     <div className="min-h-screen bg-[#F5F2ED]">
-      {/* Minimal header — logo + Book CTA + secondary phone, no nav */}
+      {/* Minimal header — logo + phone only, no nav */}
       <header className="bg-white border-b border-black/5">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
             <Image
               src="/images/full-logo-transparent.png"
               alt="Sun FM"
@@ -129,30 +129,13 @@ export default function StartLanding() {
               priority
             />
           </Link>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <a
-              href="tel:+14087614963"
-              onClick={() => trackEvent("cta_click", { button_text: "Phone", section: "start_header" })}
-              className="hidden sm:inline text-xs sm:text-sm text-gray-500 hover:text-[#1a1a1a] transition-colors"
-            >
-              (408) 761-4963
-            </a>
-            <button
-              type="button"
-              onClick={() => {
-                trackEvent("cta_click", { button_text: "Book Free Consultation", section: "start_header" });
-                const form = document.getElementById("start-form");
-                if (form) {
-                  form.scrollIntoView({ behavior: "smooth", block: "center" });
-                  const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement | null;
-                  setTimeout(() => nameInput?.focus(), 600);
-                }
-              }}
-              className="bg-[#CB4538] hover:bg-[#a83829] text-white text-sm font-semibold px-4 sm:px-5 py-2.5 rounded-lg transition-colors"
-            >
-              Book Free Consultation
-            </button>
-          </div>
+          <a
+            href="tel:+14087614963"
+            onClick={() => trackEvent("cta_click", { button_text: "Phone", section: "start_header" })}
+            className="text-sm font-medium text-[#1a1a1a] hover:text-[#CB4538] transition-colors"
+          >
+            (408) 761-4963
+          </a>
         </div>
       </header>
 
@@ -512,7 +495,7 @@ export default function StartLanding() {
             }}
             className="w-full bg-[#CB4538] hover:bg-[#a83829] text-white font-semibold py-3 rounded-lg transition-colors text-base"
           >
-            Book Free Consultation
+            Request Free Consultation
           </button>
         </div>
       )}
