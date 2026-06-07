@@ -465,8 +465,8 @@ export default function StartLanding() {
               },
               {
                 num: "2",
-                title: "Movement screen + short workout",
-                desc: "Free 1-hour session, in-person or online. I&apos;ll run a real movement assessment to find what&apos;s tight or compensating, walk you through a short workout so you feel how I coach, and map out what your body actually needs.",
+                title: "Movement screen + workout",
+                desc: "Free 1-hour session, in-person or online. I&apos;ll run a real movement assessment, walk you through a short workout, and map out what your body actually needs.",
               },
               {
                 num: "3",
