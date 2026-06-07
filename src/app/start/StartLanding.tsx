@@ -10,15 +10,73 @@ const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
 const FAQ_ITEMS = [
   {
     q: "What happens during the free consultation?",
-    a: "A 1-hour session at our San Jose studio (1401 Parkmoor Ave) or online. We talk through your goals, do a movement assessment, and run a short workout focused on breathwork, core, and mobility. No pressure, no obligation.",
+    a: "A free 1-hour session, in-person or online. I'll run a real movement assessment, walk you through a short workout focused on breathwork, core, and mobility, and we'll talk through what you're trying to fix.",
   },
   {
-    q: "How much does training cost?",
-    a: "Packages vary by frequency. Most clients train 2-3 times a week. Specific pricing is covered in the consultation once we know what fits your schedule and goals.",
+    q: "What makes your training different?",
+    a: "My background is in Human Biology and I worked as an EMT before becoming a trainer. I specialize in movement pattern correction — finding what's actually causing your pain or limitation, not just managing symptoms. The work focuses on mobility, strength that holds up over time, and undoing what desk work does to a body.",
+  },
+  {
+    q: "How do you track progress?",
+    a: "A training app tracks your workouts and progression. I check in on the big compound lifts monthly. For mobility work, I track pain levels and range of motion week over week. We set clear benchmarks during the consultation so you know what to look for.",
   },
   {
     q: "I have an injury or pain. Can I still train?",
-    a: "Yes. A meaningful share of our clients come while managing chronic pain or recovering from injury. The work specializes in transitioning safely from therapy to training, often in coordination with your PT or doctor.",
+    a: "Yes. Many of my clients come in while managing chronic pain or recovering from injury. I specialize in transitioning safely from therapy to training, often in coordination with your PT or doctor.",
+  },
+  {
+    q: "How much does training cost?",
+    a: "Packages vary by frequency. Most of my clients train 2-3 times a week. I'll cover specific pricing during the consultation once I know what fits your schedule and goals.",
+  },
+];
+
+const VIDEO_TESTIMONIALS = [
+  {
+    name: "Marshall",
+    result: "4-year client · Pain-free strength",
+    poster: "Marshall_Edited_Poster.jpg",
+    video: "Marshall_Edited.mp4",
+  },
+  {
+    name: "Sneha",
+    result: "Structured health lifestyle",
+    poster: "Sneha_Edited_Poster.jpg",
+    video: "Sneha_Edited.mp4",
+  },
+  {
+    name: "Cristina",
+    result: "Achieved goal weight",
+    poster: "Cristina_Edited_Poster.jpg",
+    video: "Cristina_Edited.mp4",
+  },
+  {
+    name: "Kanth",
+    result: "Discipline and strength",
+    poster: "Kanth_Edited_Poster.jpg",
+    video: "Kanth_Edited.mp4",
+  },
+];
+
+const TEXT_TESTIMONIALS = [
+  {
+    quote: "I originally only planned to do sessions for a few months, and now it's been 4 years. Sessions with Jeff are really great and I'd recommend them to anyone.",
+    name: "Marshall",
+    result: "Pain-free strength",
+  },
+  {
+    quote: "My body feels like a well-oiled machine and I feel stronger than ever before. He has been the best investment in my fitness journey and I highly recommend him.",
+    name: "Sneha",
+    result: "Structured health lifestyle",
+  },
+  {
+    quote: "He made things seem doable rather than overwhelming. Jeff is incredibly easy to work with and he's truly become a friend. With his help, I've achieved my goal weight and I'm still going strong.",
+    name: "Cristina",
+    result: "Achieved goal weight",
+  },
+  {
+    quote: "Before working with Jeff, I was never disciplined. Now, it has changed significantly for my workouts and diet. Thank you Jeff, thank you for everything.",
+    name: "Kanth",
+    result: "Discipline and strength",
   },
 ];
 
@@ -129,10 +187,10 @@ export default function StartLanding() {
 
   return (
     <div className="min-h-screen bg-[#F5F2ED]">
-      {/* Minimal header — logo + phone only, no nav */}
+      {/* Minimal header — logo + studio address + call/text */}
       <header className="bg-white border-b border-black/5">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
             <Image
               src="/images/full-logo-transparent.png"
               alt="Sun FM"
@@ -142,13 +200,28 @@ export default function StartLanding() {
               priority
             />
           </Link>
-          <a
-            href="tel:+14087614963"
-            onClick={() => trackEvent("cta_click", { button_text: "Phone", section: "start_header" })}
-            className="text-sm font-medium text-[#1a1a1a] hover:text-[#CB4538] transition-colors"
-          >
-            (408) 761-4963
-          </a>
+          <div className="text-right">
+            <p className="hidden sm:block text-xs text-gray-500 leading-tight mb-0.5">
+              1401 Parkmoor Ave, San Jose
+            </p>
+            <div className="flex items-center gap-2 justify-end text-sm leading-tight">
+              <a
+                href="tel:+14087614963"
+                onClick={() => trackEvent("cta_click", { button_text: "Call", section: "start_header" })}
+                className="font-medium text-[#1a1a1a] hover:text-[#CB4538] transition-colors"
+              >
+                (408) 761-4963
+              </a>
+              <span className="text-gray-300" aria-hidden="true">·</span>
+              <a
+                href="sms:+14087614963?body=Hi%20Jeff%2C%20I%27d%20like%20to%20learn%20more%20about%20training%20at%20Sun%20FM."
+                onClick={() => trackEvent("cta_click", { button_text: "Text", section: "start_header" })}
+                className="text-gray-500 hover:text-[#CB4538] transition-colors"
+              >
+                Text
+              </a>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -184,8 +257,8 @@ export default function StartLanding() {
                 </div>
               </div>
 
-              {/* Founder line + studio address */}
-              <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
+              {/* Founder line */}
+              <div className="flex items-center gap-3 text-sm text-gray-600">
                 <Image
                   src="/images/jeffrey-headshot-final.jpg"
                   alt="Jeffrey Sun"
@@ -198,9 +271,6 @@ export default function StartLanding() {
                   Founded by <strong className="text-[#1a1a1a]">Jeffrey Sun</strong>, ACE-certified personal trainer
                 </span>
               </div>
-              <p className="text-xs text-gray-500 pl-[52px]">
-                Studio at 1401 Parkmoor Ave, San Jose &nbsp;·&nbsp; Online + in-person sessions
-              </p>
             </div>
 
             {/* Right: form */}
@@ -220,7 +290,7 @@ export default function StartLanding() {
               ) : (
                 <>
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
-                  <p className="text-sm text-gray-500 mb-6">1 hour, no obligation. Jeff personally responds, usually within a few hours.</p>
+                  <p className="text-sm text-gray-500 mb-6">1 hour, no obligation. I&apos;ll personally respond, usually within a few hours.</p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -325,32 +395,29 @@ export default function StartLanding() {
         </div>
       </section>
 
-      {/* Testimonial */}
+      {/* Text testimonials — horizontal carousel */}
       <section className="bg-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
-            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">What clients say</p>
+            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">What my clients say</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-[#F5F2ED] rounded-2xl p-6 sm:p-8">
-              <div className="flex gap-0.5 mb-4">{[...Array(5)].map((_, i) => <span key={i}>{STAR}</span>)}</div>
-              <p className="text-gray-800 leading-relaxed mb-5">
-                &ldquo;I originally only planned to do sessions for a few months,
-                and now it&apos;s been 4 years. Sessions with Jeff are really great
-                and I&apos;d recommend them to anyone.&rdquo;
-              </p>
-              <p className="text-sm font-semibold text-[#1a1a1a]">Marshall</p>
-              <p className="text-xs text-gray-500">Pain Free &amp; Functional Strength</p>
-            </div>
-            <div className="bg-[#F5F2ED] rounded-2xl p-6 sm:p-8">
-              <div className="flex gap-0.5 mb-4">{[...Array(5)].map((_, i) => <span key={i}>{STAR}</span>)}</div>
-              <p className="text-gray-800 leading-relaxed mb-5">
-                &ldquo;My body feels like a well-oiled machine and I feel stronger
-                than ever before. He has been the best investment in my fitness
-                journey and I highly recommend him.&rdquo;
-              </p>
-              <p className="text-sm font-semibold text-[#1a1a1a]">Sneha</p>
-              <p className="text-xs text-gray-500">Structured Health Lifestyle</p>
+          <div className="-mx-4 sm:-mx-6">
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth px-4 sm:px-6 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {TEXT_TESTIMONIALS.map((t) => (
+                <div
+                  key={t.name}
+                  className="flex-none w-[85%] sm:w-[420px] snap-start bg-[#F5F2ED] rounded-2xl p-6 sm:p-8"
+                >
+                  <div className="flex gap-0.5 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i}>{STAR}</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-800 leading-relaxed mb-5">&ldquo;{t.quote}&rdquo;</p>
+                  <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
+                  <p className="text-xs text-gray-500">{t.result}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -367,18 +434,18 @@ export default function StartLanding() {
             {[
               {
                 num: "1",
-                title: "Tell us what you&apos;re working with",
-                desc: "30-second form. Jeff personally responds, usually within a few hours, to set up a time that fits your schedule.",
+                title: "Tell me what you&apos;re working with",
+                desc: "30-second form. I&apos;ll personally respond, usually within a few hours, to set up a time that fits your schedule.",
               },
               {
                 num: "2",
                 title: "Movement screen + short workout",
-                desc: "1 hour at our San Jose studio (1401 Parkmoor Ave) or online. We pinpoint where you&apos;re tight or compensating, run a short session so you feel how we coach, and map out where your body actually needs work.",
+                desc: "Free 1-hour session, in-person or online. I&apos;ll run a real movement assessment to find what&apos;s tight or compensating, walk you through a short workout so you feel how I coach, and map out what your body actually needs.",
               },
               {
                 num: "3",
-                title: "Train together — or don&apos;t",
-                desc: "If it&apos;s a fit, we plan from there. If not, you leave with a clear next step for your body. No high-pressure pitch, no obligation either way.",
+                title: "You leave with a plan",
+                desc: "Either way, you walk out with a real read on where your body is and what to work on next. If we&apos;re a fit, I&apos;ll lay out training from there.",
               },
             ].map((step) => (
               <div key={step.num} className="text-center">
@@ -393,42 +460,31 @@ export default function StartLanding() {
         </div>
       </section>
 
-      {/* Video testimonials */}
-      <section className="bg-white py-16">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+      {/* Video testimonials — horizontal carousel */}
+      <section className="bg-[#F5F2ED] py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
-            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">Hear from clients</p>
+            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">Hear from my clients</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <div className="aspect-video rounded-2xl overflow-hidden bg-black shadow-xl mb-3">
-                <video
-                  controls
-                  playsInline
-                  preload="metadata"
-                  poster={`${R2_BASE}/Marshall_Edited_Poster.jpg`}
-                  className="w-full h-full object-cover"
-                >
-                  <source src={`${R2_BASE}/Marshall_Edited.mp4`} type="video/mp4" />
-                </video>
-              </div>
-              <p className="text-sm font-semibold text-[#1a1a1a]">Marshall</p>
-              <p className="text-xs text-gray-500">4-year client · Pain-free strength</p>
-            </div>
-            <div>
-              <div className="aspect-video rounded-2xl overflow-hidden bg-black shadow-xl mb-3">
-                <video
-                  controls
-                  playsInline
-                  preload="metadata"
-                  poster={`${R2_BASE}/Sneha_Edited_Poster.jpg`}
-                  className="w-full h-full object-cover"
-                >
-                  <source src={`${R2_BASE}/Sneha_Edited.mp4`} type="video/mp4" />
-                </video>
-              </div>
-              <p className="text-sm font-semibold text-[#1a1a1a]">Sneha</p>
-              <p className="text-xs text-gray-500">Structured health lifestyle</p>
+          <div className="-mx-4 sm:-mx-6">
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth px-4 sm:px-6 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {VIDEO_TESTIMONIALS.map((t) => (
+                <div key={t.name} className="flex-none w-[70%] sm:w-[280px] snap-start">
+                  <div className="aspect-[9/16] rounded-2xl overflow-hidden bg-black shadow-xl mb-3">
+                    <video
+                      controls
+                      playsInline
+                      preload="metadata"
+                      poster={`${R2_BASE}/${t.poster}`}
+                      className="w-full h-full object-cover"
+                    >
+                      <source src={`${R2_BASE}/${t.video}`} type="video/mp4" />
+                    </video>
+                  </div>
+                  <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
+                  <p className="text-xs text-gray-500">{t.result}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
