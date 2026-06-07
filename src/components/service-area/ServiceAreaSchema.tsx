@@ -26,6 +26,7 @@ export default function ServiceAreaSchema({ area }: { area: ServiceArea }) {
       latitude: 37.3115,
       longitude: -121.9192,
     },
+    telephone: "+1-408-761-4963",
     areaServed: {
       "@type": "City",
       name: area.city,

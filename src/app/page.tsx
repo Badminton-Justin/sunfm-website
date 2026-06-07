@@ -44,6 +44,7 @@ const localBusinessSchema = {
     longitude: -121.9108,
   },
   email: "jeff@sunfm.fitness",
+  telephone: "+1-408-761-4963",
   areaServed: [
     { "@type": "City", name: "San Jose" },
     { "@type": "City", name: "Sunnyvale" },

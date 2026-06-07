@@ -166,6 +166,16 @@ export default function Footer() {
               </li>
               <li>
                 <TrackedLink
+                  href="tel:+14087614963"
+                  platform="phone"
+                  section="footer"
+                  className="hover:text-white transition-colors"
+                >
+                  (408) 761-4963
+                </TrackedLink>
+              </li>
+              <li>
+                <TrackedLink
                   href="mailto:jeff@sunfm.fitness"
                   platform="email"
                   section="footer"
