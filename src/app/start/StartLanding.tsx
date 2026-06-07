@@ -38,6 +38,7 @@ export default function StartLanding() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isFormVisible, setIsFormVisible] = useState(false);
   const hasStarted = useRef(false);
   const successRef = useRef<HTMLDivElement>(null);
 
@@ -46,6 +47,18 @@ export default function StartLanding() {
       successRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [submitStatus]);
+
+  // Hide the mobile sticky CTA when the form itself is visible on screen.
+  useEffect(() => {
+    const form = document.getElementById("start-form");
+    if (!form) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsFormVisible(entry.isIntersecting),
+      { threshold: 0.25 }
+    );
+    observer.observe(form);
+    return () => observer.disconnect();
+  }, []);
 
   const handleFieldFocus = (fieldName: string) => {
     if (!hasStarted.current) {
@@ -207,7 +220,7 @@ export default function StartLanding() {
               ) : (
                 <>
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
-                  <p className="text-sm text-gray-500 mb-6">1 hour, no obligation. We&apos;ll reach out within 24 hours to schedule a time that works.</p>
+                  <p className="text-sm text-gray-500 mb-6">1 hour, no obligation. Jeff personally responds, usually within a few hours.</p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -503,8 +516,8 @@ export default function StartLanding() {
         </div>
       </footer>
 
-      {/* Mobile sticky CTA — hidden on desktop where form is always visible */}
-      {submitStatus !== "success" && (
+      {/* Mobile sticky CTA — hidden on desktop, when form is visible, or after submit */}
+      {submitStatus !== "success" && !isFormVisible && (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-black/10 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
           <button
             type="button"
