@@ -19,7 +19,13 @@ Leaves alone (already formulas or manual):
   F: CPC                    (formula in sheet: =IFERROR(B/D, 0))
   H: Conv Rate              (formula in sheet: =IFERROR(G/D, 0))
   I: Cost / Conv            (formula in sheet: =IFERROR(B/G, 0))
-  J: Notes                  (manual)
+  J: Consultations          (manual — count of consults that were booked + completed)
+  K: Cost / Consultation    (formula or manual — Spend / Consultations)
+  L: New Clients            (manual — count of consults that converted to paying)
+  M: Cost / Client          (formula or manual — Spend / New Clients = real CAC)
+  N: ROAS                   (manual — Revenue / Spend)
+  O: Leads                  (manual — closed-loop attributed leads)
+  P: Notes                  (manual)
 
 Required setup:
   - ADC auth via gcloud with `https://www.googleapis.com/auth/adwords` scope
@@ -223,7 +229,13 @@ def main():
     print("  I  Cost / Conv     (=B/G)")
     print()
     print("Manual (untouched by script):")
-    print("  J  Notes           (campaign name, what changed, etc.)")
+    print("  J  Consultations        (# of booked + completed consults — you fill in)")
+    print("  K  Cost / Consultation  (Spend / Consultations — formula or manual)")
+    print("  L  New Clients          (# of consults that became paying clients — you fill in)")
+    print("  M  Cost / Client        (Spend / New Clients — your real CAC; formula or manual)")
+    print("  N  ROAS                 (Revenue / Spend — you fill in when closed clients tie back)")
+    print("  O  Leads                (closed-loop attributed leads — you fill in)")
+    print("  P  Notes                (campaign name, what changed, etc.)")
 
 
 if __name__ == "__main__":
