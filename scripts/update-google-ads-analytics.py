@@ -47,7 +47,7 @@ from datetime import datetime, timedelta
 SHEET_ID = "17GGVM2RLVU9muwf8IfdbPAQqrYUxutfx64dydyE14VE"
 SHEET_TAB_NAME = "Google Ads"
 QUOTA_PROJECT = "focal-elf-497403-c0"
-GOOGLE_ADS_API_VERSION = "v17"
+GOOGLE_ADS_API_VERSION = "v22"
 
 DEVELOPER_TOKEN = os.environ.get("GOOGLE_ADS_DEVELOPER_TOKEN", "")
 CUSTOMER_ID = os.environ.get("GOOGLE_ADS_CUSTOMER_ID", "")
