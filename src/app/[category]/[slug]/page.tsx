@@ -126,7 +126,7 @@ export default async function ArticlePage({ params }: Props) {
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
     datePublished: post.date,
@@ -147,8 +147,9 @@ export default async function ArticlePage({ params }: Props) {
     author: {
       "@type": "Person",
       name: post.author,
-      url: "https://www.sunfm.fitness",
+      url: "https://www.sunfm.fitness/team",
       jobTitle: "ACE-Certified Personal Trainer",
+      sameAs: ["https://www.instagram.com/jeffsunfitness/"],
     },
     publisher: {
       "@type": "Organization",
@@ -302,6 +303,25 @@ export default async function ArticlePage({ params }: Props) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         />
+        {post.faq && post.faq.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: post.faq.map((q) => ({
+                  "@type": "Question",
+                  name: q.question,
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: q.answer,
+                  },
+                })),
+              }),
+            }}
+          />
+        )}
       </main>
       <Footer />
     </BlogProvider>

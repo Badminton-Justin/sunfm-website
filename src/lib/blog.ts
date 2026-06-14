@@ -2,6 +2,11 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
+export interface FAQ {
+  question: string;
+  answer: string;
+}
+
 export interface Post {
   slug: string;
   category: string;
@@ -15,6 +20,7 @@ export interface Post {
   tags: string[];
   content: string;
   readTime: number;
+  faq?: FAQ[];
 }
 
 const contentDir = path.join(process.cwd(), "src/content/blog");
@@ -55,6 +61,7 @@ export function getAllPosts(): Post[] {
         tags: data.tags || [],
         content,
         readTime: calculateReadTime(content),
+        faq: Array.isArray(data.faq) ? data.faq : undefined,
       });
     }
   }

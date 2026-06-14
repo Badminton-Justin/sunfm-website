@@ -45,6 +45,14 @@ const localBusinessSchema = {
   },
   email: "jeff@sunfm.fitness",
   telephone: "+1-408-761-4963",
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      opens: "06:00",
+      closes: "22:00",
+    },
+  ],
   areaServed: [
     { "@type": "City", name: "San Jose" },
     { "@type": "City", name: "Sunnyvale" },

@@ -6,10 +6,10 @@ import { getAllServiceAreas } from "@/lib/service-areas";
 // Bump these when the page actually changes — Google uses lastmod as a
 // crawl-priority signal, so "modified today" on every fetch gets a page
 // deprioritized as low-signal churn.
-const HOMEPAGE_LAST_MODIFIED = new Date("2026-04-13");
-const TEAM_LAST_MODIFIED = new Date("2026-04-13");
+const HOMEPAGE_LAST_MODIFIED = new Date("2026-05-25");
+const TEAM_LAST_MODIFIED = new Date("2026-06-13");
 const MOVEMENT_SCREEN_LAST_MODIFIED = new Date("2026-04-30");
-const SERVICE_AREAS_LAST_MODIFIED = new Date("2026-04-13");
+const SERVICE_AREAS_LAST_MODIFIED = new Date("2026-06-13");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.sunfm.fitness";

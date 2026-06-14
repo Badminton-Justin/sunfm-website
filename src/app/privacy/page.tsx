@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description:
     "How Sun Functional Movement collects, uses, and protects your personal information.",
   alternates: { canonical: "/privacy" },
+  robots: { index: false, follow: true },
 };
 
 export default function PrivacyPage() {

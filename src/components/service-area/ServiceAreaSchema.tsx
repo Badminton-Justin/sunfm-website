@@ -23,18 +23,35 @@ export default function ServiceAreaSchema({ area }: { area: ServiceArea }) {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 37.3115,
-      longitude: -121.9192,
+      latitude: 37.31150,
+      longitude: -121.91920,
     },
     telephone: "+1-408-761-4963",
-    areaServed: {
-      "@type": "City",
-      name: area.city,
-      containedInPlace: {
-        "@type": "AdministrativeArea",
-        name: "San Francisco Bay Area",
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "06:00",
+        closes: "22:00",
       },
+    ],
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "5.0",
+      reviewCount: "107",
     },
+    areaServed: [
+      { "@type": "City", name: "San Jose" },
+      { "@type": "City", name: "Sunnyvale" },
+      { "@type": "City", name: "Cupertino" },
+      { "@type": "City", name: "Santa Clara" },
+      { "@type": "City", name: "Mountain View" },
+      { "@type": "City", name: "Los Gatos" },
+      { "@type": "City", name: "Saratoga" },
+      { "@type": "City", name: "Los Altos" },
+      { "@type": "City", name: "Milpitas" },
+      { "@type": "City", name: "Campbell" },
+    ],
     sameAs: [
       "https://www.instagram.com/jeffsunfitness/",
       "https://www.yelp.com/biz/sun-functional-movement-san-jose",

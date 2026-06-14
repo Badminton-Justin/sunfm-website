@@ -21,6 +21,86 @@ export const metadata: Metadata = {
   },
 };
 
+const personSchema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Jeffrey Sun",
+    jobTitle: "Founder & Head Coach",
+    url: "https://www.sunfm.fitness/team",
+    image: "https://www.sunfm.fitness/images/jeffrey-hero.jpg",
+    worksFor: {
+      "@type": "Organization",
+      name: "Sun Functional Movement",
+      url: "https://www.sunfm.fitness",
+    },
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: "UC Santa Cruz",
+    },
+    hasCredential: [
+      {
+        "@type": "EducationalOccupationalCredential",
+        credentialCategory: "degree",
+        name: "B.S. Human Biology",
+      },
+      {
+        "@type": "EducationalOccupationalCredential",
+        credentialCategory: "certification",
+        name: "ACE Certified Personal Trainer",
+      },
+    ],
+    knowsAbout: [
+      "Mobility",
+      "Functional Strength",
+      "Movement Pattern Correction",
+      "Hypertrophy",
+      "Athletic Performance",
+    ],
+    sameAs: ["https://www.instagram.com/jeffsunfitness/"],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Crystal Sun",
+    jobTitle: "Coach",
+    url: "https://www.sunfm.fitness/team",
+    image: "https://www.sunfm.fitness/images/Crystal_Hero.jpg",
+    worksFor: {
+      "@type": "Organization",
+      name: "Sun Functional Movement",
+      url: "https://www.sunfm.fitness",
+    },
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: "UC Davis",
+    },
+    hasCredential: [
+      {
+        "@type": "EducationalOccupationalCredential",
+        credentialCategory: "degree",
+        name: "B.S. Neurobiology, Physiology & Behavior",
+      },
+    ],
+    knowsAbout: [
+      "Functional Strength",
+      "Mobility",
+      "Athletic Performance",
+      "Mind-Body Connection",
+      "Beginner-Friendly Training",
+    ],
+  },
+];
+
+const teamBreadcrumbs = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.sunfm.fitness" },
+    { "@type": "ListItem", position: 2, name: "Team", item: "https://www.sunfm.fitness/team" },
+  ],
+};
+
 export default function TeamPage() {
   const teamMembers = [
     {
@@ -81,6 +161,14 @@ export default function TeamPage() {
 
   return (
     <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+    />
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(teamBreadcrumbs) }}
+    />
     <main className="min-h-screen bg-[#EEEADA]">
       {/* Header */}
       <header className="bg-[#EEEADA] py-6 border-b border-black/10">
