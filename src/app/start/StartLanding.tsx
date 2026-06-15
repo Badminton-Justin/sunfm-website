@@ -245,7 +245,6 @@ export default function StartLanding() {
           injuries: "",
           referral: "google-ads",
           referralDetails: "Submitted from /start landing page",
-          contactMethod: "email",
           attribution,
           landingPage: "/start",
         }),

@@ -18,7 +18,6 @@ interface FormData {
   injuries: string;
   referral: string;
   referralDetails: string;
-  contactMethod: string;
 }
 
 export default function ApplicationForm() {
@@ -35,7 +34,6 @@ export default function ApplicationForm() {
     injuries: "",
     referral: "",
     referralDetails: "",
-    contactMethod: "email",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
@@ -119,7 +117,6 @@ export default function ApplicationForm() {
           injuries: "",
           referral: "",
           referralDetails: "",
-          contactMethod: "email",
         });
       } else {
         trackEvent("form_submit_error", { error_type: `http_${response.status}` });
@@ -451,31 +448,6 @@ export default function ApplicationForm() {
                     placeholder={formData.referral === "Friend/Family Referral" ? "Who referred you?" : "Please specify"}
                   />
                 )}
-              </div>
-
-              {/* Preferred contact method */}
-              <div className="pt-2">
-                <label className="block text-white/70 text-xs uppercase tracking-wider mb-3">
-                  Preferred contact method *
-                </label>
-                <div className="flex gap-6">
-                  {["email", "phone", "text"].map((method) => (
-                    <label
-                      key={method}
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name="contactMethod"
-                        value={method}
-                        checked={formData.contactMethod === method}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-[#FFD140] bg-transparent border-white/30 focus:ring-[#FFD140]"
-                      />
-                      <span className="text-white/70 capitalize text-sm">{method}</span>
-                    </label>
-                  ))}
-                </div>
               </div>
 
               {/* Submit button */}

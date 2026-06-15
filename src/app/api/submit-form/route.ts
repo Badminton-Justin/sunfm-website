@@ -14,7 +14,6 @@ interface FormData {
   injuries: string;
   referral: string;
   referralDetails: string;
-  contactMethod: string;
   attribution?: Record<string, string>;
   landingPage?: string;
 }
@@ -69,7 +68,6 @@ export async function POST(request: Request) {
           email: data.email,
           phone: data.phone,
           age: data.age || "",
-          preferredContact: data.contactMethod,
           goal: data.goal + (data.goalDetails ? ` — ${data.goalDetails}` : ""),
           experience: data.experience,
           currentRoutine: data.currentRoutine || "",
@@ -122,7 +120,6 @@ Name: ${data.name}
 Email: ${data.email}
 Phone: ${data.phone}
 Age: ${data.age || "Not provided"}
-Preferred Contact: ${data.contactMethod}
 
 Goal: ${data.goal}${data.goalDetails ? ` — ${data.goalDetails}` : ""}
 Experience: ${data.experience}
