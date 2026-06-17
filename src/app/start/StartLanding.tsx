@@ -251,7 +251,11 @@ export default function StartLanding() {
       });
 
       if (response.ok) {
-        trackEvent("form_submit_success", { source: "start_page" });
+        trackEvent("form_submit_success", {
+          ...attribution,
+          source: "start_page",
+          landing_page: "/start",
+        });
         setSubmitStatus("success");
         setFormData({ name: "", email: "", phone: "", goal: "" });
       } else {

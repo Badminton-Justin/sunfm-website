@@ -102,7 +102,10 @@ export default function ApplicationForm() {
       });
 
       if (response.ok) {
-        trackEvent("form_submit_success");
+        trackEvent("form_submit_success", {
+          ...attributionRef.current,
+          landing_page: "/",
+        });
         setSubmitStatus("success");
         setFormData({
           name: "",
