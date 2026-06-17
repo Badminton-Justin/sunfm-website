@@ -152,25 +152,28 @@ def find_or_pick_row(token, week_of_str):
 
 
 def write_row(token, row_number, week_of_str, ads):
-    """Write A:D and G on the given row, leaving formulas/manual cols alone."""
-    body_ad = {
+    """Write A:I on the given row. A-D and G are data; E/F/H/I are formulas; J-P stay manual."""
+    r = row_number
+    body_ai = {
         "values": [[
             week_of_str,
             ads["spend"],
             ads["impressions"],
             ads["clicks"],
+            f"=IFERROR(D{r}/C{r}, 0)",
+            f"=IFERROR(B{r}/D{r}, 0)",
+            ads["conversions"],
+            f"=IFERROR(G{r}/D{r}, 0)",
+            f"=IFERROR(B{r}/G{r}, 0)",
         ]]
     }
-    body_g = {"values": [[ads["conversions"]]]}
-
-    for rng, body in [(f"{SHEET_TAB_NAME}!A{row_number}:D{row_number}", body_ad),
-                      (f"{SHEET_TAB_NAME}!G{row_number}:G{row_number}", body_g)]:
-        encoded = urllib.parse.quote(rng, safe="!")
-        url = (
-            f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values/{encoded}"
-            f"?valueInputOption=USER_ENTERED"
-        )
-        api_request(url, token, method="PUT", body=body)
+    rng = f"{SHEET_TAB_NAME}!A{r}:I{r}"
+    encoded = urllib.parse.quote(rng, safe="!")
+    url = (
+        f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values/{encoded}"
+        f"?valueInputOption=USER_ENTERED"
+    )
+    api_request(url, token, method="PUT", body=body_ai)
 
 
 def main():
