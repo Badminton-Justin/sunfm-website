@@ -9,18 +9,25 @@ Usage: python3 scripts/update-seo-analytics.py YYYY-MM-DD
 
 Auto-fills columns:
   A: Week of
-  B: Organic Sessions       (GA4)
-  C: GSC Impressions        (GSC)
-  D: GSC Clicks             (GSC)
-  E: Avg Position           (GSC)
-  I: Movement Screens Done  (GA4 event: movement_screen_completed)
-  J: Consultations Booked   (GA4 event: form_submit_success)
+  B: Sessions               (GA4 organic)
+  C: Impressions            (GSC)
+  D: Clicks                 (GSC)
+  E: CTR                    (formula =D/C)
+  F: Avg Position           (GSC)
+  I: Movement Screens       (GA4 event: movement_screen_completed)
+  J: Forms                  (GA4 event: form_submit_success — raw count)
 
 Leaves manual (does not touch):
-  F: GBP Profile Views
-  G: GBP Actions
-  H: New Google Reviews
-  K: Notes
+  G: GBP Views
+  H: GBP Clicks
+  K: Consultations (filtered qualified count)
+  L: Consult Rate
+  M: Show
+  N: Show Rate
+  O: Closed
+  P: Close Rate
+  Q: Paid
+  R: Leads
 
 Required setup:
   - ADC auth via gcloud (cloud-platform scope covers everything)
@@ -38,8 +45,8 @@ from datetime import datetime, timedelta
 
 # ---- Config ----
 SHEET_ID = "17GGVM2RLVU9muwf8IfdbPAQqrYUxutfx64dydyE14VE"
-SHEET_GID = 1675826641
-GSC_SITE = "https://www.sunfm.fitness/"
+SHEET_GID = 1433963776
+GSC_SITE = "sc-domain:sunfm.fitness"
 QUOTA_PROJECT = "focal-elf-497403-c0"
 # GA4 Property ID: sunfm-website (530996908) under Sun Functional Movement (389713304)
 # Override via env var if needed: export GA4_PROPERTY_ID=...
@@ -193,13 +200,15 @@ def find_or_pick_row(token, tab_name, week_of_str):
 
 
 def write_row(token, tab_name, row_number, week_of_str, gsc, ga4):
-    """Write data to columns A:E and I:J on the given row."""
-    body_ae = {
+    """Write data to columns A:F and I:J on the given row."""
+    r = row_number
+    body_af = {
         "values": [[
             week_of_str,
             ga4["organic_sessions"],
             gsc["impressions"],
             gsc["clicks"],
+            f"=IFERROR(D{r}/C{r}, 0)",
             round(gsc["position"], 2),
         ]]
     }
@@ -210,8 +219,8 @@ def write_row(token, tab_name, row_number, week_of_str, gsc, ga4):
         ]]
     }
 
-    for rng, body in [(f"{tab_name}!A{row_number}:E{row_number}", body_ae),
-                      (f"{tab_name}!I{row_number}:J{row_number}", body_ij)]:
+    for rng, body in [(f"{tab_name}!A{r}:F{r}", body_af),
+                      (f"{tab_name}!I{r}:J{r}", body_ij)]:
         encoded = urllib.parse.quote(rng, safe="!")
         url = (
             f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values/{encoded}"
@@ -270,18 +279,25 @@ def main():
     print("--- Summary ---")
     print(f"Tab: {tab_name}, Row: {row_number}")
     print(f"  A  Week of:                {monday_str}")
-    print(f"  B  Organic Sessions:       {ga4['organic_sessions']}")
-    print(f"  C  GSC Impressions:        {gsc['impressions']}")
-    print(f"  D  GSC Clicks:             {gsc['clicks']}")
-    print(f"  E  Avg Position:           {gsc['position']:.2f}")
-    print(f"  I  Movement Screens Done:  {ga4['movement_screens']}")
-    print(f"  J  Consultations Booked:   {ga4['consultations']}")
+    print(f"  B  Sessions:               {ga4['organic_sessions']}")
+    print(f"  C  Impressions:            {gsc['impressions']}")
+    print(f"  D  Clicks:                 {gsc['clicks']}")
+    print(f"  E  CTR:                    (formula =D/C)")
+    print(f"  F  Avg Position:           {gsc['position']:.2f}")
+    print(f"  I  Movement Screens:       {ga4['movement_screens']}")
+    print(f"  J  Forms (GA4 raw):        {ga4['consultations']}")
     print()
     print("Manual fill required (untouched by script):")
-    print("  F  GBP Profile Views   (from GBP Insights → Performance tab)")
-    print("  G  GBP Actions          (from GBP Insights → Performance tab)")
-    print("  H  New Google Reviews   (from GBP Reviews → count new this week)")
-    print("  K  Notes                (anything you shipped this week)")
+    print("  G  GBP Views           (from GBP Insights → Performance tab)")
+    print("  H  GBP Clicks          (from GBP Insights → Performance tab)")
+    print("  K  Consultations       (qualified count — filter spam/test from Forms)")
+    print("  L  Consult Rate        (K/J or your own logic)")
+    print("  M  Show                (consults that showed up to the session)")
+    print("  N  Show Rate           (M/K or your own logic)")
+    print("  O  Closed              (consults that became paying clients)")
+    print("  P  Close Rate          (O/M or your own logic)")
+    print("  Q  Paid                (revenue collected from new clients this week)")
+    print("  R  Leads               (named leads — Iris, Dongkai, etc.)")
 
 
 if __name__ == "__main__":

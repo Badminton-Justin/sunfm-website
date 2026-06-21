@@ -14,9 +14,8 @@ Update the Google Ads tab row for the week starting `$ARGUMENTS`.
 2. Parse the script's output (it prints a clear summary at the end).
 3. Report to the user:
    - Which row was updated
-   - The auto-filled values for columns A, B, C, D, G
-   - A reminder that E, F, H, I auto-calculate via sheet formulas
-   - A reminder that column J (Notes) is manual (campaign name, what changed that week, etc.)
+   - The auto-filled values for columns A, B, C, D, G (raw data) and E, F, H, I (formulas written by the script)
+   - A reminder that columns J through T are manual (funnel metrics: Consultations, Show, New Clients, Paid, ROAS, Leads, and their rates/cost ratios)
 
 ## If the script errors
 
@@ -37,17 +36,27 @@ Update the Google Ads tab row for the week starting `$ARGUMENTS`.
 | B | Spend ($) | Google Ads (cost_micros / 1,000,000) |
 | C | Impressions | Google Ads metrics.impressions |
 | D | Clicks | Google Ads metrics.clicks |
+| E | CTR | sheet formula `=IFERROR(D{row}/C{row}, 0)` written by the script |
+| F | CPC | sheet formula `=IFERROR(B{row}/D{row}, 0)` written by the script |
 | G | Conversions | Google Ads metrics.conversions (primary conversion action — should be `form_submit_success` imported from GA4) |
+| H | Conv Rate | sheet formula `=IFERROR(G{row}/D{row}, 0)` written by the script |
+| I | Cost / Conv | sheet formula `=IFERROR(B{row}/G{row}, 0)` written by the script |
 
 ## What it does NOT touch
 
 | Col | Field | Why |
 |-----|-------|-----|
-| E | CTR | sheet formula `=IFERROR(D/C, 0)` |
-| F | CPC | sheet formula `=IFERROR(B/D, 0)` |
-| H | Conv Rate | sheet formula `=IFERROR(G/D, 0)` |
-| I | Cost / Conv | sheet formula `=IFERROR(B/G, 0)` |
-| J | Notes | manual by design (free-text context for the week) |
+| J | Consultations | manual — count of qualified consults from this week's spend |
+| K | Consult Rate | manual or formula — Consultations / Conversions or your own logic |
+| L | Cost / Consultation | manual or formula — Spend / Consultations |
+| M | Show | manual — consults that showed up + completed the session |
+| N | Show Rate | manual or formula — Show / Consultations |
+| O | Cost / Show | manual or formula — Spend / Show |
+| P | New Clients | manual — consults that became paying |
+| Q | Cost / Client | manual or formula — Spend / New Clients = real CAC |
+| R | Paid | manual — revenue collected this week from new clients |
+| S | ROAS | manual or formula — Paid / Spend |
+| T | Leads | manual — named leads attributed to ad-driven traffic |
 
 ## Behavior
 

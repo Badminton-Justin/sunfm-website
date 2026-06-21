@@ -29,25 +29,32 @@ Update the SEO tracking sheet row for the week starting `$ARGUMENTS`.
 | Col | Field | Source |
 |-----|-------|--------|
 | A | Week of | the date passed |
-| B | Organic Sessions | GA4 Data API (sessionDefaultChannelGroup = "Organic Search") |
-| C | GSC Impressions | Search Console searchAnalytics |
-| D | GSC Clicks | Search Console searchAnalytics |
-| E | Avg Position | Search Console searchAnalytics |
-| I | Movement Screens Done | GA4 event count: `movement_screen_completed` |
-| J | Consultations Booked | GA4 event count: `form_submit_success` |
+| B | Sessions | GA4 Data API (sessionDefaultChannelGroup = "Organic Search") |
+| C | Impressions | Search Console searchAnalytics |
+| D | Clicks | Search Console searchAnalytics |
+| E | CTR | sheet formula `=IFERROR(D{row}/C{row}, 0)` written by the script |
+| F | Avg Position | Search Console searchAnalytics |
+| I | Movement Screens | GA4 event count: `movement_screen_completed` |
+| J | Forms | GA4 event count: `form_submit_success` — raw count, may include spam/test |
 
 ## What it does NOT touch
 
 | Col | Field | Why |
 |-----|-------|-----|
-| F | GBP Profile Views | GBP API not allowlisted by Google |
-| G | GBP Actions | same |
-| H | New Google Reviews | same |
-| K | Notes | manual by design (free-text context for the week) |
+| G | GBP Views | GBP API not allowlisted by Google |
+| H | GBP Clicks | same |
+| K | Consultations | manual — qualified consult count (filter spam/tests from Forms) |
+| L | Consult Rate | manual — Consultations / Forms (or your own logic) |
+| M | Show | manual — consults that showed up to the session |
+| N | Show Rate | manual — Show / Consultations (or your own logic) |
+| O | Closed | manual — consults that became paying clients |
+| P | Close Rate | manual — Closed / Show (or your own logic) |
+| Q | Paid | manual — revenue collected from new clients this week |
+| R | Leads | manual — named leads (e.g. "Iris, Dongkai, Nileema") |
 
 ## Behavior
 
 - Finds the row in column A matching the passed Monday date and updates it in place
 - If no row matches, appends a new row at the bottom
-- Doesn't overwrite columns F, G, H, K (your manual values are safe)
-- Always operates on the tab whose gid is `1675826641` in the sheet — looks up the name dynamically so it works if you rename the tab
+- Doesn't overwrite columns G, H, K, L, M, N, O, P, Q, R (your manual values are safe)
+- Always operates on the tab whose gid is `1433963776` in the sheet — looks up the name dynamically so it works if you rename the tab
