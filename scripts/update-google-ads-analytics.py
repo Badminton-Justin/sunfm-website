@@ -156,7 +156,12 @@ def find_or_pick_row(token, week_of_str):
 
 
 def write_row(token, row_number, week_of_str, ads):
-    """Write A:I on the given row. A-D and G are data; E/F/H/I are formulas; J-P stay manual."""
+    """Write A:I (data + auto formulas) and the funnel ratio formulas K/L/N/O/Q/S.
+
+    Manual columns (J Consultations, M Show, P New Clients, R Paid, T Leads) are
+    left untouched. The ratio columns get IFERROR-guarded formulas that render "X"
+    until the denominator manual column is filled in.
+    """
     r = row_number
     body_ai = {
         "values": [[
@@ -178,6 +183,26 @@ def write_row(token, row_number, week_of_str, ads):
         f"?valueInputOption=USER_ENTERED"
     )
     api_request(url, token, method="PUT", body=body_ai)
+
+    # Funnel ratio formulas. Each lives between two manual columns, so we write
+    # them one at a time rather than as a contiguous block (to avoid blanking J,
+    # M, P, R which the user fills by hand).
+    ratio_writes = [
+        ("K", f'=IFERROR(J{r}/G{r}, "X")'),  # Consult Rate
+        ("L", f'=IFERROR(B{r}/J{r}, "X")'),  # Cost / Consultation
+        ("N", f'=IFERROR(M{r}/J{r}, "X")'),  # Show Rate
+        ("O", f'=IFERROR(B{r}/M{r}, "X")'),  # Cost / Show
+        ("Q", f'=IFERROR(B{r}/P{r}, "X")'),  # Cost / Client
+        ("S", f'=IFERROR(R{r}/B{r}, "X")'),  # ROAS
+    ]
+    for col, formula in ratio_writes:
+        cell = f"{SHEET_TAB_NAME}!{col}{r}"
+        encoded = urllib.parse.quote(cell, safe="!")
+        url = (
+            f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values/{encoded}"
+            f"?valueInputOption=USER_ENTERED"
+        )
+        api_request(url, token, method="PUT", body={"values": [[formula]]})
 
 
 def main():
