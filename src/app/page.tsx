@@ -13,7 +13,7 @@ import TrackedSection from "@/components/TrackedSection";
 
 const localBusinessSchema = {
   "@context": "https://schema.org",
-  "@type": "PersonalTrainer",
+  "@type": "ExerciseGym",
   name: "Sun Functional Movement",
   alternateName: "SunFM",
   url: "https://www.sunfm.fitness",
@@ -40,8 +40,8 @@ const localBusinessSchema = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 37.3175,
-    longitude: -121.9108,
+    latitude: 37.3115,
+    longitude: -121.9192,
   },
   email: "jeff@sunfm.fitness",
   telephone: "+1-408-761-4963",
@@ -59,6 +59,10 @@ const localBusinessSchema = {
     { "@type": "City", name: "Cupertino" },
     { "@type": "City", name: "Santa Clara" },
     { "@type": "City", name: "Mountain View" },
+    { "@type": "City", name: "Los Gatos" },
+    { "@type": "City", name: "Saratoga" },
+    { "@type": "City", name: "Los Altos" },
+    { "@type": "City", name: "Milpitas" },
     { "@type": "City", name: "Campbell" },
   ],
   priceRange: "$$",

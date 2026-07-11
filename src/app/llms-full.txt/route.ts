@@ -1,7 +1,7 @@
 import { getAllPosts } from "@/lib/blog";
 
-// Serves /llms-full.txt — the full-content companion to the curated
-// /public/llms.txt. Where llms.txt is a short index, this emits the
+// Serves /llms-full.txt — the full-content companion to the dynamic
+// /llms.txt route. Where llms.txt is a short index, this emits the
 // complete body of every blog post so AI engines can ingest the
 // material without crawling each page. Generated from getAllPosts() so
 // it stays current automatically as posts are added or edited.

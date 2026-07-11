@@ -1,200 +1,160 @@
 # Sun FM — SEO Health Audit
 
-**Audit date:** 2026-06-13
+**Audit date:** 2026-07-11
 **Site:** https://www.sunfm.fitness
-**Compared against:** 2026-05-24 SEO work (3 weeks prior — sitemap fix, llms-full.txt, IndexNow, publisher sameAs, crawl-discovery links, movement screen meta rewrite, footer cross-linking on 05-25)
+**Compared against:** 2026-06-13 audit (docs/SEO-AUDIT-REPORT.md, superseded by this version — ~4 weeks prior)
 
 ---
 
 ## Health Score
 
 ```
-Overall SEO Health Score: 78/100 (Grade B)
+Overall SEO Health Score: 78/100 (Grade B) — flat vs June 13, but the composition shifted
 
-Technical SEO:     84/100  ████████░░  (22%)
-Content Quality:   85/100  ████████░░  (23%)
-On-Page / Local:   72/100  ███████░░░  (20%)
-Schema:            80/100  ████████░░  (10%)
-Performance:       N/A     ──────────  (10%)  ⚠ Not measured this round
-AI Search (GEO):   67/100  ██████░░░░  (10%)
-Images:            N/A     ──────────  (5%)
+Technical SEO:     88/100  ████████░░  (22%)  ▲ +4
+Content Quality:   84/100  ████████░░  (23%)  ▼ -1 (in line, citation gap opened)
+On-Page / Local:   65/100  ██████░░░░  (20%)  ▼ -7 (NAP/schema-type issues newly surfaced)
+Schema:            75/100  ███████░░░  (10%)  ▼ -5 (one real validation error found)
+Performance:       N/A     ──────────  (10%)  ⚠ Still not measured — 2nd audit in a row
+AI Search (GEO):   78/100  ████████░░  (10%)  ▲ +11 (llms-full.txt paying off)
+Images:            N/A     ──────────  (5%)   ⚠ Still not measured
 ```
 
-*Composite weighted 78.7 across the 7 measurable categories. Performance + Images were not fully measured in this audit; assumed ~75 carry-over from baseline.*
-
-**One-line takeaway:** The May 24 push is delivering as designed — sitemap lastmod, llms-full.txt, publisher sameAs, and city-page footer linking are all working. The new gaps are about completing what was started (author sameAs, FAQ schema on posts, /start in sitemap) rather than fixing regressions.
+**One-line takeaway:** the June 13 fixes held — technical debt is genuinely down and AI-search readiness jumped 11 points. But this round surfaced a real local-SEO integrity problem that predates both audits: the homepage and the 10 city pages disagree with each other on the studio's exact coordinates, legal/display name, and price tier, all inside structured data Google reads for local-pack ranking. That's the headline finding, not a regression, a gap that was there all along and just hadn't been checked before.
 
 ---
 
-## What's Changed Since 2026-05-24
+## What's Changed Since 2026-06-13
 
-### ✓ Landed and working
+### Confirmed fixed and holding
 
-| May 24 work | Status |
+| June 13 item | Status |
 |---|---|
-| Sitemap lastmod fix | Working. Posture-self-check shows 2026-06-11, breathing 2026-06-08, etc. Frontmatter `updated` overrides `date` correctly. |
-| llms-full.txt | Live, dynamic route, 24-hour CDN cache, covers all current posts, strips YouTube/MDX cleanly. Spec-compliant. |
-| Publisher sameAs | Present on homepage `PersonalTrainer` schema AND blog post `Article` schema. Instagram + Yelp + Google Maps. |
-| Crawl-discovery links | Older posts now link to newer ones (functional-movement → posture-self-check, deadlift-setup → breathing post). |
-| Footer site-wide | Renders on every page. All 10 city pages linked. Phone `tel:+14087614963` clickable on mobile. |
-| Movement screen title/meta rewrite | Title + meta visible in HTML, structured for CTR. |
-| City page cross-linking | "Nearby areas" grid on each city page links to all 9 other cities. |
+| `openingHoursSpecification` (homepage + city pages) | Live, valid |
+| `aggregateRating` on city pages | Live, valid (reviewCount 107 — your deliberate value, unchanged) |
+| `/team` Person schema (Jeffrey + Crystal) | Live, valid |
+| Blog `Article` → `BlogPosting` | Live |
+| Author `sameAs` (Instagram) | Live, though narrower than homepage's set (see #12 below) |
+| CSP + upgraded HSTS headers | Live: `max-age=63072000; includeSubDomains; preload` |
+| `/privacy` noindex | Correct, `noindex, follow` |
+| Inline city-page links from top posts | Live on 4-5 posts as planned |
+| Sunnyvale/San Jose content parity | Gap narrowed from ~1,000 words to ~150 words. No longer worth flagging. |
+| Posture self-check FAQ + credential anchor | Live |
 
-### ⚠ Drifted or incomplete
+### Walked back — not actually a bug
 
-| Item | What's happening |
-|---|---|
-| `/start` not in sitemap | High-conversion PPC landing page is indexable but unsubmitted. Was likely planned but not added when /start launched 2026-06-07. |
-| `/privacy` not in sitemap | Indexable, unsubmitted. Either add to sitemap or `robots: { index: false }` to align. |
-| HOMEPAGE_LAST_MODIFIED hardcoded to 2026-04-13 | The homepage has been updated since (footer phone number, schema additions). Stale lastmod suppresses crawl priority. |
-| Static llms.txt missing 2 newest posts | Hydration + stress-training posts not listed. The dynamic llms-full.txt has them; the static index has drifted. |
+**`/start` missing from sitemap.ts** was flagged Critical #1 last time. On closer check, `/start` is intentionally `noindex, nofollow` (it's a PPC-only landing page with no internal links pointing to it). Leaving it out of the sitemap is correct behavior, not a gap. Closing this one.
 
-### ➕ Net-new content shipped since May 24
+### Recurred — same issue, came back
 
-22 training posts, 2 nutrition, 2 wellness — all over 1,000 words, none thin, all in canonical voice. The May→June posts (neck pain, deadlift setup, breathing, posture self-check) are noticeably stronger than the April posts on specificity, first-person grounding, and internal linking density.
-
----
-
-## Critical Issues (fix this week)
-
-### 1. `/start` is missing from the sitemap
-- File: `src/app/sitemap.ts`
-- Add: `{ url: 'https://www.sunfm.fitness/start', lastModified: <recent>, changeFrequency: 'monthly', priority: 0.8 }`
-- Why: Your highest-conversion landing page (PPC traffic destination) is currently not submitted to Google. Even if you don't want it ranking organically you still want it discoverable and tracked.
-
-### 2. `openingHoursSpecification` is missing from every LocalBusiness schema
-- Files: `src/components/ServiceAreaSchema.tsx`, homepage schema
-- Why: This is a required property for GBP knowledge panel alignment. Currently no city page surfaces business hours in structured data.
-- Fix: Add the 7-day-of-week block once in the shared schema component.
-
-### 3. `aggregateRating` missing from city page schema
-- Files: `src/components/ServiceAreaSchema.tsx`
-- Why: Homepage has it (reviewCount 107, your deliberate value). City pages don't. Rich result eligibility blocked for those pages.
-- Fix: Pull the same rating data into the city page block.
-
-### 4. 24 blog posts have ZERO outbound links to city pages
-- Files: 24 MDX files in `src/content/blog/`
-- Why: City pages link TO blog posts (related posts blocks), but no blog post links back to a city page. This is your single biggest unused internal link equity.
-- Fix: 5–6 highest-traffic posts get one contextual inline link like `[San Jose personal trainer](/san-jose-personal-trainer)` in a "what to do next" or city-relevant section.
-
-### 5. `/team` has zero structured data
-- File: `src/app/team/page.tsx`
-- Why: Page renders full bios for Jeffrey + Crystal (credentials, education, specialties) but emits no JSON-LD. Strongest entity-resolution gap in the site.
-- Fix: Add two Person blocks with `sameAs` to Instagram/LinkedIn, `alumniOf`, `hasCredential`. Sample provided in schema agent report.
+- **`public/llms.txt` drift.** Fixed June 13 (was missing 6 posts), now missing 7 again (25 of 32 posts listed). This is the second time this has happened, which means it's a process gap, not a one-off. It needs to stop being a manual step.
+- **`HOMEPAGE_LAST_MODIFIED` staleness.** Bumped to `2026-05-25` on June 13, but `src/app/page.tsx` was edited in that same commit (added `openingHoursSpecification`). The constant should have been bumped to `2026-06-13` and wasn't.
 
 ---
 
-## High Priority (this month)
+## New Critical Findings (fix this week)
 
-### 6. Author `sameAs` missing from blog post Article schema
-- File: `src/app/[category]/[slug]/page.tsx` (lines ~147-152)
-- Why: Publisher has sameAs ✓. Author only has name + url + jobTitle. Without sameAs, AI engines can't resolve "Jeffrey Sun" to a specific entity.
-- Fix: Add `sameAs: ['https://www.instagram.com/jeffsunfitness/', '<LinkedIn URL if exists>']` to the author Person.
+### 1. Homepage and city pages disagree on the studio's GPS coordinates
+- **Files:** `src/app/page.tsx:43-44` (`37.3175, -121.9108`) vs `src/components/service-area/ServiceAreaSchema.tsx:26-27` (`37.31150, -121.91920`), used identically across all 10 city pages
+- **Why it matters:** these are two different points roughly 700m apart for the *same physical address*. Google cross-references geo data across your schema, GBP listing, and citations for local-pack ranking. A silent mismatch like this is exactly the kind of thing that suppresses local-pack visibility without ever showing up as an error anywhere.
+- **Fix:** pick whichever coordinate actually matches your GBP listing (city-page value looks more precise — 5 decimal places vs homepage's 4) and make the homepage match it.
 
-### 7. Blog `@type` should be `BlogPosting`, not `Article`
-- File: same as #6
-- Why: `Article` is acceptable but `BlogPosting` is Google's preferred subtype for blog content. One-line change.
+### 2. Business name is inconsistent across 10+ schema blocks
+- **Files:** `src/app/page.tsx`, `src/components/Footer.tsx`, `/team`, `/privacy` all say **"Sun Functional Movement"** (alternateName "SunFM"). Every one of the 10 city pages instead declares `name: "SunFM — Personal Trainer in {City}"` in `src/components/service-area/ServiceAreaSchema.tsx:11`.
+- **Why it matters:** that's 10 different literal entity-name strings for one location. NAP (Name/Address/Phone) consistency is one of the more load-bearing local-ranking signals, and city pages inventing a per-page business name is the classic pattern Google's local algorithm is built to distrust (it looks like manufactured location pages even when the underlying business is completely real).
+- **Fix:** city pages should use the same `name` as everywhere else ("Sun Functional Movement"), with the city context carried in the page title/H1/description instead of the schema `name` field.
 
-### 8. `HOMEPAGE_LAST_MODIFIED` constant is stale
-- File: `src/app/sitemap.ts`
-- Why: Hardcoded `2026-04-13`. Homepage has been updated since (phone, footer, schema). Suppresses crawl priority for your most important page.
-- Fix: Either bump the constant or derive it dynamically from the actual page last-modified timestamp.
-
-### 9. Sunnyvale city page is shorter than the others
-- File: `src/lib/service-areas.ts` (Sunnyvale entry)
-- 1,800 words vs San Jose 2,800. Second most commercially important city deserves parity.
-- Fix: Add a 2nd case study OR a section on Sunnyvale-specific neighborhoods (Murphy Ave, Lawrence corridor, Heritage District).
-
-### 10. CSP header missing site-wide
-- File: `next.config.js`
-- Why: Four other security headers set, no Content-Security-Policy. Medium-severity gap for a site handling form submissions.
-- Fix: Starter `default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; img-src 'self' data: https:;`
+### 3. Homepage LocalBusiness `@type` is not a valid schema.org type
+- **File:** `src/app/page.tsx:16` — `"@type": "PersonalTrainer"` does not exist in schema.org's vocabulary (confirmed: `schema.org/PersonalTrainer` 404s, `schema.org/ExerciseGym` resolves).
+- **Fix:** change to `"ExerciseGym"`. This is also the type to standardize on for the city pages (see High #4).
 
 ---
 
-## Medium Priority (next month)
+## High Priority (this week — all mechanical, low-risk)
 
-11. Add FAQPage schema to 4–6 question-anchored blog posts (posture self-check is the best candidate — already structured as questions).
-12. Add LinkedIn URL for Jeffrey Sun to ALL sameAs arrays (homepage founder, blog author). Single highest-impact entity signal.
-13. Add visible review count/star widget to city pages (currently no review signal visible on any city page).
-14. Expand `areaServed` from single City object to array of all 10 served cities, on each city page schema.
-15. Fix geo precision: `37.3115` → `37.31150`, `-121.9192` → `-121.91920` in ServiceAreaSchema.
-16. Add HSTS `includeSubDomains; preload` directives.
-17. Update llms.txt static file to include the 2 newest posts (or convert to dynamic route like llms-full.txt).
-18. Add `openingHoursSpecification` to homepage schema (companion to fix #2).
+### 4. City pages use a different (also non-ideal) LocalBusiness type
+- **File:** `src/components/service-area/ServiceAreaSchema.tsx:9` uses `"HealthAndBeautyBusiness"`, which is schema.org's salon/spa vertical, not fitness.
+- **Fix:** unify with the homepage fix above — `"ExerciseGym"` everywhere.
+
+### 5. `priceRange` mismatch: `$$` on homepage vs `$$$` on all 10 city pages
+- **Files:** `src/app/page.tsx:64` vs `src/components/service-area/ServiceAreaSchema.tsx:15`
+- **Fix:** pick one value that reflects actual pricing and apply it everywhere.
+
+### 6. `areaServed` mismatch: homepage lists 6 cities, city pages list all 10
+- **Files:** `src/app/page.tsx:56-62` (missing Los Gatos, Saratoga, Los Altos, Milpitas) vs `ServiceAreaSchema.tsx:43-53` (has all 10, including Campbell)
+- **Fix:** expand the homepage array to match. Two-minute fix, meaningful consistency win.
+
+### 7. `public/llms.txt` needs to stop being manually maintained
+- **Fix:** either regenerate it from the same `getAllPosts()` source `llms-full.txt`'s route already uses, or delete the static file and let `robots.ts` / the site's own links point crawlers straight at the dynamic `llms-full.txt` route. Given it's drifted twice now, automate it rather than fix it a third time.
+
+### 8. `HOMEPAGE_LAST_MODIFIED` in `src/app/sitemap.ts` is stale again
+- **Fix:** bump to today's date whenever `src/app/page.tsx` actually changes, or derive it programmatically instead of hardcoding.
+
+### 9. 6 of the 8 newest blog posts make specific numeric or clinical claims with no external citation
+- **Posts:** `personal-trainer-for-injury-recovery-bridge-from-physical-therapy`, `shoulder-impingement-for-desk-workers-self-check`, `how-long-to-see-results-strength-training-after-40`, `frozen-shoulder-vs-shoulder-impingement-self-check` (claims diabetics are "5x more common" for frozen shoulder with no source), `resistance-band-routine-desk-workers-no-equipment`, `protein-intake-for-muscle-after-40` (claims "20-40% more protein" needed with no source)
+- **Why it matters:** this is the same trustworthiness pattern the June 13 audit flagged on the breathing post — specific numbers read as more credible, but also more exposed, without a citation backing them.
+- **Fix:** add one PubMed/clinical link per post where a hard number is stated. Low effort, meaningfully closes an E-E-A-T gap.
+
+---
+
+## Medium Priority (this month)
+
+10. **`resistance-band-routine-desk-workers-no-equipment.mdx` has no FAQ frontmatter** — the only post of the 8 newest without one. Quick to add, matches the pattern the other 7 already use.
+11. **VideoObject schema is entirely absent** despite 70+ YouTube embeds across the blog via the `<YouTube>` MDX component. This is a straightforward, high-volume schema win for video rich results and AI citation.
+12. **Per-article author `Person` schema only lists Instagram `sameAs`**, while the homepage's fuller entity has Instagram + Yelp + Google Maps. Align them.
+13. **Only 1 of 32 posts sets an `updated` frontmatter date.** AI crawlers and Google both use freshness signals to decide re-crawl priority; evergreen posts that have genuinely been revised should say so.
+14. **The "desk-worker self-check" post cluster is now 6 posts deep** (knee, neck, shoulder-mobility, shoulder-impingement, frozen-shoulder, SI joint). Topically fine so far, each covers a distinct joint, but it's worth cross-linking the two shoulder posts (shoulder-impingement ↔ frozen-shoulder ↔ shoulder-mobility-test) into an explicit cluster now, before a 7th or 8th post makes the overlap harder to untangle.
+15. **Bare-HTTP redirect chain:** `http://sunfm.fitness` takes 2 hops (→ HTTPS apex → www) to reach the canonical host. `http://www.sunfm.fitness` is already a single hop. Cheap to collapse to one hop at the DNS/host layer.
+16. **LinkedIn `sameAs` still missing everywhere** — flagged twice now. Genuinely blocked on your end: I couldn't find an existing LinkedIn URL for Jeffrey Sun anywhere in the repo to add. If one exists, send it over and I'll wire it into all three Person blocks (homepage, blog author, `/team`) in one pass.
 
 ---
 
 ## Low Priority
 
-19. Strip `changefreq` + `priority` from sitemap.ts (Google ignores both — harmless cleanup).
-20. Add one external citation to the breathing post (currently zero external sources — citability gap).
-21. Add credential anchor ("over 12,000 sessions") to posture self-check closing CTA — neck-pain post has it, posture doesn't.
-22. Update functional-movement-exercises-for-desk-workers opener with a specific client scene (April writing reads thinner than the May/June work).
+17. No IndexNow implementation despite frequent publishing (8 posts in the last 4 weeks) — cheap to add given the publishing cadence.
+18. `BreadcrumbList` present on post pages and city pages, missing on `/blog` category index pages.
+19. Campbell city page (added since June 13, not covered in the last audit) has the thinnest prose of the 10 cities at ~663 words, though still genuinely differentiated, not templated. Not urgent, just the one to grow next if you're adding city-page content.
 
 ---
 
-## Content Quality Scorecard (sampled posts)
+## AI Search Readiness — the real win this round
 
-| Post | Content | E-E-A-T | AI Citation |
-|---|---:|---:|---:|
-| neck-pain-when-sitting-at-a-desk | 89 | 91 | 87 |
-| how-to-breathe-during-heavy-lifts | 87 | 88 | 74 |
-| posture-self-check-at-home | 84 | 84 | 76 |
-| functional-movement-exercises-for-desk-workers | 72 | 78 | 61 |
+Scored 67/100 on June 13, now **78/100**. This is the one category where the May/June investment clearly paid off:
 
-The newer posts are objectively better than the older ones — voice is sharper, internal linking density is higher, technical accuracy is solid. No post is a rewrite candidate. No thin-content flags except meal-prep-for-busy-professionals (1,329 words, only nutrition post besides hydration).
+- `llms-full.txt` is live, dynamic, and confirmed to include all 32 current posts (fetched live to verify, not just checked the code).
+- No AI crawlers are blocked in `robots.txt` — GPTBot, ClaudeBot, PerplexityBot, Google-Extended, and CCBot all pass.
+- The newest posts (protein, SI joint) have strong, self-contained, quotable passages with specific attributed numbers, exactly the shape AI answer engines lift from.
+- NAP (address, phone) is consistent everywhere it's checked outside of the geo-coordinate issue above.
+
+The remaining drag is almost entirely the `llms.txt` drift (#7 above) and the missing `updated` frontmatter dates (#13). Both are cheap fixes that would likely push this into the mid-80s.
 
 ---
 
 ## What Couldn't Be Measured This Round
 
-### GSC + GA4 + CrUX data (seo-google agent failed auth)
+**GSC / GA4 / CrUX field data:** same gap as June 13. The ADC token needs re-authentication (`gcloud auth application-default login --client-id-file=$HOME/sunfm-oauth-client.json --scopes=...`, full command in project memory) before indexation status, search performance deltas, or real-user Core Web Vitals can be pulled. This is the second audit in a row without this data — worth doing once, since the token keeps expiring between sessions anyway.
 
-Your current ADC token (from the gcloud auth done for Ads API earlier today) has scopes `adwords + spreadsheets + cloud-platform`. **GSC and GA4 need different scopes** (`webmasters.readonly` and `analytics.readonly`).
+**Performance (Core Web Vitals) and Images:** not measured this round either. Two audits in a row without numbers here is the biggest blind spot in this report. Worth a dedicated pass next time rather than folding it into a broader audit.
 
-To get field data:
-
-```
-gcloud auth application-default login \
-  --client-id-file=$HOME/sunfm-oauth-client.json \
-  --scopes=https://www.googleapis.com/auth/adwords,https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/webmasters.readonly,https://www.googleapis.com/auth/analytics.readonly
-```
-
-That covers ALL the APIs we need in one auth flow. After running it, the seo-google agent can pull:
-- GSC indexation status per URL (which new posts are indexed?)
-- GSC search performance last 28 days vs prior 28 days (the actual "what changed" signal)
-- CrUX field CWV (real-user perf data)
-- GA4 organic sessions trend
-
-### Performance / Core Web Vitals (seo-performance agent ran partial)
-
-Without CrUX field data and without a successful lab Lighthouse run, this round has no CWV numbers. Worth re-running in a follow-up. If you re-auth per above, CrUX comes for free.
-
-### Backlink profile (Common Crawl was 504)
-
-Common Crawl's index API was returning gateway timeouts during the run. For a site this young (≤6 months) the backlink profile is expected to be sparse — directory listings, social profiles. Not a critical gap right now; revisit at Month 6.
+**Backlink profile:** skipped this round. Site is still young; low expected value per the June 13 note to revisit at month 6.
 
 ---
 
-## Files Available
+## Quick Wins — Implemented 2026-07-11
 
-- This report: `docs/SEO-AUDIT-REPORT.md`
-- Action plan (priority-sorted): see "Critical → High → Medium → Low" sections above
+All 9 in-repo items were implemented same-day as this audit and verified live on the dev server (tsc clean, schema fields confirmed in rendered HTML, llms.txt confirmed serving all 32 posts):
 
----
-
-## Diff vs May 24 (the headline)
-
-| Dimension | May 24 baseline (estimated) | Today | Delta |
+| # | Fix | File(s) | Status |
 |---|---|---|---|
-| Sitemap | Broken lastmod | Working | ✓ Fixed |
-| AI access (llms.txt) | Missing | Live + dynamic full version | ✓ Big win |
-| Publisher sameAs | Missing | Live on homepage + blog | ✓ Win |
-| City cross-linking | Missing | Footer + nearby grid | ✓ Win |
-| New posts indexed | Unknown | Unknown (auth needed) | ⚠ Need GSC |
-| `/start` discoverability | N/A (didn't exist) | Indexable but unsubmitted | ⚠ New gap |
-| Schema completeness | Homepage strong, city OK | Homepage strong, city gaps surfaced | ↓ Surfaced gaps |
-| Content velocity | Catalog of ~16 posts | 26 posts, stronger voice | ✓ Up |
+| 1 | Fix homepage `@type` → `ExerciseGym` | `src/app/page.tsx` | ✓ Done |
+| 2 | Fix city-page `@type` → `ExerciseGym` | `ServiceAreaSchema.tsx` | ✓ Done |
+| 3 | Align homepage geo coordinates to the city-page value | `src/app/page.tsx` | ✓ Done (37.3115, -121.9192 everywhere) |
+| 4 | Fix city-page schema `name` to match the real business name | `ServiceAreaSchema.tsx` | ✓ Done ("Sun Functional Movement" everywhere, city context stays in description/title) |
+| 5 | Align `priceRange` (picked `$$`, the homepage's existing value) | both files | ✓ Done — **flagging for your review**: I defaulted to `$$` since that was already the more prominent page's value, not because I know your actual pricing tier. Correct me if `$$$` is more accurate. |
+| 6 | Expand homepage `areaServed` to all 10 cities | `src/app/page.tsx` | ✓ Done |
+| 7 | Bump `HOMEPAGE_LAST_MODIFIED` + `SERVICE_AREAS_LAST_MODIFIED` to today | `src/app/sitemap.ts` | ✓ Done |
+| 8 | Convert `llms.txt` from a static file to a dynamic route sourced from `getAllPosts()` | New `src/app/llms.txt/route.ts`, deleted `public/llms.txt` | ✓ Done — this closes the drift permanently instead of re-fixing it a third time next month |
+| 9 | Add FAQ frontmatter to the resistance-band post | `resistance-band-routine-desk-workers-no-equipment.mdx` | ✓ Done, 4 Q&As, FAQPage schema confirmed rendering |
+| 10 | Collapse the bare-HTTP redirect chain | DNS/host config | Not done — outside the repo, needs a hosting/DNS console change |
 
-The site is healthier than it was 3 weeks ago. The May 24 work paid off. The gaps now are smaller, more targeted, and mostly about completing the schema/linking work that the May push started.
+Items 1-9 are reversible with `git revert`. Item 10 is still open.

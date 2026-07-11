@@ -6,13 +6,14 @@ export default function ServiceAreaSchema({ area }: { area: ServiceArea }) {
 
   const localBusiness = {
     "@context": "https://schema.org",
-    "@type": "HealthAndBeautyBusiness",
+    "@type": "ExerciseGym",
     "@id": `${pageUrl}#business`,
-    name: `SunFM — Personal Trainer in ${area.city}`,
+    name: "Sun Functional Movement",
+    alternateName: "SunFM",
     description: area.metaDescription,
     url: pageUrl,
     image: `${baseUrl}/images/jeffrey-headshot-final.jpg`,
-    priceRange: "$$$",
+    priceRange: "$$",
     address: {
       "@type": "PostalAddress",
       streetAddress: "1401 Parkmoor Ave, Suite 100",
