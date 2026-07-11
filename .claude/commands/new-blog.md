@@ -268,6 +268,10 @@ Report to the user:
 
 Do NOT commit or push unless the user asks. The user will usually want to review first.
 
+### IndexNow ping (after the user confirms push)
+
+Once the post is pushed to production, run `python3 scripts/indexnow-ping.py https://www.sunfm.fitness/<category>/<slug>` to push the new URL to Bing/Yandex/other IndexNow-participating engines immediately instead of waiting for the next scheduled crawl. Skip this if the post hasn't actually been deployed yet — pinging a URL that 404s wastes the submission.
+
 ---
 
 ## Notes
