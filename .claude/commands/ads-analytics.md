@@ -71,3 +71,13 @@ If Google Ads API is not yet set up:
 - The developer token application is queued for **Q3** per user
 - The script is built but inactive until the dev token + customer ID env vars are populated
 - Once those are in place, no code changes needed — just run the slash command
+
+## Summary tab dependency (read before changing columns)
+
+A tab named **"Ads Summary"** (gid `217155132`) reads from this tab via formulas — an All-Time Total row and an auto-expanding Monthly Rollup (pre-built 24 months ahead, keyed off `EOMONTH` grouping of column A). It is 100% formula-driven; this script never writes to it directly.
+
+**The Monthly Rollup formulas hardcode these column letters from THIS tab: B, C, D, G, J, M, P, R** (the raw/summable metrics — Spend, Impressions, Clicks, Conversions, Consultations, Show, New Clients, Paid). Every ratio column (CTR, Conv Rate, ROAS, etc.) is recomputed from the summed raw values in Ads Summary, not averaged from weekly percentages — that's intentional and correct; don't "fix" it to reference this tab's E/F/H/I/K/L/N/O/Q/S formula columns directly.
+
+**If you ever change this tab's column layout** (as has happened 3+ times), you must also update the `sumif_guarded()` column references in Ads Summary's monthly rows (B6:S29) and the `SUM('Google Ads'!X2:X1000)` refs in its All-Time Total row (row 2), or the summary will silently reference the wrong data.
+
+**Known quirk:** any row in this tab with a blank Week-of date (e.g., a manually-added consult logged outside the weekly cadence) is included in the All-Time Total but invisible to the Monthly Rollup, since it can't be bucketed by month. If the user adds a row without a date, mention this gap.
