@@ -90,30 +90,29 @@ Images:            N/A     ──────────  (5%)   ⚠ Still not 
 ### 8. `HOMEPAGE_LAST_MODIFIED` in `src/app/sitemap.ts` is stale again
 - **Fix:** bump to today's date whenever `src/app/page.tsx` actually changes, or derive it programmatically instead of hardcoding.
 
-### 9. 6 of the 8 newest blog posts make specific numeric or clinical claims with no external citation
-- **Posts:** `personal-trainer-for-injury-recovery-bridge-from-physical-therapy`, `shoulder-impingement-for-desk-workers-self-check`, `how-long-to-see-results-strength-training-after-40`, `frozen-shoulder-vs-shoulder-impingement-self-check` (claims diabetics are "5x more common" for frozen shoulder with no source), `resistance-band-routine-desk-workers-no-equipment`, `protein-intake-for-muscle-after-40` (claims "20-40% more protein" needed with no source)
-- **Why it matters:** this is the same trustworthiness pattern the June 13 audit flagged on the breathing post — specific numbers read as more credible, but also more exposed, without a citation backing them.
-- **Fix:** add one PubMed/clinical link per post where a hard number is stated. Low effort, meaningfully closes an E-E-A-T gap.
+### 9. ✓ Done — 6 posts with uncited numeric/clinical claims now cite a real source
+- **Posts fixed:** `personal-trainer-for-injury-recovery-bridge-from-physical-therapy` (reinjury rates after rushed vs. graded return to training), `shoulder-impingement-for-desk-workers-self-check` (painful arc test reliability), `how-long-to-see-results-strength-training-after-40` (neural adaptation vs. hypertrophy timeline), `frozen-shoulder-vs-shoulder-impingement-self-check` (diabetes/frozen-shoulder prevalence — the "5x more common" claim now backed by the actual meta-analysis it came from), `resistance-band-routine-desk-workers-no-equipment` (elastic vs. conventional resistance training outcomes), `protein-intake-for-muscle-after-40` (protein requirements for older adults, with a note on why this post's target runs a bit higher than the general geriatric recommendation)
+- Every link was fetched and confirmed to return HTTP 200 before insertion, all PMC/PubMed.
 
 ---
 
 ## Medium Priority (this month)
 
-10. **`resistance-band-routine-desk-workers-no-equipment.mdx` has no FAQ frontmatter** — the only post of the 8 newest without one. Quick to add, matches the pattern the other 7 already use.
-11. **VideoObject schema is entirely absent** despite 70+ YouTube embeds across the blog via the `<YouTube>` MDX component. This is a straightforward, high-volume schema win for video rich results and AI citation.
-12. **Per-article author `Person` schema only lists Instagram `sameAs`**, while the homepage's fuller entity has Instagram + Yelp + Google Maps. Align them.
-13. **Only 1 of 32 posts sets an `updated` frontmatter date.** AI crawlers and Google both use freshness signals to decide re-crawl priority; evergreen posts that have genuinely been revised should say so.
-14. **The "desk-worker self-check" post cluster is now 6 posts deep** (knee, neck, shoulder-mobility, shoulder-impingement, frozen-shoulder, SI joint). Topically fine so far, each covers a distinct joint, but it's worth cross-linking the two shoulder posts (shoulder-impingement ↔ frozen-shoulder ↔ shoulder-mobility-test) into an explicit cluster now, before a 7th or 8th post makes the overlap harder to untangle.
-15. **Bare-HTTP redirect chain:** `http://sunfm.fitness` takes 2 hops (→ HTTPS apex → www) to reach the canonical host. `http://www.sunfm.fitness` is already a single hop. Cheap to collapse to one hop at the DNS/host layer.
-16. **LinkedIn `sameAs` still missing everywhere** — flagged twice now. Genuinely blocked on your end: I couldn't find an existing LinkedIn URL for Jeffrey Sun anywhere in the repo to add. If one exists, send it over and I'll wire it into all three Person blocks (homepage, blog author, `/team`) in one pass.
+10. ✓ Done — `resistance-band-routine-desk-workers-no-equipment.mdx` FAQ frontmatter added (part of the initial quick-wins pass).
+11. ✓ Done — VideoObject schema added for all 75 YouTube embeds across 15 posts, generated straight from the MDX source. **Caveat:** Google requires `uploadDate` for full video rich-result eligibility, and there's no reliable way to get accurate upload dates for third-party YouTube videos without the YouTube Data API (which isn't configured). I left `uploadDate` out rather than fabricate it — the schema is valid and helps AI/general structured understanding, but may not qualify for Google's video rich results until that field is added with real data.
+12. ✓ Done — author `Person` schema now includes Instagram + Yelp + Google Maps, matching the homepage.
+13. **Only 1 of 32 posts sets an `updated` frontmatter date.** Still open — didn't batch-stamp this since fabricating "updated" dates on posts that weren't actually revised would be its own integrity problem. Add it going forward whenever a post gets a genuine substantive edit.
+14. ✓ Done — the three shoulder posts (mobility test, impingement, frozen shoulder) are now cross-linked in both directions.
+15. **Bare-HTTP redirect chain** — still open, needs a DNS/hosting-provider change outside the repo.
+16. **LinkedIn `sameAs` still missing everywhere** — still blocked, no URL found in the repo to add.
 
 ---
 
 ## Low Priority
 
-17. No IndexNow implementation despite frequent publishing (8 posts in the last 4 weeks) — cheap to add given the publishing cadence.
-18. `BreadcrumbList` present on post pages and city pages, missing on `/blog` category index pages.
-19. Campbell city page (added since June 13, not covered in the last audit) has the thinnest prose of the 10 cities at ~663 words, though still genuinely differentiated, not templated. Not urgent, just the one to grow next if you're adding city-page content.
+17. ✓ Done — IndexNow key file live at the site root, `scripts/indexnow-ping.py` added for one-off or full-sitemap submission, and wired into the `/new-blog` skill so future posts get pinged automatically after publish.
+18. ✓ Done — `BreadcrumbList` added to `/blog`; the shared `Breadcrumbs` component (used by category pages) now includes a "Home" crumb it was previously missing.
+19. Campbell city page still the thinnest of the 10 at ~663 words. Not urgent, just the one to grow next if adding city-page content.
 
 ---
 
