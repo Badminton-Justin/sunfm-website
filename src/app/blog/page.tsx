@@ -24,6 +24,24 @@ export const metadata: Metadata = {
   },
 };
 
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: "https://www.sunfm.fitness",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Blog",
+    },
+  ],
+};
+
 export default function BlogPage() {
   const posts = getAllPosts();
   const categories = getAllCategories();
@@ -31,6 +49,10 @@ export default function BlogPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       <Header />
       <main className="min-h-screen bg-[#EEEADA]">
 

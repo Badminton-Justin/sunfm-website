@@ -100,6 +100,31 @@ export default async function ArticlePage({ params }: Props) {
 
   const heroDims = post.image ? await getPublicImageDims(post.image) : null;
 
+  const youtubeMatches = [
+    ...post.content.matchAll(/<YouTube\s+id="([^"]+)"\s+title="([^"]+)"\s*\/>/g),
+  ];
+  const videoLd =
+    youtubeMatches.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@graph": youtubeMatches.map(([, id, title]) => ({
+            "@type": "VideoObject",
+            name: title,
+            description: `${title} — exercise demonstration referenced in "${post.title}" on Sun Functional Movement.`,
+            thumbnailUrl: `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
+            embedUrl: `https://www.youtube-nocookie.com/embed/${id}`,
+            publisher: {
+              "@type": "Organization",
+              name: "Sun Functional Movement",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://www.sunfm.fitness/images/logo.png",
+              },
+            },
+          })),
+        }
+      : null;
+
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -149,7 +174,11 @@ export default async function ArticlePage({ params }: Props) {
       name: post.author,
       url: "https://www.sunfm.fitness/team",
       jobTitle: "ACE-Certified Personal Trainer",
-      sameAs: ["https://www.instagram.com/jeffsunfitness/"],
+      sameAs: [
+        "https://www.instagram.com/jeffsunfitness/",
+        "https://www.yelp.com/biz/sun-functional-movement-san-jose",
+        "https://maps.app.goo.gl/XyrnsHXu9K1xYqXw5",
+      ],
     },
     publisher: {
       "@type": "Organization",
@@ -303,6 +332,12 @@ export default async function ArticlePage({ params }: Props) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         />
+        {videoLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(videoLd) }}
+          />
+        )}
         {post.faq && post.faq.length > 0 && (
           <script
             type="application/ld+json"
