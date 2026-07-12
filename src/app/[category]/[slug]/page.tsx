@@ -5,7 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import {
   getAllPosts,
   getPostBySlug,
-  getPostsByCategory,
+  getRelatedPosts,
   categoryLabels,
 } from "@/lib/blog";
 import ProgressBar from "@/components/blog/ProgressBar";
@@ -92,9 +92,7 @@ export default async function ArticlePage({ params }: Props) {
     day: "numeric",
   });
 
-  const relatedPosts = getPostsByCategory(category).filter(
-    (p) => p.slug !== slug
-  );
+  const relatedPosts = getRelatedPosts(post);
 
   const wordCount = post.content.split(/\s+/).length;
 
