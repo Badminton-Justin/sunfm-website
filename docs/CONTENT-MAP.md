@@ -1,0 +1,94 @@
+# Sun FM — Content Map
+
+**Purpose:** this is the information-architecture reference for the blog. Read it before writing a new post, so topic placement and interlinking are a deliberate decision instead of something an audit discovers later. Update it after publishing anything that changes the picture below (new post, new cluster, a cluster that's outgrown its shape).
+
+This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it's the *internal* map (what exists, how it's grouped, how it should link) that complements the *external* research (what's ranking, what's missing).
+
+---
+
+## Route structure
+
+- `/<category>/<slug>` — blog posts. Categories: `training`, `nutrition`, `wellness`.
+- `/blog` — full post index (all categories, `Related Articles`-free, just the grid).
+- `/<category>` — per-category index page.
+- `/<city>-personal-trainer` — 10 city landing pages (San Jose, Sunnyvale, Cupertino, Santa Clara, Mountain View, Los Gatos, Saratoga, Los Altos, Milpitas, Campbell), driven by `src/lib/service-areas.ts`.
+- `/tools/movement-screen` — the primary conversion asset. Nearly every blog post should route toward this or `/#apply` in its closing section.
+- `/team`, `/start` (PPC-only, noindexed), `/#apply`.
+
+---
+
+## Blog clusters (31 posts as of 2026-07)
+
+### 1. Desk-worker self-check cluster (13 posts) — the biggest cluster, split into 3 sub-groups
+
+This is the "at-home test, pass/borderline/fail, then drills" format. It's the site's signature content type and the one most likely to keep growing, so sub-grouping matters more here than anywhere else.
+
+**1a. Pure mobility/ROM tests** (no pain framing, just "how much range do you have"):
+- `ankle-mobility-test-at-home`
+- `hip-mobility-test-at-home`
+- `thoracic-spine-mobility-test-at-home`
+- `hamstring-flexibility-test-at-home`
+- `core-stability-test-at-home`
+- `grip-strength-test-at-home-build-after-40`
+
+**1b. Shoulder micro-cluster** (3 posts, tightly related, cross-linked in both directions as of 2026-07-11):
+- `shoulder-mobility-test-at-home` — general tightness, no pain
+- `shoulder-impingement-for-desk-workers-self-check` — pain in the 60-120° arc specifically
+- `frozen-shoulder-vs-shoulder-impingement-self-check` — differentiates the above from adhesive capsulitis
+
+**1c. Pain-triage / differential-diagnosis posts** (symptom-driven, "is this X or Y", desk-sitting-specific):
+- `knee-pain-when-sitting-at-a-desk`
+- `neck-pain-when-sitting-at-a-desk`
+- `posture-self-check-at-home`
+- `si-joint-pain-when-sitting-at-a-desk-self-test`
+
+**Rule for this cluster:** a new post here needs a genuinely distinct joint/pattern AND a genuinely distinct angle (test vs. pain-triage vs. differential-diagnosis) from all 13 existing ones, or it's a rewrite candidate, not a new post. Check sub-group 1b's pattern (2-3 tightly related posts, explicitly cross-linked) before adding a 4th shoulder-adjacent post — that's the size where a micro-cluster should get its cross-links written in, not discovered later.
+
+### 2. Strength training fundamentals / programming (13 posts)
+
+- `strength-training-for-longevity-beginners-guide-over-30` — the entry point/pillar for this group
+- `how-often-should-you-strength-train-after-30`
+- `how-to-warm-up-before-lifting`
+- `how-to-breathe-during-heavy-lifts`
+- `deadlift-setup-for-over-30`
+- `functional-movement-exercises-for-desk-workers`
+- `resistance-band-routine-desk-workers-no-equipment`
+- `what-to-do-on-rest-days-strength-training`
+- `when-to-take-a-deload-week`
+- `injury-vs-soreness-when-to-train-through-pain-over-30`
+- `how-to-return-to-strength-training-after-a-break`
+- `personal-trainer-for-injury-recovery-bridge-from-physical-therapy`
+- `how-long-to-see-results-strength-training-after-40`
+
+No formal sub-clusters yet, but there's a natural "program design" thread (frequency, warm-up, breathing, deadlift) and a "coming back from a setback" thread (deload, injury vs soreness, return-after-break, post-PT bridge) worth linking within, not just to the pillar post.
+
+### 3. Nutrition (3 posts)
+
+- `protein-intake-for-muscle-after-40`
+- `hydration-and-electrolytes-for-strength-training-after-40`
+- `meal-prep-for-busy-professionals`
+
+Small enough that all three can reasonably reference each other; no sub-grouping needed yet.
+
+### 4. Wellness / recovery-adjacent (3 posts)
+
+- `sleep-and-muscle-recovery-for-strength-training-over-30`
+- `when-work-stress-should-change-how-you-train`
+- `personal-training-for-stress-relief-bay-area`
+
+Overlaps meaningfully with cluster 2's "coming back from a setback" thread (deload, rest days) — these are legitimate cross-category link targets, not just same-category ones.
+
+---
+
+## Linking philosophy
+
+- **No blanket sibling links.** The automated "Related Articles" block (`getRelatedPosts` in `src/lib/blog.ts`) scores candidates by shared *words* (not whole tag phrases — tags here are unique long-tail keyword strings per post, so exact-tag matching finds almost nothing between clearly related posts) weighted by inverse document frequency, so specific overlap (e.g. "shoulder" + "impingement") counts far more than near-universal words ("desk", "San Jose"). It's automatic and doesn't need per-post maintenance, but it's a relevance signal, not a substitute for judgment — a hand-picked contextual link in prose is always stronger than an algorithmic card grid.
+- **Manual inline links stay conservative:** one link where it earns its place, in prose, at a natural anchor. Not a "related posts" dump inside the body. (This is already the `/new-blog` Step 4 rule — this map is what tells you *which* post is the right one to link, before you get there.)
+- **Every post should route toward `/tools/movement-screen` and `/#apply`** in its closing section regardless of cluster.
+
+## Before writing a new post
+
+1. Check which cluster (if any) the topic belongs to above.
+2. If it's cluster 1 (desk-worker self-check), check the 30%-overlap rule against all 13 existing posts, not just the obvious neighbor.
+3. Decide the 1-2 existing posts that should get an inbound link, and which existing post(s) the new one should link out to — based on the cluster map above, not a fresh search each time.
+4. After publishing, add the new post to the relevant cluster list in this file (or start a new cluster section if it doesn't fit an existing one).

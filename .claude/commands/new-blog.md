@@ -20,11 +20,14 @@ If the user gives you no topic ("pick the best next post"), run the full researc
 
 Goal: pick a topic with real search intent that complements existing content and converts into the Movement Screen tool or the consultation.
 
-### 1a. Audit what's already published
+### 1a. Read the content map, then audit what's already published
 
-Launch an Explore subagent and ask it to:
+Read `docs/CONTENT-MAP.md` first. It's the maintained cluster map (which posts group together, which sub-clusters exist, which cluster is near its overlap limit) — use it to shortcut most of what a fresh audit would otherwise have to rediscover.
+
+Then launch an Explore subagent to verify the map is still accurate and catch anything it missed:
 - Read every MDX file under `src/content/blog/`
 - For each, note: title, target keywords (from frontmatter + headings), primary angle, rough word count, internal linking patterns
+- Flag any post not accounted for in `docs/CONTENT-MAP.md`, and any drift from what the map describes
 - Identify topic gaps — areas the business's positioning (mobility, strength for longevity, desk workers 30+, Bay Area) could cover but hasn't
 - Note the frontmatter format for new posts
 
@@ -257,6 +260,8 @@ Write the final MDX to:
 ```
 src/content/blog/<category>/<slug>.mdx
 ```
+
+Update `docs/CONTENT-MAP.md`: add the new post to the cluster it belongs in (or start a new cluster section if it genuinely doesn't fit an existing one — that's rare, since Step 1a should have already placed it). This is what keeps the map useful for the next post instead of drifting stale.
 
 Report to the user:
 - File path + final URL (`https://www.sunfm.fitness/<category>/<slug>`)
