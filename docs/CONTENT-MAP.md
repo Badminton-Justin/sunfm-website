@@ -17,9 +17,9 @@ This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it'
 
 ---
 
-## Blog clusters (31 posts as of 2026-07)
+## Blog clusters (33 posts as of 2026-07-14)
 
-### 1. Desk-worker self-check cluster (13 posts) — the biggest cluster, split into 3 sub-groups
+### 1. Desk-worker self-check cluster (14 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
 
 This is the "at-home test, pass/borderline/fail, then drills" format. It's the site's signature content type and the one most likely to keep growing, so sub-grouping matters more here than anywhere else.
 
@@ -30,6 +30,7 @@ This is the "at-home test, pass/borderline/fail, then drills" format. It's the s
 - `hamstring-flexibility-test-at-home`
 - `core-stability-test-at-home`
 - `grip-strength-test-at-home-build-after-40`
+- `balance-test-at-home-single-leg-checks-over-40` — uses the same 3-test format, but the topic (single-leg balance, tied to longevity/mortality research) sits closer to the strength-for-longevity pillar than to desk-worker pain specifically. Linked bidirectionally with the `strength-training-for-longevity-beginners-guide-over-30` pillar post (2026-07-14), alongside the usual self-check cluster placement.
 
 **1b. Shoulder micro-cluster** (3 posts, tightly related, cross-linked in both directions as of 2026-07-11):
 - `shoulder-mobility-test-at-home` — general tightness, no pain
