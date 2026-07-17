@@ -17,9 +17,9 @@ This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it'
 
 ---
 
-## Blog clusters (33 posts as of 2026-07-14)
+## Blog clusters (34 posts as of 2026-07-17)
 
-### 1. Desk-worker self-check cluster (14 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
+### 1. Desk-worker self-check cluster (15 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
 
 This is the "at-home test, pass/borderline/fail, then drills" format. It's the site's signature content type and the one most likely to keep growing, so sub-grouping matters more here than anywhere else.
 
@@ -30,6 +30,7 @@ This is the "at-home test, pass/borderline/fail, then drills" format. It's the s
 - `hamstring-flexibility-test-at-home`
 - `core-stability-test-at-home`
 - `grip-strength-test-at-home-build-after-40`
+- `lumbar-spine-mobility-test-at-home` (2026-07-17) — fills the gap between hip-mobility (ball-and-socket ROM), thoracic-spine (upper-back rotation/extension), and SI-joint (pelvis pain-triage). Tests hip-lumbar dissociation and segmental control rather than pure range. Cross-links with `hip-mobility-test-at-home`, `thoracic-spine-mobility-test-at-home`, and `si-joint-pain-when-sitting-at-a-desk-self-test` in its differential section; the SI-joint post's own differential section now points here instead of to `posture-self-check-at-home` for "pain that's central and moves with spinal bending," since this is the more precise match.
 - `balance-test-at-home-single-leg-checks-over-40` — uses the same 3-test format, but the topic (single-leg balance, tied to longevity/mortality research) sits closer to the strength-for-longevity pillar than to desk-worker pain specifically. Linked bidirectionally with the `strength-training-for-longevity-beginners-guide-over-30` pillar post (2026-07-14), alongside the usual self-check cluster placement.
 
 **1b. Shoulder micro-cluster** (3 posts, tightly related, cross-linked in both directions as of 2026-07-11):
@@ -43,7 +44,7 @@ This is the "at-home test, pass/borderline/fail, then drills" format. It's the s
 - `posture-self-check-at-home`
 - `si-joint-pain-when-sitting-at-a-desk-self-test`
 
-**Rule for this cluster:** a new post here needs a genuinely distinct joint/pattern AND a genuinely distinct angle (test vs. pain-triage vs. differential-diagnosis) from all 13 existing ones, or it's a rewrite candidate, not a new post. Check sub-group 1b's pattern (2-3 tightly related posts, explicitly cross-linked) before adding a 4th shoulder-adjacent post — that's the size where a micro-cluster should get its cross-links written in, not discovered later.
+**Rule for this cluster:** a new post here needs a genuinely distinct joint/pattern AND a genuinely distinct angle (test vs. pain-triage vs. differential-diagnosis vs. pure-ROM) from all 14 existing ones, or it's a rewrite candidate, not a new post. Check sub-group 1b's pattern (2-3 tightly related posts, explicitly cross-linked) before adding a 4th shoulder-adjacent post — that's the size where a micro-cluster should get its cross-links written in, not discovered later. Ruled out as too overlapping in 2026-07 research: hip flexor tightness (already in hip-mobility-test), glute activation (already in knee-pain post), calf mobility (already in ankle-mobility-test), jaw/TMJ (wrong authority — dentist territory, not a trainer's lane).
 
 ### 2. Strength training fundamentals / programming (13 posts)
 
