@@ -53,13 +53,23 @@ const TEXT_TESTIMONIALS = [
   { quote: "Before Jeff, I went to the gym once a week. After, I consistently go to the gym twice a week. My strength has gotten a lot better and my body has gotten a lot more toned.", name: "Karson", result: "Functional strength for life" },
 ];
 
+// Always resolves to the last day of the current month, so the banner
+// carries a real, near-term deadline without needing a hardcoded date
+// that quietly expires and sits stale until someone happens to notice
+// (this has already happened twice with a fixed date).
+function getMonthEndDeadline(): string {
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  return lastDay.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+}
+
 function LaunchBanner() {
   useEffect(() => {
-    trackEvent("banner_impression", { campaign: "launch_offer_july" });
+    trackEvent("banner_impression", { campaign: "launch_offer_rolling" });
   }, []);
 
   const scrollToForm = () => {
-    trackEvent("banner_click", { campaign: "launch_offer_july" });
+    trackEvent("banner_click", { campaign: "launch_offer_rolling" });
     const form = document.getElementById("start-form");
     if (form) {
       form.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -68,6 +78,8 @@ function LaunchBanner() {
     }
   };
 
+  const deadline = getMonthEndDeadline();
+
   return (
     <div className="bg-[#FFD140] text-[#1a1a1a]">
       <button
@@ -75,7 +87,7 @@ function LaunchBanner() {
         onClick={scrollToForm}
         className="block w-full max-w-6xl mx-auto px-4 sm:px-6 py-2.5 text-center text-sm sm:text-base font-medium hover:underline focus:underline focus:outline-none"
       >
-        <strong>Launch offer:</strong> Free home workout set with every new client signup through July 15
+        <strong>Launch offer:</strong> Free home workout set with every new client signup through {deadline}
       </button>
     </div>
   );
@@ -383,7 +395,7 @@ export default function StartLanding() {
               ) : (
                 <>
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
-                  <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Launch offer:</strong> Free home workout set with every new client signup through July 15.</p>
+                  <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Launch offer:</strong> Free home workout set with every new client signup through {getMonthEndDeadline()}.</p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
