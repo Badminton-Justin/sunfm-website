@@ -17,7 +17,7 @@ This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it'
 
 ---
 
-## Blog clusters (34 posts as of 2026-07-17)
+## Blog clusters (35 posts as of 2026-07-20)
 
 ### 1. Desk-worker self-check cluster (15 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
 
@@ -32,6 +32,7 @@ This is the "at-home test, pass/borderline/fail, then drills" format. It's the s
 - `grip-strength-test-at-home-build-after-40`
 - `lumbar-spine-mobility-test-at-home` (2026-07-17) — fills the gap between hip-mobility (ball-and-socket ROM), thoracic-spine (upper-back rotation/extension), and SI-joint (pelvis pain-triage). Tests hip-lumbar dissociation and segmental control rather than pure range. Cross-links with `hip-mobility-test-at-home`, `thoracic-spine-mobility-test-at-home`, and `si-joint-pain-when-sitting-at-a-desk-self-test` in its differential section; the SI-joint post's own differential section now points here instead of to `posture-self-check-at-home` for "pain that's central and moves with spinal bending," since this is the more precise match.
 - `balance-test-at-home-single-leg-checks-over-40` — uses the same 3-test format, but the topic (single-leg balance, tied to longevity/mortality research) sits closer to the strength-for-longevity pillar than to desk-worker pain specifically. Linked bidirectionally with the `strength-training-for-longevity-beginners-guide-over-30` pillar post (2026-07-14), alongside the usual self-check cluster placement.
+- `foot-arch-test-at-home-flat-feet-or-high-arches` (2026-07-20) — the one joint in the kinetic chain the cluster hadn't covered yet (ankle, hip, thoracic spine, hamstring, core, grip, lumbar spine, balance, shoulder were all already claimed). 3 tests (wet footprint, navicular drop, single-leg arch check), plus the short-foot/toe-splay/towel-scrunch drills. Cross-links with `ankle-mobility-test-at-home` (added a reciprocal outbound link there) and `hip-mobility-test-at-home` in its kinetic-chain section.
 
 **1b. Shoulder micro-cluster** (3 posts, tightly related, cross-linked in both directions as of 2026-07-11):
 - `shoulder-mobility-test-at-home` — general tightness, no pain
