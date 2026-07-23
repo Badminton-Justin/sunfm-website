@@ -17,9 +17,9 @@ This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it'
 
 ---
 
-## Blog clusters (35 posts as of 2026-07-20)
+## Blog clusters (37 posts as of 2026-07-23)
 
-### 1. Desk-worker self-check cluster (15 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
+### 1. Desk-worker self-check cluster (16 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
 
 This is the "at-home test, pass/borderline/fail, then drills" format. It's the site's signature content type and the one most likely to keep growing, so sub-grouping matters more here than anywhere else.
 
@@ -45,7 +45,7 @@ This is the "at-home test, pass/borderline/fail, then drills" format. It's the s
 - `posture-self-check-at-home`
 - `si-joint-pain-when-sitting-at-a-desk-self-test`
 
-**Rule for this cluster:** a new post here needs a genuinely distinct joint/pattern AND a genuinely distinct angle (test vs. pain-triage vs. differential-diagnosis vs. pure-ROM) from all 14 existing ones, or it's a rewrite candidate, not a new post. Check sub-group 1b's pattern (2-3 tightly related posts, explicitly cross-linked) before adding a 4th shoulder-adjacent post — that's the size where a micro-cluster should get its cross-links written in, not discovered later. Ruled out as too overlapping in 2026-07 research: hip flexor tightness (already in hip-mobility-test), glute activation (already in knee-pain post), calf mobility (already in ankle-mobility-test), jaw/TMJ (wrong authority — dentist territory, not a trainer's lane).
+**Rule for this cluster:** a new post here needs a genuinely distinct joint/pattern AND a genuinely distinct angle (test vs. pain-triage vs. differential-diagnosis vs. pure-ROM) from all 15 existing ones, or it's a rewrite candidate, not a new post. Check sub-group 1b's pattern (2-3 tightly related posts, explicitly cross-linked) before adding a 4th shoulder-adjacent post — that's the size where a micro-cluster should get its cross-links written in, not discovered later. Ruled out as too overlapping in 2026-07 research: hip flexor tightness (already in hip-mobility-test), glute activation (already in knee-pain post), calf mobility (already in ankle-mobility-test), jaw/TMJ (wrong authority — dentist territory, not a trainer's lane), wrist mobility, postural breathing reset, desk ergonomics checklist, rowing habit, return to running, overhead press guide, pelvic floor + breathing, supplements for over-40 lifters. This cluster is now close to saturated across the whole kinetic chain (ankle, hip, thoracic spine, hamstring, core, grip, lumbar spine, balance, foot arch, shoulder x3, knee, neck, posture, SI-joint) — new posts are more likely to belong in cluster 2, 3, or 4 going forward.
 
 ### 2. Strength training fundamentals / programming (13 posts)
 
@@ -64,6 +64,8 @@ This is the "at-home test, pass/borderline/fail, then drills" format. It's the s
 - `how-long-to-see-results-strength-training-after-40`
 
 No formal sub-clusters yet, but there's a natural "program design" thread (frequency, warm-up, breathing, deadlift) and a "coming back from a setback" thread (deload, injury vs soreness, return-after-break, post-PT bridge) worth linking within, not just to the pillar post.
+
+- `mobility-vs-strength-training-why-you-need-both` (2026-07-23) — the connective-tissue post between this cluster and cluster 1 (the 16-post mobility-test cluster). Explains why mobility work and strength training are complementary, not competing, and how to run both without a separate mobility day. Added an inbound link from `functional-movement-exercises-for-desk-workers`; links out to `hip-mobility-test-at-home`, `ankle-mobility-test-at-home`, and `strength-training-for-longevity-beginners-guide-over-30`.
 
 ### 3. Nutrition (3 posts)
 
@@ -92,6 +94,6 @@ Overlaps meaningfully with cluster 2's "coming back from a setback" thread (delo
 ## Before writing a new post
 
 1. Check which cluster (if any) the topic belongs to above.
-2. If it's cluster 1 (desk-worker self-check), check the 30%-overlap rule against all 13 existing posts, not just the obvious neighbor.
+2. If it's cluster 1 (desk-worker self-check), check the 30%-overlap rule against all 16 existing posts, not just the obvious neighbor.
 3. Decide the 1-2 existing posts that should get an inbound link, and which existing post(s) the new one should link out to — based on the cluster map above, not a fresh search each time.
 4. After publishing, add the new post to the relevant cluster list in this file (or start a new cluster section if it doesn't fit an existing one).
