@@ -110,6 +110,7 @@ export default async function ArticlePage({ params }: Props) {
             name: title,
             description: `${title} — exercise demonstration referenced in "${post.title}" on Sun Functional Movement.`,
             thumbnailUrl: `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
+            uploadDate: post.date,
             embedUrl: `https://www.youtube-nocookie.com/embed/${id}`,
             publisher: {
               "@type": "Organization",
