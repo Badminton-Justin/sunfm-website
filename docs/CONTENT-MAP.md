@@ -17,7 +17,7 @@ This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it'
 
 ---
 
-## Blog clusters (37 posts as of 2026-07-23)
+## Blog clusters (37 posts as of 2026-07-26)
 
 ### 1. Desk-worker self-check cluster (16 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
 
@@ -66,6 +66,7 @@ This is the "at-home test, pass/borderline/fail, then drills" format. It's the s
 No formal sub-clusters yet, but there's a natural "program design" thread (frequency, warm-up, breathing, deadlift) and a "coming back from a setback" thread (deload, injury vs soreness, return-after-break, post-PT bridge) worth linking within, not just to the pillar post.
 
 - `mobility-vs-strength-training-why-you-need-both` (2026-07-23) — the connective-tissue post between this cluster and cluster 1 (the 16-post mobility-test cluster). Explains why mobility work and strength training are complementary, not competing, and how to run both without a separate mobility day. Added an inbound link from `functional-movement-exercises-for-desk-workers`; links out to `hip-mobility-test-at-home`, `ankle-mobility-test-at-home`, and `strength-training-for-longevity-beginners-guide-over-30`.
+- `pickleball-tennis-golf-injury-prevention-return-to-sport-after-40` (2026-07-26) — return-to-sport bridge for desk workers getting back into racquet sports and golf after years away. Distinct from cluster 1: sport-specific and pre-emptive (a rotational hip-shoulder-separation self-test) rather than symptom-driven pain-triage. Links out to `balance-test-at-home-single-leg-checks-over-40` and `hip-mobility-test-at-home`; added a reciprocal inbound link from the balance-test post's closing section.
 
 ### 3. Nutrition (3 posts)
 
