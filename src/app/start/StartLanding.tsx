@@ -31,6 +31,98 @@ const FAQ_ITEMS = [
   },
 ];
 
+type StartTheme = {
+  eyebrow: string;
+  headline: string;
+  subhead: string;
+};
+
+const DEFAULT_THEME: StartTheme = {
+  eyebrow: "Personal training in San Jose & South Bay",
+  headline: "Train without breaking down.",
+  subhead:
+    "For busy professionals who want to feel strong, move well, and stay that way for the long run. Mobility, strength for longevity, and undoing what desk work does to your body.",
+};
+
+// Keyed off the Google Ads final-URL ?t= param, matching the ad group themes
+// documented in docs/ads-plan/GOOGLE-ADS-REPORT.md. Every ad group currently
+// points at the same generic /start page, which is a big part of why Quality
+// Score is cratering — this lets each ad group land on copy that actually
+// echoes what was searched, without splitting the form/tracking across pages.
+const START_THEMES: Record<string, StartTheme> = {
+  "san-jose": {
+    eyebrow: "Personal trainer in San Jose",
+    headline: "Train without breaking down.",
+    subhead:
+      "San Jose-based, in-studio or on-site. For busy professionals who want to feel strong, move well, and stay that way for the long run.",
+  },
+  sunnyvale: {
+    eyebrow: "Personal trainer serving Sunnyvale",
+    headline: "Train without breaking down.",
+    subhead:
+      "Based in San Jose, training clients throughout Sunnyvale. Mobility, strength for longevity, and undoing what desk work does to your body.",
+  },
+  cupertino: {
+    eyebrow: "Personal trainer serving Cupertino",
+    headline: "Train without breaking down.",
+    subhead:
+      "Based in San Jose, training clients throughout Cupertino. Mobility, strength for longevity, and undoing what desk work does to your body.",
+  },
+  "santa-clara": {
+    eyebrow: "Personal trainer serving Santa Clara",
+    headline: "Train without breaking down.",
+    subhead:
+      "Based in San Jose, training clients throughout Santa Clara. Mobility, strength for longevity, and undoing what desk work does to your body.",
+  },
+  "mountain-view": {
+    eyebrow: "Personal trainer serving Mountain View",
+    headline: "Train without breaking down.",
+    subhead:
+      "Based in San Jose, training clients throughout Mountain View. Mobility, strength for longevity, and undoing what desk work does to your body.",
+  },
+  "over-40": {
+    eyebrow: "Strength training after 40",
+    headline: "Get strong again after 40.",
+    subhead:
+      "Strength and mobility training built for a body that's spent years at a desk. No bootcamp burnout, just a plan that fits where you're starting from.",
+  },
+  mobility: {
+    eyebrow: "Mobility coaching in San Jose",
+    headline: "Move like your body actually can.",
+    subhead:
+      "Mobility-first personal training for stiff hips, tight shoulders, and the aches that come from years at a desk.",
+  },
+  "desk-worker": {
+    eyebrow: "For desk workers who sit all day",
+    headline: "Undo what your desk is doing to your body.",
+    subhead:
+      "Mobility and strength training built for people who sit eight-plus hours a day and want to move and feel better.",
+  },
+  "return-to-training": {
+    eyebrow: "Getting back into training",
+    headline: "Ease back into training the right way.",
+    subhead:
+      "Coming back from a break, an injury, or physical therapy? A program built around where your body actually is right now, not where it used to be.",
+  },
+  "busy-professionals": {
+    eyebrow: "For busy professionals",
+    headline: "Real training that fits a packed week.",
+    subhead:
+      "Efficient, focused sessions built around your schedule. Strength, mobility, and real results without turning your week upside down.",
+  },
+  "senior-strength": {
+    eyebrow: "Strength training for older adults",
+    headline: "Build strength that holds up for the long run.",
+    subhead:
+      "Strength and balance training built for older adults who want to stay independent, capable, and steady on their feet.",
+  },
+};
+
+function resolveTheme(themeKey?: string): StartTheme {
+  if (!themeKey) return DEFAULT_THEME;
+  return START_THEMES[themeKey] || DEFAULT_THEME;
+}
+
 const VIDEO_TESTIMONIALS = [
   { name: "Marshall", result: "4-year client · Pain-free strength", poster: "Marshall_Edited_Poster.jpg", video: "Marshall_Edited.mp4" },
   { name: "Sneha", result: "Structured health lifestyle", poster: "Sneha_Edited_Poster.jpg", video: "Sneha_Edited.mp4" },
@@ -155,7 +247,8 @@ const STAR = (
   </svg>
 );
 
-export default function StartLanding() {
+export default function StartLanding({ themeKey }: { themeKey?: string }) {
+  const theme = resolveTheme(themeKey);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -174,7 +267,8 @@ export default function StartLanding() {
 
   useEffect(() => {
     attributionRef.current = captureAttribution();
-  }, []);
+    trackEvent("start_page_view", { landing_theme: themeKey || "default" });
+  }, [themeKey]);
 
   useEffect(() => {
     if (submitStatus === "success" && successRef.current) {
@@ -267,6 +361,7 @@ export default function StartLanding() {
           ...attribution,
           source: "start_page",
           landing_page: "/start",
+          landing_theme: themeKey || "default",
         });
         setSubmitStatus("success");
         setFormData({ name: "", email: "", phone: "", goal: "" });
@@ -334,15 +429,13 @@ export default function StartLanding() {
             {/* Left: copy */}
             <div>
               <p className="text-xs sm:text-sm text-gray-500 tracking-[0.15em] uppercase mb-5 font-medium">
-                Personal training in San Jose &amp; South Bay
+                {theme.eyebrow}
               </p>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl text-[#1a1a1a] font-bold leading-[1.05] mb-6">
-                Train without breaking down.
+                {theme.headline}
               </h1>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
-                For busy professionals who want to feel strong, move well,
-                and stay that way for the long run. Mobility, strength for
-                longevity, and undoing what desk work does to your body.
+                {theme.subhead}
               </p>
 
               {/* Trust pills */}

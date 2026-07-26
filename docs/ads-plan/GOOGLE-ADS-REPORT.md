@@ -1,195 +1,149 @@
 # Sun FM — Google Ads Health Audit
 
-**Audit date:** 2026-06-13
+**Audit date:** 2026-07-27
 **Account ID:** 950-229-6068
-**Data window:** 2026-06-01 → 2026-06-13 (12 days)
-**Total spend:** $100.17
-**Total clicks:** 16
-**Total conversions:** 0
+**Data window:** 2026-06-01 → 2026-07-27 (57 days, all-time) + last-30-day cut for freshness
+**Total spend (all-time):** $1,822.04
+**Total spend (last 30d):** $1,216.10
+**Total conversions (all-time, Google's blended metric):** 5 — but only **4 are `form_submit_success`** (real booked consultations); the 5th is a phone call conversion, which per `ADS-STRATEGY.md` is explicitly not the tracked primary metric.
 
-> **Data limitation caveat.** Standard Google Ads audits expect ≥30 days of data + a non-zero conversion baseline. This account has 12 days and zero paid conversions. Findings below are split into two buckets:
->
-> - **Structurally evaluable** — settings, ad config, tracking setup, negatives, match types. These are reliable now.
-> - **Performance-dependent** — Quality Score, CVR, CPA, real wasted spend. These need at least 30 days + 30 conversions to score honestly. Flagged as "TOO EARLY" rather than guessed.
+> **Previous audit:** 2026-06-13, at day 12 ($100 spend, 0 conversions). Findings were split into structural (evaluable then) vs. performance-dependent (flagged "TOO EARLY"). This audit is 57 days in — the account has crossed the 30-day/30-click thresholds needed to score Quality Score and wasted spend honestly. **The headline: several structural quick wins from the last audit got done, but the real performance data that's now available reveals a serious problem the last audit couldn't see.**
 
 ---
 
 ## Health Score
 
 ```
-Google Ads Health Score: 70/100 (Grade: C)
+Google Ads Health Score: 60/100 (Grade: C, down from 70)
 
-Conversion Tracking: 70/100  ████████░░  (25%)
-Wasted Spend:        85/100  ██████████  (20%)
-Account Structure:   70/100  ███████░░░  (15%)
-Keywords:            75/100  █████░░░░░  (15%)
-Ads:                 40/100  ████░░░░░░  (15%)  ← BIGGEST DRAG
-Settings:            75/100  ██████████  (10%)
+Conversion Tracking: 72/100  ███████░░░  (25%)
+Wasted Spend:        45/100  ████░░░░░░  (20%)  ← NEW, was N/A
+Account Structure:   78/100  ████████░░  (15%)
+Keywords:            25/100  ██░░░░░░░░  (15%)  ← NEW, was N/A — BIGGEST DRAG
+Ads:                 72/100  ███████░░░  (15%)
+Settings:            70/100  ███████░░░  (10%)
 ```
 
-The structural foundation is solid. The two areas pulling the score down are **ad assets/extensions** (zero extensions account-wide, all ad strength Poor or Average) and **conversion measurement granularity** (only 1 of 5 conversion actions feeds Smart Bidding).
+The score dropped from 70 to 60 not because the account got structurally worse — it actually got better in several ways — but because the last audit's "TOO EARLY" placeholders for Wasted Spend and Keywords have now resolved into real numbers, and those numbers are bad. Structural fixes don't matter yet if the account isn't converting economically.
 
 ---
 
-## Conversion Tracking — 70/100
+## The headline number: true CAC is ~$455, not $100-150
 
-**What's set up:**
-- 5 conversion actions defined ✓
-- `sunfm-website (web) form_submit_success` — ENABLED, PRIMARY, included in conversions metric ✓
-- `sunfm-website (web) movement_screen_completed` — ENABLED, **NOT primary, NOT included** ⚠
-- `sunfm-website (web) close_convert_lead`, `qualify_lead`, `purchase` — all HIDDEN, not active ⚠
-- Attribution model: data-driven (all actions) ✓
-- gtag.js fires on form submissions (verified in code) ✓
+Filtering Google's blended "conversions" metric down to the actual target (`form_submit_success`, the booked-consultation event): **4 conversions on $1,822.04 spent = $455.51 per booked consultation.**
 
-**Gaps:**
-- **Movement screen completion isn't counted as a conversion.** Movement screen is your secondary funnel asset, but Smart Bidding gets no signal from it. Mark it as a **secondary conversion** (include in "All conversions" but not primary) so bidding can use it as a stronger lead signal without diluting the primary metric.
-- **Enhanced Conversions not verified.** Requires checking the gtag config — can't be confirmed via API alone.
-- **Consent Mode v2** — not in scope (US-only audience).
-- **Server-side tagging** — not implemented. Optional at this scale; nice-to-have when scaling past $5K/month spend.
+Your own `ADS-STRATEGY.md` decision gates say: *"Pause and reassess if 4 consecutive weeks with CAC above $300."* You're at 57 days with a CAC roughly 50% above even that reassessment trigger, and 3-4.5x the stated $100-150 target. All 4 form-submit conversions landed inside the last 30 days — the first ~4 weeks produced zero — so the trend is improving, but not fast enough to be on track for the month-3 target ($80-130 CAC).
 
-**Score reasoning:** Foundation is correct, but only one signal is feeding bidding. With 0 conversions in the first 12 days, every additional valid signal type matters.
+This isn't a tracking problem — the pipeline works end-to-end (4 real leads did get captured and attributed correctly). It's a Quality Score and landing page problem, detailed below, which is inflating CPCs and depressing conversion rate at the same time.
 
 ---
 
-## Wasted Spend — 85/100
+## What got fixed since the last audit (real progress)
 
-**Strong:**
-- All keywords are PHRASE or EXACT match (no untargeted BROAD) ✓
-- Account-level negative keyword shared list with **163 members** attached to both non-brand campaigns ✓
-- Brand and Non-Brand campaigns separated ✓
-- Geo targeting: PRESENCE (positive + negative) — only serves to people physically in target areas ✓
-- Search Partners + Display Network both OFF ✓
-- Search Terms Report reviewed; 4 competitor negatives added today (`2b fit cupertino`, `westca gym`, `evolution trainers`, `exercise coach willow glen`)
-
-**Gaps:**
-- **Duplicate orphaned shared negative list** — there are TWO lists both named "Sun FM Account Negatives" (159 members vs. 163 members). The 159-member one isn't attached to any campaign. Delete it to avoid future confusion.
-- **TOO EARLY:** real wasted-spend dollar value. With $100 spent and 0 conversions there's no profitability denominator yet.
+- **Extensions added.** Zero before, now: 4 sitelinks + 5-9 callouts + 1 structured snippet per campaign, plus an account-level call extension. This was the single biggest recommendation from June 13 and it's done.
+- **2nd RSA per ad group added.** Most ad groups now run 2-3 RSAs (old single RSA paused, replaced). This enables the variant testing that was structurally impossible before.
+- **RSA ad strength improved.** `AG_Mobility` and `AG_Over_40` both moved from POOR to GOOD. Account-wide: 6 GOOD, 18 AVERAGE, 3 POOR (was 0 GOOD / 8 AVERAGE / 4 POOR).
+- **Orphaned negative list deleted.** The duplicate 159-member "Sun FM Account Negatives" list is now REMOVED; only the 163-member active one remains.
+- **`movement_screen_completed` secondary conversion — still NOT done.** This was flagged as a 5-minute quick win on June 13 and is unchanged 6 weeks later: still `primary: False, include_in_conversions_metric: False`. Smart Bidding is still getting zero signal from your mid-funnel asset. This is the single easiest fix left on the list.
 
 ---
 
-## Account Structure — 70/100
+## NEW: Keywords — 25/100 (biggest problem, wasn't visible before)
 
-**Solid:**
-- 3 campaigns split by intent: Brand Defense / Non-Brand Location / Non-Brand Intent ✓
-- Non-Brand Location split into 6 ad groups by city (San Jose, Sunnyvale, Cupertino, Santa Clara, Mountain View, Other Cities) ✓
-- Non-Brand Intent split into 5 themed ad groups (Desk Worker Fix, Mobility, Return to Training, Over 40, Busy Professionals) ✓
-- Naming convention consistent: `AG_<Theme>` ✓
-- Each ad group has 5-10 keywords — tight thematic grouping ✓
+**Impression-weighted average Quality Score: 1.5** (out of 10). Of 35 keywords with any impressions in the last 30 days, 29 sit at QS 1-2, only 3 are at QS 5-6, none at 7+.
 
-**Gaps:**
-- **Only 1 RSA per ad group.** Google's published guidance is **2-3 RSAs per ad group** for split testing. With one RSA, you have no way to test alternate messaging variants — and Smart Bidding can't pick a winner. Adding a 2nd RSA per ad group is the single highest-leverage structural change.
+Breaking down the QS components across those 35 keywords tells you exactly why:
 
----
+| Component | Below Average | Average | Above Average |
+|---|---|---|---|
+| Landing page experience | **33 (94%)** | 2 | 0 |
+| Expected CTR | 32 (91%) | 3 | 0 |
+| Ad relevance | 19 (54%) | 12 | 4 |
 
-## Keywords — 75/100
+**Root cause, confirmed:** every single ad group across all 13 active groups — every city, every intent theme, brand and non-brand alike — points to the exact same final URL: `https://www.sunfm.fitness/start`. A search for "personal trainer sunnyvale" and a search for "chair exercises for seniors" land on an identical, generic page. Google's landing-page-experience signal explicitly penalizes this kind of one-size-fits-all mismatch, and it shows: 94% of your active keywords are marked Below Average on that exact component.
 
-**Working:**
-- Match type strategy: PHRASE for most, EXACT for highest-intent. No BROAD. ✓
-- Impression share on the active campaign: 44% (room to grow but healthy for week 2) ✓
-- No cannibalization between campaigns (Brand vs Non-Brand vs Intent split is clean) ✓
+This is very likely the single biggest lever in the account right now. Low QS directly inflates CPC (you're paying a premium for the same ad rank a well-matched page would get cheaper) and a generic page converts worse than one that mirrors the search intent back to the visitor.
 
-**TOO EARLY:**
-- Quality Score distribution — Google requires ~50 clicks per keyword before assigning a meaningful QS. Most keywords here have 0-2 clicks.
-- Per-keyword CVR — same reason.
-
-**One specific observation worth keeping:** `private personal trainer san jose` is showing a **17.4% CTR on 23 impressions** in the Non-Brand Location → San Jose ad group. That's well above the 6.66% PASS threshold. Don't change anything — just note that this keyword is a leading indicator of which messaging is resonating.
+**Recommendation:** this needs a real fix, not a quick one — either dynamic city/intent insertion on `/start` (headline or subhead that echoes the ad group theme) or a small set of themed landing variants (e.g. one for city-based groups, one for "over 40," one for "return to training") that all still funnel into the same booking form. Worth scoping as its own task rather than bolting on today.
 
 ---
 
-## Ads — 40/100  ← BIGGEST PROBLEM
+## NEW: Wasted Spend — 45/100 (was N/A, now real data)
 
-**The bad:**
+**61.2% of the last 30 days' search-term spend ($372.34 of $608.76) sits on terms with $10+ cost and zero conversions.** Well above the 20% FAIL threshold.
 
-| Campaign | Ad Group | Ad Strength |
-|---|---|---|
-| Brand Defense | AG_Brand_Exact | **POOR** |
-| Non-Brand Intent | AG_Desk_Worker_Fix | **POOR** |
-| Non-Brand Intent | AG_Mobility | **POOR** |
-| Non-Brand Intent | AG_Over_40 | **POOR** |
-| Non-Brand Intent | AG_Busy_Professionals | AVERAGE |
-| Non-Brand Intent | AG_Return_to_Training | AVERAGE |
-| Non-Brand Location | All 6 city ad groups | AVERAGE |
+Important nuance: most of this isn't junk traffic, it's low-sample-size noise on your actual target terms. `personal trainer san jose` (EXACT), `personal trainer santa clara` (EXACT), `personal training santa clara` (EXACT) — these are exactly the high-intent terms you want, just with too few clicks yet (2-7 clicks each) to expect a conversion by chance. Don't touch these.
 
-**Zero Good or Excellent ad strength across all 12 ad groups.** This directly affects ad rank and CPC.
+**What's worth acting on:**
 
-Headlines (14-15) and descriptions (4) are at recommended counts, so the issue isn't volume — it's likely:
-- Headlines too similar to each other (not enough variation in messaging angles)
-- Headlines don't include enough keyword themes from the ad group
-- Descriptions could use stronger CTAs and value props
-
-**The worse:**
-
-**Zero extensions configured account-wide.** Confirmed via API: no sitelinks, no callouts, no structured snippets, no call extensions, no business name/logo, no image extensions, no location extension.
-
-Extensions are free real estate — they typically lift CTR by 10-30% and significantly improve ad rank. This is the single biggest CTR-lift opportunity in the entire account.
-
-**Minimum extension targets:**
-
-| Type | Min count | Why |
-|---|---|---|
-| Sitelinks | 4-6 | Drive users to /tools/movement-screen, /start, /training, /about, /reviews |
-| Callouts | 4-6 | "12,000+ Sessions Coached", "San Jose Studio", "1-on-1 Personal Training", "Free Movement Screen" |
-| Structured Snippets | 1 | Header: "Services" → "Personal Training, Mobility Coaching, Strength Training, Movement Assessment" |
-| Call extension | 1 | Phone number (mobile lifts CTR sharply) |
-| Business name/logo | 1 each | Required by Google to get the "verified business" badge on ads |
-| Location extension | 1 | If GBP is verified, this surfaces the studio address |
+- **`sun functional movement` (EXACT, your own brand name)** — $27.97, 4 clicks, 0 conversions. Branded search should convert at your highest rate, not zero. With only 4 clicks this could be noise, but it's worth a manual check: does the `/start` page load correctly and fast for someone who already knows the business and just wants to book?
+- **`beast fitness san jose` (NEAR_PHRASE)** — $58.71, your single biggest wasted-spend line item. This reads like a competitor gym name (possibly "Beast Mode Fitness" or similar) bleeding into your Non-Brand Location / San Jose ad group via close-variant matching. Worth an exact-match negative if it's confirmed to be a different business.
+- **`chair exercises for seniors`, `senior exercise classes near me`** ($14.14, $14.06) — these describe group/seated fitness classes, a different service than 1:1 personal training. Candidates for phrase-match negatives on `AG_Senior_Strength` if you don't want to compete for that intent.
+- **`how can i build muscle after age 75 male`** ($14.00) — long informational query, low commercial intent. Low-severity, but a pattern worth watching if similar informational long-tail terms keep showing up.
 
 ---
 
-## Settings — 75/100
+## Account Structure — 78/100 (up from 70)
 
-**Solid:**
-- Bid strategy: MAXIMIZE_CONVERSIONS on all 3 ✓ (in principle)
-- Geo: PRESENCE ✓
-- Network: Google Search only — no Display, no Search Partners ✓
-- Budgets: $5 / $20 / $15 daily for Brand / Location / Intent — appropriate test sizes
-- Optimization scores: 75.9% (Brand), 53.2% (Location), 78.9% (Intent) — Google's own grades
+**Solid, confirmed unchanged:**
+- Brand/Non-Brand/Location split still clean, no keyword cannibalization
+- No Broad Match anywhere — still 100% Phrase/Exact
+- Search Partners + Display still OFF
 
-**Concern:**
-- **Maximize Conversions on a 0-conversion account doesn't work.** This is exactly why Non-Brand Intent has had 0 impressions in 36 hours. The algorithm has nothing to optimize toward. For the first 2-4 weeks of any new account, **Maximize Clicks** is structurally better — it gives Smart Bidding click-data to start learning on, and once you accumulate 15-30 paid conversions, you switch back to Maximize Conversions.
-- Decision point on Non-Brand Intent: switch to Maximize Clicks with $4 CPC cap if still 0 impressions tomorrow morning.
+**New since last audit:**
+- `AG_Senior_Strength` ad group added under Non-Brand Intent (6th intent theme, was 5) — reasonable thematic expansion, not scope creep
+- 2nd/3rd RSA per ad group now standard (see Ads section)
+
+**Open question — needs your input:**
+- **`Non-Brand Intent` campaign is currently PAUSED.** It spent $402.90 over the last 30 days with **zero conversions** before going inactive. I couldn't pull change history via the API to confirm exactly when or why it was paused (a GAQL field/date-range issue on my end, not something I could resolve in this pass). If you paused it intentionally because of the zero-conversion run, that's a defensible call — but it's also your Over 40 / Mobility / Senior Strength / Desk Worker Fix / Busy Professionals / Return to Training themes all going dark at once, which is a lot of your non-brand intent coverage to lose. Worth deciding deliberately rather than leaving it paused by default.
 
 ---
 
-## Quick Wins (priority-ordered by CTR/conversion impact)
+## Ads — 72/100 (up from 40)
 
-### Today (45 min total)
+RSA counts are solid across the board (12-15 headlines, 4 descriptions — both within Google's recommended range). Ad strength distribution improved meaningfully (see "what got fixed" above).
 
-1. **Add account-level extensions** (single biggest lift). Tools → Assets → +Asset:
-   - 6 sitelinks
-   - 6 callouts (specific number anchors are best — "12,000+ Sessions", "San Jose Studio", etc.)
-   - 1 structured snippet (Services header)
-   - Business name + logo
-   - Call extension (phone number)
-   - Location extension (link to verified GBP)
-2. **Mark `movement_screen_completed` as a secondary conversion** so Smart Bidding can use it. Goals → Conversions → edit action → "Include in 'Conversions'" → Secondary.
-3. **Delete the orphaned 159-member shared negative list.** Tools → Shared Library → Negative Keyword Lists → delete the unattached one.
+**One lingering issue:** `AG_Desk_Worker_Fix` still has a POOR-strength RSA actively enabled (alongside an AVERAGE one). This was one of the 4 POOR ad groups flagged in June and is the only one of the four that didn't get fixed.
 
-### Tomorrow morning (15 min)
+---
 
-4. **Decision on Non-Brand Intent:** if still 0 impressions, switch bid strategy to **Maximize Clicks** with $4 CPC cap.
-5. **Submit a test consultation** to verify `form_submit_success` actually fires the Google Ads conversion event. If it doesn't, every future conversion is invisible to bidding.
+## Settings — 70/100
 
-### This week (1-2 hr)
+**Confirmed via this pass:**
+- Sitelinks (4), callouts (5-9), structured snippet (1), call extension (1) — all now present, both at campaign and account level (see "what got fixed")
+- Bid strategy: MAXIMIZE_CONVERSIONS on all 3 campaigns — appropriate now that there's real conversion history, though with only 4-5 total conversions the algorithm is likely still deep in learning
+- Optimization scores: Brand 79.6%, Non-Brand Location 78.5% (Non-Brand Intent shows no score while paused)
 
-6. **Add a 2nd RSA per ad group.** Different angle / different CTA. This enables variant testing and gives Smart Bidding room to optimize.
-7. **Improve the POOR ad strength ad groups.** Focus on the 4 POOR ones first (Brand Defense, AG_Mobility, AG_Desk_Worker_Fix, AG_Over_40). Add 3-5 headlines per ad that lean harder into the specific ad group theme (e.g., AG_Mobility headlines should literally include the word "mobility" multiple times).
+**Still missing:**
+- Image extensions, business logo/name asset, location extension — none of these appeared in the account-level or campaign-level asset pull. These were on the original minimum-extension-target list and didn't make it in alongside sitelinks/callouts.
+- Geo targeting type (PRESENCE vs. PRESENCE_OR_INTEREST) — I wasn't able to re-verify this cleanly this pass (a query scoping issue on my end); worth a manual spot-check in Settings → Locations if you want it reconfirmed rather than assumed unchanged from June.
 
-### Day 14 — Saturday 2026-06-20
+---
 
-8. **Real performance review.** ~$200 spent, hopefully a few conversions, enough data to start judging keywords on more than CTR.
+## Priority-ordered action plan
 
-### Day 30 — Sunday 2026-07-05
+### This week (high impact, still cheap)
 
-9. **Smart Bidding exits learning.** Bid strategy decisions become meaningful here, not before.
+1. **Mark `movement_screen_completed` as a secondary conversion.** Still a 5-minute fix, still not done. Goals → Conversions → edit action → Secondary.
+2. **Decide on `Non-Brand Intent`.** Either resume it deliberately (it's most of your non-brand keyword coverage) or confirm you're comfortable running San Jose/Sunnyvale/Cupertino location-only for now. Don't leave it paused by accident.
+3. **Add exact-match negative for `beast fitness san jose`** (or the actual competitor name if different) if confirmed to be a different business — $58.71 single biggest line item.
+4. **Fix the `AG_Desk_Worker_Fix` POOR ad** — pause it or rework headlines; it's the last of the original 4 POOR ad groups still unresolved.
+
+### This month (bigger lift, biggest expected payoff)
+
+5. **Stop sending every ad group to the same generic `/start` page.** This is the actual root cause behind both the QS collapse and a meaningful chunk of the CAC problem. Doesn't need to be 13 separate pages — even a themed subset (city-based vs. "over 40" vs. "return to training") with dynamic headline text matching the ad group would move both landing-page-experience and ad-relevance QS components, which together account for the bulk of the 1.5 average score.
+6. **Add image extensions + business logo/name asset.** Quick relative to #5, still meaningful for CTR.
+7. **Spot-check the `sun functional movement` branded search experience.** Zero conversions on your own brand name over $27.97/4 clicks could be noise, but it's cheap to verify the page loads fast and correctly for someone who already trusts the business.
+
+### Ongoing
+
+8. **Re-run this audit again once `form_submit_success` count crosses ~15-20** — Smart Bidding needs volume in that range to meaningfully exit learning, and the QS picture should be re-checked once the landing page work (#5) ships to see if it actually moved the needle.
 
 ---
 
 ## What I'm NOT recommending yet (and why)
 
-- **Don't pause `best personal trainer san jose` despite the $18 CPC.** High-intent commercial query, sample size of 1 click too small to act on.
-- **Don't add new keywords.** Existing keyword set hasn't gathered enough data yet.
-- **Don't change daily budget by more than 20%.** Resets Smart Bidding learning.
-- **Don't add device/audience bid adjustments.** No performance data to base them on.
-- **Don't enable Search Partners or Display.** Lower-intent traffic; revisit at Month 3.
-- **Don't experiment with AI Max for Search.** Account is too new — needs the negative list scaled 3x and a working conversion baseline before AI Max is safe. Revisit after 60 days.
+- **Don't panic-pause Non-Brand Location.** It's the only campaign producing real conversions ($778/4 = $194.51 CAC in the last 30 days alone — better than the blended all-time number, and trending toward target).
+- **Don't add PMax or AI Max yet.** Per `ADS-STRATEGY.md`, both are gated on 30+ conversions of Search history. You have 4-5. Not close.
+- **Don't switch off Maximize Conversions.** With volume this low, Manual CPC wouldn't meaningfully outperform, and switching resets whatever learning has accumulated.
+- **Don't read too much into the individual high-intent zero-conversion search terms** (`personal trainer san jose`, `personal trainer santa clara`, etc). 2-7 clicks each is too small a sample to judge; these are your correct target terms.
