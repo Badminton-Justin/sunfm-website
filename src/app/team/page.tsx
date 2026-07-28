@@ -81,6 +81,11 @@ const personSchema = [
         credentialCategory: "degree",
         name: "B.S. Neurobiology, Physiology & Behavior",
       },
+      {
+        "@type": "EducationalOccupationalCredential",
+        credentialCategory: "certificate",
+        name: "CrossFit Level 1 Trainer (CF-L1)",
+      },
     ],
     knowsAbout: [
       "Functional Strength",
@@ -134,8 +139,8 @@ export default function TeamPage() {
     {
       name: "Crystal Sun",
       title: "Coach",
-      credentials: "B.S. Neurobiology, Physiology & Behavior — UC Davis",
-      bio: "My journey into fitness began through competitive gymnastics, and my degree in Neurobiology, Physiology, and Behavior from UC Davis gives me a strong foundation in how the body and mind work together. I apply that science practically — building programs that support physical progress and overall well-being, not just short-term results.\n\nHaving trained in a Division I athletic performance program, I understand what it takes to build for performance, resilience, and long-term health. Whether you're just starting out, returning after time away, or pushing your performance further, my goal is to create an environment where you feel supported and challenged.",
+      credentials: "B.S. Neurobiology, Physiology & Behavior — UC Davis | CF-L1 Trainer",
+      bio: "My journey into fitness began through competitive gymnastics, and my degree in Neurobiology, Physiology, and Behavior from UC Davis gives me a strong foundation in how the body and mind work together. I apply that science practically — building programs that support physical progress and overall well-being, not just short-term results.\n\nHaving trained in a Division I athletic performance program and earned my CrossFit Level 1 Trainer credential, I understand what it takes to build for performance, resilience, and long-term health. Whether you're just starting out, returning after time away, or pushing your performance further, my goal is to create an environment where you feel supported and challenged.",
       specialties: [
         "Functional Strength",
         "Mobility & Flexibility",
@@ -146,6 +151,7 @@ export default function TeamPage() {
       ],
       education: [
         "B.S. Neurobiology, Physiology & Behavior — UC Davis",
+        "CrossFit Level 1 Trainer (CF-L1)",
         "Division I Athletic Performance Program",
         "Competitive Gymnastics Background",
       ],
