@@ -115,29 +115,36 @@ RSA counts are solid across the board (12-15 headlines, 4 descriptions — both 
 - Optimization scores: Brand 79.6%, Non-Brand Location 78.5% (Non-Brand Intent shows no score while paused)
 
 **Still missing:**
-- Image extensions, business logo/name asset, location extension — none of these appeared in the account-level or campaign-level asset pull. These were on the original minimum-extension-target list and didn't make it in alongside sitelinks/callouts.
+- Image extensions — genuinely not found anywhere, including the raw `asset` table (no `MARKETING_IMAGE` type assets exist).
+- Location extension — **uncertain, not confirmed either way.** A "Business Profile" asset set (`type: LOCATION_SYNC`, `status: ENABLED`) exists at the account level, meaning GBP is linked — a real prerequisite. But `campaign_asset_set` (which would confirm it's applied to specific campaigns) returns zero rows, and unlike the Business Logo I have no UI screenshot confirming it's actually serving. **Worth a 10-second check: Google Ads → Assets → filter to "Location" → see if it shows Eligible/serving like Business Logo did.**
+- **Correction, 2026-07-27 (later same day):** Business Logo (`SunFM-Character.png`, added 2026-06-13, actively serving — 44 clicks / 681 impressions / $374.11 through this audit window) and Business Name **are already live**, confirmed by the user from the Ads UI after this report initially said they were missing. They're invisible to every GAQL resource that normally exposes asset links (`customer_asset`, `campaign_asset`, `asset_set_asset` all return nothing for this asset) — the raw asset exists (`asset.type = IMAGE`, `asset.name = SunFM-Character.png`) but whatever links it to "Business logo" at the account level isn't exposed through the API surface used in this audit. Likely tied to Google's newer Advertiser Identity system rather than classic extensions. **Lesson for future audits of this account: check the raw `asset` table for IMAGE-type assets before concluding logo/business-name are missing — the link tables can't be trusted for this specific asset type.**
 - Geo targeting type (PRESENCE vs. PRESENCE_OR_INTEREST) — I wasn't able to re-verify this cleanly this pass (a query scoping issue on my end); worth a manual spot-check in Settings → Locations if you want it reconfirmed rather than assumed unchanged from June.
 
 ---
 
 ## Priority-ordered action plan
 
-### This week (high impact, still cheap)
+### Update, 2026-07-27 (same day, post-audit follow-through)
 
-1. **Mark `movement_screen_completed` as a secondary conversion.** Still a 5-minute fix, still not done. Goals → Conversions → edit action → Secondary.
-2. **Decide on `Non-Brand Intent`.** Either resume it deliberately (it's most of your non-brand keyword coverage) or confirm you're comfortable running San Jose/Sunnyvale/Cupertino location-only for now. Don't leave it paused by accident.
-3. **Add exact-match negative for `beast fitness san jose`** (or the actual competitor name if different) if confirmed to be a different business — $58.71 single biggest line item.
-4. **Fix the `AG_Desk_Worker_Fix` POOR ad** — pause it or rework headlines; it's the last of the original 4 POOR ad groups still unresolved.
+- **DONE — Landing page personalization (#5 below) shipped and wired up.** `/start` now has an 11-variant theme map keyed by `?t=`; every non-brand ad group's Final URL was updated via the Ads API to point at its matching variant (verified via read-back). `AG_Brand_Exact` and `AG_PT_Other_Cities` intentionally left on the default page. See `src/app/start/StartLanding.tsx`.
+- **DONE — Negative keyword added.** Confirmed via web search that "Beast Fitness" is a real, separate personal training gym (4640 Meridian Ave, San Jose) — added `[beast fitness san jose]` (exact match) to the shared negative list.
+- **DONE — Paused the `AG_Desk_Worker_Fix` POOR ad.** Its headlines leaned generic rather than desk-worker-specific compared to the AVERAGE ad still running in the same group. Paused rather than rewritten, since new ad copy is a voice/content decision that should get human review before going live, not something to push through the API unreviewed.
+- **BLOCKED, needs manual action — `movement_screen_completed` secondary conversion.** The API returns `IMMUTABLE_FIELD` on `includeInConversionsMetric` for this conversion action (likely locked because it's GA4-imported). Do it manually: **Google Ads → Goals → Conversions → Summary → `movement_screen_completed` → Settings → "Include in 'Conversions'" → Secondary.**
+- **DECIDED — `Non-Brand Intent` stays paused for now.** Revisit once there's a read on how the personalized pages affect `Non-Brand Location` first.
 
-### This month (bigger lift, biggest expected payoff)
+### Still open
 
-5. **Stop sending every ad group to the same generic `/start` page.** This is the actual root cause behind both the QS collapse and a meaningful chunk of the CAC problem. Doesn't need to be 13 separate pages — even a themed subset (city-based vs. "over 40" vs. "return to training") with dynamic headline text matching the ad group would move both landing-page-experience and ad-relevance QS components, which together account for the bulk of the 1.5 average score.
-6. **Add image extensions + business logo/name asset.** Quick relative to #5, still meaningful for CTR.
-7. **Spot-check the `sun functional movement` branded search experience.** Zero conversions on your own brand name over $27.97/4 clicks could be noise, but it's cheap to verify the page loads fast and correctly for someone who already trusts the business.
+1. ~~Mark `movement_screen_completed` as a secondary conversion~~ — blocked on the API, needs the manual UI step above.
+2. ~~Decide on `Non-Brand Intent`~~ — decided, staying paused.
+3. ~~Add exact-match negative for `beast fitness san jose`~~ — done.
+4. ~~Fix the `AG_Desk_Worker_Fix` POOR ad~~ — done (paused).
+5. ~~Stop sending every ad group to the same generic `/start` page~~ — done, live.
+6. **Business logo/name — correction, not actually needed.** Both are already live and serving (see correction note above). The landscape logo I uploaded to the asset library (`public/images/logo-landscape-ads-4x1.png`, asset `customers/9502296068/assets/399472246842`) is unnecessary — it's sitting unlinked and harmless, safe to ignore or delete from Assets in the UI. **Image extensions** (marketing images, a separate thing from the logo) are still genuinely untouched — would need new photography/creative, not just a resize, and remain open if you want them.
+7. **Spot-check the `sun functional movement` branded search experience.** Still open, low effort, low urgency.
 
 ### Ongoing
 
-8. **Re-run this audit again once `form_submit_success` count crosses ~15-20** — Smart Bidding needs volume in that range to meaningfully exit learning, and the QS picture should be re-checked once the landing page work (#5) ships to see if it actually moved the needle.
+8. **Re-run this audit again once `form_submit_success` count crosses ~15-20**, and specifically re-check the keyword Quality Score numbers no sooner than ~1-2 weeks after 2026-07-27 — QS needs real post-change traffic to recompute, there's no faster way to verify whether the landing page fix actually worked.
 
 ---
 
