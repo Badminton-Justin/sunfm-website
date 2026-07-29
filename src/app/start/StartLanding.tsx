@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
 
 const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
@@ -357,6 +357,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       });
 
       if (response.ok) {
+        setEnhancedConversionUserData(formData.email, formData.phone);
         trackEvent("form_submit_success", {
           ...attribution,
           source: "start_page",

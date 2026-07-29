@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
 import { useReveal } from "@/hooks/useReveal";
 
@@ -102,6 +102,7 @@ export default function ApplicationForm() {
       });
 
       if (response.ok) {
+        setEnhancedConversionUserData(formData.email, formData.phone);
         trackEvent("form_submit_success", {
           ...attributionRef.current,
           landing_page: "/",

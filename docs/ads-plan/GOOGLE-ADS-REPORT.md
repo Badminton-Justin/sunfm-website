@@ -132,6 +132,16 @@ RSA counts are solid across the board (12-15 headlines, 4 descriptions — both 
 - **BLOCKED, needs manual action — `movement_screen_completed` secondary conversion.** The API returns `IMMUTABLE_FIELD` on `includeInConversionsMetric` for this conversion action (likely locked because it's GA4-imported). Do it manually: **Google Ads → Goals → Conversions → Summary → `movement_screen_completed` → Settings → "Include in 'Conversions'" → Secondary.**
 - **DECIDED — `Non-Brand Intent` stays paused for now.** Revisit once there's a read on how the personalized pages affect `Non-Brand Location` first.
 
+### Update, 2026-07-29 — Enhanced Conversions implemented (resolves original June 13 "not verified" item)
+
+Investigated a real case: Chirag's consultation request on 2026-07-23 had a `gclid` clearly present (confirmed in the email notification), but Google Ads recorded 0 conversions the entire week of 2026-07-20. Root cause: GA4 attributed that session to "Cross-network" rather than "Google / cpc" — its own cookie-based gclid matching failed for reasons that can't be fully diagnosed without real browser-level session data (privacy browser, ITP, ad blocker, etc. are all plausible, none confirmable from here). Since Google Ads only imports conversions GA4 attributes to the Google Ads channel, the conversion was never counted, meaning Smart Bidding never saw it either.
+
+**DONE — Enhanced Conversions for web implemented.** `src/lib/analytics.ts` now has `setEnhancedConversionUserData(email, phone)`, called immediately before `trackEvent("form_submit_success", ...)` in both `ApplicationForm.tsx` (homepage) and `StartLanding.tsx` (`/start`). Normalizes email (lowercase/trim) and phone (E.164), passes to `gtag('set', 'user_data', ...)` — Google's tag hashes it client-side before transmission, so this gives Ads a backup match signal (hashed email/phone against Google's own signed-in user data) for exactly the cases where gclid cookie-matching fails. Verified the compiled logic is correct (tested normalization against real inputs including Chirag's actual phone number) and confirmed via the built client bundle that the function is actually wired into both forms' submit paths, not just written and forgotten.
+
+**Remaining manual step:** GA4 also needs its Enhanced Conversions toggle enabled on the Google Ads link for this data to actually flow through. **GA4 Admin → Data display → Google Ads Links → your linked Ads account → confirm "Enhanced conversions" is on.** The code is ready either way; without this toggle nothing reaches Ads yet.
+
+**Implication:** if this gap has been happening regularly (not just Chirag), true CAC could be meaningfully better than the $455/conversion figure calculated in the main audit above — worth re-checking after a few weeks of Enhanced Conversions data.
+
 ### Still open
 
 1. ~~Mark `movement_screen_completed` as a secondary conversion~~ — blocked on the API, needs the manual UI step above.
@@ -139,8 +149,9 @@ RSA counts are solid across the board (12-15 headlines, 4 descriptions — both 
 3. ~~Add exact-match negative for `beast fitness san jose`~~ — done.
 4. ~~Fix the `AG_Desk_Worker_Fix` POOR ad~~ — done (paused).
 5. ~~Stop sending every ad group to the same generic `/start` page~~ — done, live.
-6. **Business logo/name — correction, not actually needed.** Both are already live and serving (see correction note above). The landscape logo I uploaded to the asset library (`public/images/logo-landscape-ads-4x1.png`, asset `customers/9502296068/assets/399472246842`) is unnecessary — it's sitting unlinked and harmless, safe to ignore or delete from Assets in the UI. **Image extensions** (marketing images, a separate thing from the logo) are still genuinely untouched — would need new photography/creative, not just a resize, and remain open if you want them.
-7. **Spot-check the `sun functional movement` branded search experience.** Still open, low effort, low urgency.
+6. ~~Enhanced Conversions~~ — done, code-side. Needs the GA4 Admin toggle confirmed (see above).
+7. **Business logo/name — correction, not actually needed.** Both are already live and serving (see correction note above). The landscape logo I uploaded to the asset library (`public/images/logo-landscape-ads-4x1.png`, asset `customers/9502296068/assets/399472246842`) is unnecessary — it's sitting unlinked and harmless, safe to ignore or delete from Assets in the UI. **Image extensions** (marketing images, a separate thing from the logo) are still genuinely untouched — would need new photography/creative, not just a resize, and remain open if you want them.
+8. **Spot-check the `sun functional movement` branded search experience.** Still open, low effort, low urgency.
 
 ### Ongoing
 
