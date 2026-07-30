@@ -17,7 +17,7 @@ This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it'
 
 ---
 
-## Blog clusters (37 posts as of 2026-07-26)
+## Blog clusters (38 posts as of 2026-07-30)
 
 ### 1. Desk-worker self-check cluster (16 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
 
@@ -67,6 +67,7 @@ No formal sub-clusters yet, but there's a natural "program design" thread (frequ
 
 - `mobility-vs-strength-training-why-you-need-both` (2026-07-23) — the connective-tissue post between this cluster and cluster 1 (the 16-post mobility-test cluster). Explains why mobility work and strength training are complementary, not competing, and how to run both without a separate mobility day. Added an inbound link from `functional-movement-exercises-for-desk-workers`; links out to `hip-mobility-test-at-home`, `ankle-mobility-test-at-home`, and `strength-training-for-longevity-beginners-guide-over-30`.
 - `pickleball-tennis-golf-injury-prevention-return-to-sport-after-40` (2026-07-26) — return-to-sport bridge for desk workers getting back into racquet sports and golf after years away. Distinct from cluster 1: sport-specific and pre-emptive (a rotational hip-shoulder-separation self-test) rather than symptom-driven pain-triage. Links out to `balance-test-at-home-single-leg-checks-over-40` and `hip-mobility-test-at-home`; added a reciprocal inbound link from the balance-test post's closing section.
+- `how-hard-should-you-be-training-rpe-self-test-after-30` (2026-07-30) — the programming-lever gap this cluster hadn't covered: how to self-regulate training intensity (reps in reserve / RPE) instead of guessing. A 4-question self-test scores recent workouts as too light, dialed in, or too hot, and ties misjudged effort directly to the injury patterns covered elsewhere in the cluster. Links out to `when-to-take-a-deload-week` and `injury-vs-soreness-when-to-train-through-pain-over-30`; added a reciprocal inbound link from `how-to-breathe-during-heavy-lifts`'s week-three progression step. Note for future audits: this cluster's posts have accumulated 5-10 internal links each by this point — when picking a reciprocal-link target, "least link-dense among thematically relevant options" is the realistic bar now, not an absolute low count.
 
 ### 3. Nutrition (3 posts)
 
