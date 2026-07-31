@@ -145,14 +145,19 @@ const TEXT_TESTIMONIALS = [
   { quote: "Before Jeff, I went to the gym once a week. After, I consistently go to the gym twice a week. My strength has gotten a lot better and my body has gotten a lot more toned.", name: "Karson", result: "Functional strength for life" },
 ];
 
-// Always resolves to the last day of the current month, so the banner
+// Always resolves to the next occurring 15th of a month, so the banner
 // carries a real, near-term deadline without needing a hardcoded date
 // that quietly expires and sits stale until someone happens to notice
-// (this has already happened twice with a fixed date).
-function getMonthEndDeadline(): string {
+// (this has already happened with a fixed date on this banner, and with
+// the "through June 30" / "through July 15" copy left stale in live
+// Google Ads descriptions for weeks — see the 2026-07-31 fix).
+function getRollingPromoDeadline(): string {
   const now = new Date();
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  return lastDay.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  const target =
+    now.getDate() <= 15
+      ? new Date(now.getFullYear(), now.getMonth(), 15)
+      : new Date(now.getFullYear(), now.getMonth() + 1, 15);
+  return target.toLocaleDateString("en-US", { month: "long", day: "numeric" });
 }
 
 function LaunchBanner() {
@@ -170,7 +175,7 @@ function LaunchBanner() {
     }
   };
 
-  const deadline = getMonthEndDeadline();
+  const deadline = getRollingPromoDeadline();
 
   return (
     <div className="bg-[#FFD140] text-[#1a1a1a]">
@@ -489,7 +494,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
               ) : (
                 <>
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
-                  <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Launch offer:</strong> Free home workout set with every new client signup through {getMonthEndDeadline()}.</p>
+                  <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Launch offer:</strong> Free home workout set with every new client signup through {getRollingPromoDeadline()}.</p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
