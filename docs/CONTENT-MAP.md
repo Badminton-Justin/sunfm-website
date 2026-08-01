@@ -17,7 +17,7 @@ This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it'
 
 ---
 
-## Blog clusters (38 posts as of 2026-07-30)
+## Blog clusters (39 posts as of 2026-08-01)
 
 ### 1. Desk-worker self-check cluster (16 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
 
@@ -47,7 +47,7 @@ This is the "at-home test, pass/borderline/fail, then drills" format. It's the s
 
 **Rule for this cluster:** a new post here needs a genuinely distinct joint/pattern AND a genuinely distinct angle (test vs. pain-triage vs. differential-diagnosis vs. pure-ROM) from all 15 existing ones, or it's a rewrite candidate, not a new post. Check sub-group 1b's pattern (2-3 tightly related posts, explicitly cross-linked) before adding a 4th shoulder-adjacent post — that's the size where a micro-cluster should get its cross-links written in, not discovered later. Ruled out as too overlapping in 2026-07 research: hip flexor tightness (already in hip-mobility-test), glute activation (already in knee-pain post), calf mobility (already in ankle-mobility-test), jaw/TMJ (wrong authority — dentist territory, not a trainer's lane), wrist mobility, postural breathing reset, desk ergonomics checklist, rowing habit, return to running, overhead press guide, pelvic floor + breathing, supplements for over-40 lifters. This cluster is now close to saturated across the whole kinetic chain (ankle, hip, thoracic spine, hamstring, core, grip, lumbar spine, balance, foot arch, shoulder x3, knee, neck, posture, SI-joint) — new posts are more likely to belong in cluster 2, 3, or 4 going forward.
 
-### 2. Strength training fundamentals / programming (13 posts)
+### 2. Strength training fundamentals / programming (17 posts — subheading count was stale at "13" until 2026-08-01, corrected)
 
 - `strength-training-for-longevity-beginners-guide-over-30` — the entry point/pillar for this group
 - `how-often-should-you-strength-train-after-30`
@@ -68,6 +68,7 @@ No formal sub-clusters yet, but there's a natural "program design" thread (frequ
 - `mobility-vs-strength-training-why-you-need-both` (2026-07-23) — the connective-tissue post between this cluster and cluster 1 (the 16-post mobility-test cluster). Explains why mobility work and strength training are complementary, not competing, and how to run both without a separate mobility day. Added an inbound link from `functional-movement-exercises-for-desk-workers`; links out to `hip-mobility-test-at-home`, `ankle-mobility-test-at-home`, and `strength-training-for-longevity-beginners-guide-over-30`.
 - `pickleball-tennis-golf-injury-prevention-return-to-sport-after-40` (2026-07-26) — return-to-sport bridge for desk workers getting back into racquet sports and golf after years away. Distinct from cluster 1: sport-specific and pre-emptive (a rotational hip-shoulder-separation self-test) rather than symptom-driven pain-triage. Links out to `balance-test-at-home-single-leg-checks-over-40` and `hip-mobility-test-at-home`; added a reciprocal inbound link from the balance-test post's closing section.
 - `how-hard-should-you-be-training-rpe-self-test-after-30` (2026-07-30) — the programming-lever gap this cluster hadn't covered: how to self-regulate training intensity (reps in reserve / RPE) instead of guessing. A 4-question self-test scores recent workouts as too light, dialed in, or too hot, and ties misjudged effort directly to the injury patterns covered elsewhere in the cluster. Links out to `when-to-take-a-deload-week` and `injury-vs-soreness-when-to-train-through-pain-over-30`; added a reciprocal inbound link from `how-to-breathe-during-heavy-lifts`'s week-three progression step. Note for future audits: this cluster's posts have accumulated 5-10 internal links each by this point — when picking a reciprocal-link target, "least link-dense among thematically relevant options" is the realistic bar now, not an absolute low count.
+- `training-around-a-chronic-injury-that-never-fully-healed` (2026-08-01) — fills the gap between `injury-vs-soreness-when-to-train-through-pain-over-30` (week-one triage) and `personal-trainer-for-injury-recovery-bridge-from-physical-therapy` (formal PT discharge): the population that had neither, just an old ache that quietly stuck around for years. Covers compensation-pattern mechanics, a flare-up/compensation/new-problem self-check, a "load map" framework (load directly / load around / leave alone), and a 4-week reintroduction template. Links out to `injury-vs-soreness-when-to-train-through-pain-over-30` and `personal-trainer-for-injury-recovery-bridge-from-physical-therapy`; added a reciprocal inbound link from the PT-bridge post's closing section, alongside its existing branches to the injury-vs-soreness and return-after-a-break posts.
 
 ### 3. Nutrition (3 posts)
 
