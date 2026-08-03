@@ -2,6 +2,7 @@
 
 import type { Appointment, Trainer } from "@/lib/supabase/types";
 import { isSameDay, monthGridDays } from "@/lib/portal/date-utils";
+import { compactClientName } from "@/lib/portal/client-display";
 
 interface MonthViewProps {
   anchorDate: Date;
@@ -87,7 +88,7 @@ export function MonthView({
                       hour: "numeric",
                       minute: "2-digit",
                     })}{" "}
-                    {appt.client_name}
+                    {compactClientName(appt.client_name)}
                   </div>
                 ))}
                 {overflow > 0 && (

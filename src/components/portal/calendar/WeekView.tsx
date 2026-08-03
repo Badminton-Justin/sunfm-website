@@ -2,6 +2,7 @@
 
 import type { Appointment, Trainer } from "@/lib/supabase/types";
 import { addDays, isSameDay, startOfWeek } from "@/lib/portal/date-utils";
+import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
 import {
   HEADER_HEIGHT,
@@ -110,7 +111,9 @@ export function WeekView({
                 key={day.toISOString()}
                 className="relative border-r border-black/[0.06] last:border-r-0"
                 style={{
-                  backgroundImage: `repeating-linear-gradient(to bottom, rgba(26,26,26,0.07) 0, rgba(26,26,26,0.07) 1px, transparent 1px, transparent calc(100% / ${TOTAL_HOURS}))`,
+                  // No line at 0% — the header row's own bottom border already
+                  // marks the top edge, so a line there just doubles it up.
+                  backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent calc(100% / ${TOTAL_HOURS} - 1px), rgba(26,26,26,0.07) calc(100% / ${TOTAL_HOURS} - 1px), rgba(26,26,26,0.07) calc(100% / ${TOTAL_HOURS}))`,
                 }}
               >
                 {laidOut.map(({ item, lane, laneCount }) => {
@@ -142,7 +145,7 @@ export function WeekView({
                           canceled ? "text-black/50 line-through" : "text-white"
                         }`}
                       >
-                        {item.appt.client_name}
+                        {compactClientName(item.appt.client_name)}
                       </p>
                     </button>
                   );

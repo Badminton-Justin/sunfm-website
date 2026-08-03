@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Appointment, Trainer, TrainerAvailability } from "@/lib/supabase/types";
 import { addDays, addMonths, formatPeriodLabel } from "@/lib/portal/date-utils";
 import { buildTrainerColorMap } from "./colors";
@@ -32,6 +33,7 @@ export function CalendarClient({
   initialAppointments,
   availability,
 }: CalendarClientProps) {
+  const router = useRouter();
   const [appointments, setAppointments] = useState(initialAppointments);
   const [view, setView] = useState<ViewMode>("day");
   const [anchorDate, setAnchorDate] = useState(() => new Date());
@@ -41,6 +43,23 @@ export function CalendarClient({
   const [modalValues, setModalValues] = useState<AppointmentFormValues | null>(
     null
   );
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // initialAppointments only changes when router.refresh() re-runs the
+  // server component with fresh data (e.g. after "Sync now") — pick that up.
+  useEffect(() => {
+    setAppointments(initialAppointments);
+    setIsSyncing(false);
+  }, [initialAppointments]);
+
+  const handleSyncNow = async () => {
+    setIsSyncing(true);
+    try {
+      await fetch("/api/portal/google/sync-now", { method: "POST" });
+    } finally {
+      router.refresh();
+    }
+  };
 
   const isOwner = currentTrainer.role === "owner";
   const trainerColorMap = useMemo(() => buildTrainerColorMap(trainers), [trainers]);
@@ -154,17 +173,6 @@ export function CalendarClient({
     }
   };
 
-  const handleDeleteAppointment = async () => {
-    if (!modalValues?.id) return;
-    const res = await fetch(`/api/portal/appointments/${modalValues.id}`, {
-      method: "DELETE",
-    });
-    if (res.ok) {
-      setAppointments((prev) => prev.filter((a) => a.id !== modalValues.id));
-      setModalValues(null);
-    }
-  };
-
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
@@ -212,6 +220,30 @@ export function CalendarClient({
               </button>
             ))}
           </div>
+          <button
+            onClick={handleSyncNow}
+            disabled={isSyncing}
+            aria-label="Sync now"
+            title="Sync now"
+            className="w-9 h-9 rounded-full border border-black/10 flex items-center justify-center text-black/50 hover:text-black hover:bg-black/5 transition-colors disabled:opacity-50"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={isSyncing ? "animate-spin" : ""}
+            >
+              <path d="M3 12a9 9 0 0 1 15.36-6.36L21 8" />
+              <path d="M21 3v5h-5" />
+              <path d="M21 12a9 9 0 0 1-15.36 6.36L3 16" />
+              <path d="M3 21v-5h5" />
+            </svg>
+          </button>
           <button onClick={openCreateDefault} className="btn-primary text-sm !py-2.5">
             + New appointment
           </button>
@@ -285,9 +317,6 @@ export function CalendarClient({
           onSave={handleSave}
           onCancelAppointment={
             modalValues.id ? handleCancelAppointment : undefined
-          }
-          onDeleteAppointment={
-            modalValues.id ? handleDeleteAppointment : undefined
           }
           onClose={() => setModalValues(null)}
         />

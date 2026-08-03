@@ -16,11 +16,10 @@ interface AppointmentModalProps {
   initial: AppointmentFormValues;
   trainers: Trainer[];
   canPickTrainer: boolean;
-  canManage: boolean; // owner, or this trainer's own appointment — gates cancel/delete
+  canManage: boolean; // owner, or this trainer's own appointment — gates cancel
   isCanceled?: boolean;
   onSave: (values: AppointmentFormValues) => Promise<string | null>; // returns error message, or null on success
   onCancelAppointment?: () => Promise<void>;
-  onDeleteAppointment?: () => Promise<void>;
   onClose: () => void;
 }
 
@@ -32,14 +31,12 @@ export function AppointmentModal({
   isCanceled,
   onSave,
   onCancelAppointment,
-  onDeleteAppointment,
   onClose,
 }: AppointmentModalProps) {
   const [form, setForm] = useState(initial);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,17 +49,10 @@ export function AppointmentModal({
 
   const handleCancelAppointment = async () => {
     if (!onCancelAppointment) return;
+    if (!confirm(`Cancel the appointment with ${form.client_name}?`)) return;
     setIsCanceling(true);
     await onCancelAppointment();
     setIsCanceling(false);
-  };
-
-  const handleDelete = async () => {
-    if (!onDeleteAppointment) return;
-    if (!confirm(`Delete the appointment with ${form.client_name}?`)) return;
-    setIsDeleting(true);
-    await onDeleteAppointment();
-    setIsDeleting(false);
   };
 
   return (
@@ -163,28 +153,16 @@ export function AppointmentModal({
             </button>
           </div>
 
-          {form.id && canManage && (
-            <div className="flex gap-3 pt-3 border-t border-black/[0.06]">
-              {!isCanceled && onCancelAppointment && (
-                <button
-                  type="button"
-                  onClick={handleCancelAppointment}
-                  disabled={isCanceling}
-                  className="flex-1 text-sm font-medium text-black/50 hover:text-black transition-colors disabled:opacity-50"
-                >
-                  {isCanceling ? "Canceling…" : "Cancel appointment"}
-                </button>
-              )}
-              {onDeleteAppointment && (
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="flex-1 text-sm font-medium text-[#CB4538]/70 hover:text-[#CB4538] transition-colors disabled:opacity-50"
-                >
-                  {isDeleting ? "Deleting…" : "Delete"}
-                </button>
-              )}
+          {form.id && canManage && !isCanceled && onCancelAppointment && (
+            <div className="flex pt-3 border-t border-black/[0.06]">
+              <button
+                type="button"
+                onClick={handleCancelAppointment}
+                disabled={isCanceling}
+                className="flex-1 text-sm font-medium text-[#CB4538]/70 hover:text-[#CB4538] transition-colors disabled:opacity-50"
+              >
+                {isCanceling ? "Canceling…" : "Cancel appointment"}
+              </button>
             </div>
           )}
         </form>

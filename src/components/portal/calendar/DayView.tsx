@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Appointment, Trainer, TrainerAvailability } from "@/lib/supabase/types";
 import { isSameDay } from "@/lib/portal/date-utils";
+import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
 import {
   GRID_HEIGHT,
@@ -135,10 +136,10 @@ export function DayView({
                   className={`relative ${editable ? "cursor-pointer" : ""}`}
                   style={{
                     height: GRID_HEIGHT,
+                    // No line at 0 — the header row's own bottom border
+                    // already marks the top edge, a line there doubles it up.
                     backgroundImage:
-                      "repeating-linear-gradient(to bottom, rgba(26,26,26,0.07) 0, rgba(26,26,26,0.07) 1px, transparent 1px, transparent " +
-                      PX_PER_HOUR +
-                      "px)",
+                      `repeating-linear-gradient(to bottom, transparent 0, transparent ${PX_PER_HOUR - 1}px, rgba(26,26,26,0.07) ${PX_PER_HOUR - 1}px, rgba(26,26,26,0.07) ${PX_PER_HOUR}px)`,
                   }}
                   onClick={(e) => handleColumnClick(e, t.id)}
                 >
@@ -196,7 +197,7 @@ export function DayView({
                             canceled ? "text-black/50 line-through" : "text-white"
                           }`}
                         >
-                          {item.appt.client_name}
+                          {compactClientName(item.appt.client_name)}
                         </p>
                         {height > 32 && (
                           <p
