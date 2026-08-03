@@ -1,21 +1,36 @@
 import { SUNFM_CALENDAR_NAME, webhookUrl } from "./config";
 
 const API_BASE = "https://www.googleapis.com/calendar/v3";
+const REQUEST_TIMEOUT_MS = 10_000;
 
+// A single hanging Google API call (network stall, etc.) must not be able
+// to hang the whole function for minutes — fail fast with a clear error
+// instead of waiting on the platform's own gateway timeout to notice.
 async function googleFetch(
   accessToken: string,
   path: string,
   init?: RequestInit
 ) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...init,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-      ...init?.headers,
-    },
-  });
-  return res;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(`${API_BASE}${path}`, {
+      ...init,
+      signal: controller.signal,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        ...init?.headers,
+      },
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error(`Google API request timed out after ${REQUEST_TIMEOUT_MS}ms: ${path}`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export interface GoogleEvent {
@@ -60,6 +75,11 @@ interface EventsPage {
   syncTokenInvalid?: boolean;
 }
 
+// Generous, but a hard ceiling so a pagination bug can never turn into a
+// runaway loop (a real incident: resending syncToken alongside pageToken on
+// later pages confused the API into never terminating cleanly).
+const MAX_PAGES = 5;
+
 async function listEventsPaged(
   accessToken: string,
   calendarId: string,
@@ -68,11 +88,11 @@ async function listEventsPaged(
   const items: GoogleEvent[] = [];
   let pageToken: string | undefined;
 
-  for (;;) {
-    const query = new URLSearchParams({
-      ...params,
-      ...(pageToken ? { pageToken } : {}),
-    });
+  for (let page = 0; page < MAX_PAGES; page++) {
+    // pageToken is a complete continuation cursor on its own — Google's API
+    // doesn't expect (and may misbehave with) the original filters like
+    // syncToken/timeMin repeated alongside it on later pages.
+    const query = new URLSearchParams(pageToken ? { pageToken } : params);
     const res = await googleFetch(
       accessToken,
       `/calendars/${encodeURIComponent(calendarId)}/events?${query}`
@@ -85,15 +105,16 @@ async function listEventsPaged(
       throw new Error(`events.list failed: ${await res.text()}`);
     }
 
-    const page = await res.json();
-    items.push(...(page.items ?? []));
+    const body = await res.json();
+    items.push(...(body.items ?? []));
 
-    if (page.nextPageToken) {
-      pageToken = page.nextPageToken;
-      continue;
+    if (!body.nextPageToken) {
+      return { items, nextSyncToken: body.nextSyncToken };
     }
-    return { items, nextSyncToken: page.nextSyncToken };
+    pageToken = body.nextPageToken;
   }
+
+  throw new Error(`events.list exceeded ${MAX_PAGES} pages — aborting`);
 }
 
 // Initial sync: bootstrap a sync token, scoped to events from `timeMin`
@@ -122,6 +143,7 @@ export function listEventsIncremental(
   return listEventsPaged(accessToken, calendarId, {
     singleEvents: "true",
     syncToken,
+    maxResults: "250",
   });
 }
 
