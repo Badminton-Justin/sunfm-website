@@ -1,21 +1,15 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import {
-  getConnection,
-  pullChangesFromGoogle,
-  pushUnsyncedAppointments,
-  renewWatchChannelIfNeeded,
-} from "@/lib/google/sync";
+import { createServiceClient } from "@/lib/supabase/service";
+import { getConnection, runFullSync } from "@/lib/google/sync";
 
-// Processes events one at a time (a Google API call + a DB write each), so
-// a calendar with a few dozen events can take longer than the default 10s
-// serverless timeout — extend it rather than risk the function getting
-// killed mid-sync.
+// A full sync makes a handful of Google API calls and batched DB writes, so
+// give it real headroom rather than the default 10s serverless timeout.
 export const maxDuration = 60;
 
-// Manual "sync now" — pulls the current trainer's Google Calendar changes
-// immediately rather than waiting on the webhook/daily cron. No-op (not an
-// error) if this trainer hasn't connected a Google Calendar.
+// Manual "sync now" — reconciles the current trainer's calendar immediately
+// rather than waiting on the webhook/daily cron. No-op (not an error) if this
+// trainer hasn't connected a Google Calendar.
 export async function POST() {
   const supabase = await createClient();
   const {
@@ -26,19 +20,22 @@ export async function POST() {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const connection = await getConnection(supabase, user.id);
+  // Authenticate against the caller's session, then do the sync work with the
+  // service client: RLS on google_calendar_connections is self-only and the
+  // pending-deletions bookkeeping is server-only. Scoped to user.id
+  // throughout, so this grants no access beyond the caller's own calendar.
+  const service = createServiceClient();
+  const connection = await getConnection(service, user.id);
   if (!connection) {
     return NextResponse.json({ synced: false, reason: "not_connected" });
   }
 
   try {
-    const pullSummary = await pullChangesFromGoogle(supabase, connection);
-    await pushUnsyncedAppointments(supabase, user.id);
-    // Self-heal: if the webhook subscription was never registered (e.g. the
-    // original connect got cut off before reaching this step) or has gone
-    // stale, this quietly (re)establishes it.
-    await renewWatchChannelIfNeeded(supabase, connection);
-    return NextResponse.json({ synced: true, pull: pullSummary });
+    // runFullSync also (re)registers the webhook subscription if it was never
+    // established — e.g. the original connect got cut off before that step —
+    // or has gone stale, so this doubles as a self-heal.
+    const summary = await runFullSync(service, connection);
+    return NextResponse.json({ synced: true, ...summary });
   } catch (err) {
     console.error("Manual sync-now failed", err);
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });

@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { deleteAppointmentFromGoogle, pushAppointmentToGoogle } from "@/lib/google/sync";
 import type { Appointment } from "@/lib/supabase/types";
+
+// Both handlers wait on a Google API call (capped at 10s on its own), so the
+// platform default leaves no headroom.
+export const maxDuration = 30;
 
 export async function PATCH(
   request: Request,
@@ -52,7 +57,9 @@ export async function PATCH(
   }
 
   try {
-    await pushAppointmentToGoogle(supabase, data as Appointment);
+    // Service client — see the note in ../route.ts. The row stays flagged
+    // google_push_pending if this fails, so the retry sweep will catch it.
+    await pushAppointmentToGoogle(createServiceClient(), data as Appointment);
   } catch (err) {
     console.error("Push to Google Calendar failed", err);
   }
@@ -90,7 +97,14 @@ export async function DELETE(
 
   if (existing) {
     try {
-      await deleteAppointmentFromGoogle(supabase, existing as Appointment);
+      // Service client, and durable: the local row is already gone, so a
+      // failed delete has nothing left to carry a retry flag. The queue in
+      // google_pending_deletions is what stops the orphaned Google event
+      // from being re-imported as a new appointment on the next full sync.
+      await deleteAppointmentFromGoogle(
+        createServiceClient(),
+        existing as Appointment
+      );
     } catch (err) {
       console.error("Delete from Google Calendar failed", err);
     }

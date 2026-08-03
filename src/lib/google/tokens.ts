@@ -28,5 +28,12 @@ export async function getValidAccessToken(
     })
     .eq("trainer_id", connection.trainer_id);
 
+  // Keep the caller's in-memory copy in step with what we just persisted.
+  // A single sync run threads one connection object through several helpers
+  // (pull, then push, then channel renewal); without this every one of them
+  // sees the original stale expiry and burns another refresh round-trip.
+  connection.access_token = refreshed.access_token;
+  connection.access_token_expires_at = newExpiresAt;
+
   return refreshed.access_token;
 }

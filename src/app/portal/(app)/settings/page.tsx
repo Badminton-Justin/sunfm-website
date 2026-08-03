@@ -3,7 +3,11 @@ import { requireTrainer } from "@/lib/supabase/trainer";
 import { GoogleCalendarConnect } from "@/components/portal/GoogleCalendarConnect";
 
 interface SettingsPageProps {
-  searchParams: Promise<{ google_connected?: string; google_error?: string }>;
+  searchParams: Promise<{
+    google_connected?: string;
+    google_error?: string;
+    google_warning?: string;
+  }>;
 }
 
 export default async function SettingsPage({ searchParams }: SettingsPageProps) {
@@ -25,6 +29,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         isConnected={!!connection}
         justConnected={params.google_connected === "1"}
         connectError={params.google_error}
+        connectWarning={params.google_warning}
       />
     </div>
   );
