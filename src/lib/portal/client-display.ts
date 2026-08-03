@@ -33,3 +33,34 @@ export function appointmentTypeFromName(
   const type = match[1].trim().toLowerCase();
   return type === "session" || type === "consultation" ? type : null;
 }
+
+export type AppointmentType = "session" | "consultation";
+
+const TYPE_LABELS: Record<AppointmentType, string> = {
+  session: "Session",
+  consultation: "Consultation",
+};
+
+// Splits a stored client_name into its recognized type + the plain name,
+// for populating the Session/Consultation toggle in the appointment form.
+// Falls back to session + the name as-is if there's no recognized prefix.
+export function parseAppointmentName(name: string): {
+  type: AppointmentType;
+  name: string;
+} {
+  const match = name.match(/^\[([^\]]*)\]\s*(.*)$/);
+  if (match) {
+    const type = match[1].trim().toLowerCase();
+    const rest = match[2].trim();
+    if ((type === "session" || type === "consultation") && rest) {
+      return { type, name: rest };
+    }
+  }
+  return { type: "session", name };
+}
+
+// Inverse of parseAppointmentName — builds the stored client_name from the
+// form's type toggle + plain name.
+export function buildAppointmentName(type: AppointmentType, name: string) {
+  return `[${TYPE_LABELS[type]}] ${name.trim()}`;
+}

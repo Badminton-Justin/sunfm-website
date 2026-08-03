@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Trainer, TrainerAvailability } from "@/lib/supabase/types";
+import { Select } from "@/components/portal/Select";
 
 interface AvailabilityClientProps {
   currentTrainer: Trainer;
@@ -97,17 +98,18 @@ export function AvailabilityClient({
       {isOwner && (
         <div className="mb-8">
           <label className="portal-kicker block mb-1.5">Trainer</label>
-          <select
-            value={selectedTrainerId}
-            onChange={(e) => setSelectedTrainerId(e.target.value)}
-            className="px-3 py-2.5 rounded-xl border border-black/10 bg-[#FDFCF8] focus:outline-none focus:border-[#CB4538] transition-colors"
-          >
-            {trainers.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
+          <div className="max-w-xs">
+            <Select
+              value={selectedTrainerId}
+              onChange={(e) => setSelectedTrainerId(e.target.value)}
+            >
+              {trainers.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </Select>
+          </div>
         </div>
       )}
 
@@ -153,19 +155,18 @@ export function AvailabilityClient({
       <div className="bg-[#FDFCF8] rounded-2xl border border-black/[0.06] shadow-[0_1px_2px_rgba(26,26,26,0.04)] p-5 max-w-lg">
         <div className="portal-ledger-heading mb-4">Add a Weekly Window</div>
         <form onSubmit={handleAdd} className="flex flex-wrap items-end gap-3">
-          <div>
+          <div className="w-40">
             <label className="portal-kicker block mb-1.5">Day</label>
-            <select
+            <Select
               value={dayOfWeek}
               onChange={(e) => setDayOfWeek(Number(e.target.value))}
-              className="px-3 py-2.5 rounded-xl border border-black/10 bg-white focus:outline-none focus:border-[#CB4538] transition-colors"
             >
               {DAYS.map((day, idx) => (
                 <option key={day} value={idx}>
                   {day}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <div>
             <label className="portal-kicker block mb-1.5">Start</label>
