@@ -199,7 +199,16 @@ export async function pullChangesFromGoogle(
     }
   }
 
-  if (page.nextSyncToken) {
+  // Only advance the checkpoint if the batch was empty (nothing to lose) or
+  // at least one event actually got written. A 100%-failed batch is a sign
+  // of something systemic (not one bad event) — saving the token in that
+  // case would tell Google "we're caught up" on data we never actually
+  // persisted, silently losing the whole batch with no way to recover it on
+  // the next sync (this is exactly what happened here: a full batch failed
+  // to write, but the token still advanced, so subsequent syncs correctly
+  // reported "nothing new" while the local table stayed empty).
+  const shouldAdvanceToken = page.items.length === 0 || applied > 0;
+  if (page.nextSyncToken && shouldAdvanceToken) {
     await supabase
       .from("google_calendar_connections")
       .update({ sync_token: page.nextSyncToken })
