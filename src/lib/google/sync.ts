@@ -477,6 +477,23 @@ async function applyGoogleEvents(
       continue;
     }
 
+    // An unexpanded recurring master describes a rule, not a session: its
+    // start is the series' DTSTART, so writing it books a phantom
+    // appointment on that date and silently stands in for every real
+    // instance of the series. We always ask for singleEvents=true, so this
+    // should be unreachable — but it reached production once by way of a
+    // pagination bug that dropped the flag, and the corruption was invisible
+    // until someone compared the two calendars by eye. Refuse loudly instead.
+    if (event.recurrence?.length) {
+      console.error(
+        "Refusing unexpanded recurring master from Google — singleEvents expansion was lost",
+        event.id
+      );
+      result.errors.push(`${event.id}: unexpanded recurring master, skipped`);
+      result.skipped++;
+      continue;
+    }
+
     // All-day events (date-only, no dateTime) don't map cleanly onto a
     // session's start/end — skip them rather than guessing a time range.
     if (!event.start?.dateTime || !event.end?.dateTime) {
