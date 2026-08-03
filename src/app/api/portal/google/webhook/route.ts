@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { pullChangesFromGoogle } from "@/lib/google/sync";
 
+export const maxDuration = 60;
+
 // Google's push notifications carry no body — everything we need is in
 // headers. "sync" is the handshake fired right after events.watch is
 // registered and has no real change to process; anything else means "go

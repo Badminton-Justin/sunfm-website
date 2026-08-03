@@ -6,6 +6,10 @@ import {
   renewWatchChannelIfNeeded,
 } from "@/lib/google/sync";
 
+// Iterates every connected trainer's calendar sequentially — give it real
+// headroom rather than the default 10s timeout.
+export const maxDuration = 60;
+
 // Daily safety net: Vercel's automatic push-notification renewal happens on
 // connect, but channels expire (~7 days) and a webhook ping can be missed —
 // this re-syncs every connected trainer and renews channels nearing expiry.

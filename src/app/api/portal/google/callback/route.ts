@@ -7,6 +7,13 @@ import { getConnection, performInitialSync } from "@/lib/google/sync";
 
 const STATE_COOKIE = "google_oauth_state";
 
+// performInitialSync pushes existing appointments, pulls the whole calendar,
+// and registers the webhook — sequentially, one event at a time. On a
+// calendar with real history this can run past the default 10s timeout,
+// which would kill the function before registerWatchChannel ever runs
+// (leaving no working webhook at all, silently).
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const settingsUrl = new URL("/portal/settings", request.url);
