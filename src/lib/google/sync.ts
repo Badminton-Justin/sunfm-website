@@ -110,19 +110,12 @@ async function applyGoogleEventToLocal(
   trainerId: string,
   event: GoogleEvent
 ) {
-  const { data: existing } = await supabase
-    .from("appointments")
-    .select("*")
-    .eq("google_event_id", event.id)
-    .maybeSingle();
-
   if (event.status === "cancelled") {
-    if (existing && existing.status !== "canceled") {
-      await supabase
-        .from("appointments")
-        .update({ status: "canceled", google_synced_at: new Date().toISOString() })
-        .eq("id", existing.id);
-    }
+    await supabase
+      .from("appointments")
+      .update({ status: "canceled", google_synced_at: new Date().toISOString() })
+      .eq("google_event_id", event.id)
+      .neq("status", "canceled");
     return;
   }
 
@@ -141,11 +134,16 @@ async function applyGoogleEventToLocal(
     google_synced_at: new Date().toISOString(),
   };
 
-  if (existing) {
-    await supabase.from("appointments").update(fields).eq("id", existing.id);
-  } else {
-    await supabase.from("appointments").insert(fields);
-  }
+  // Atomic upsert on the google_event_id unique constraint — a plain
+  // check-then-insert-or-update here is exactly the kind of thing that
+  // races and duplicates rows when two sync runs overlap (which is exactly
+  // what happened: a request stuck behind the earlier pagination bug kept
+  // running server-side after the client gave up and got a 504, racing the
+  // next "Sync now" click).
+  const { error } = await supabase
+    .from("appointments")
+    .upsert(fields, { onConflict: "google_event_id" });
+  if (error) throw error;
 }
 
 // Pulls changes from Google (incremental via stored sync_token, or a fresh
