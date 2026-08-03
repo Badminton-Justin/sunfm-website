@@ -82,7 +82,30 @@ export async function pushAppointmentToGoogle(
       .from("appointments")
       .update({ google_synced_at: new Date().toISOString() })
       .eq("id", appointment.id);
-  } else {
+    return;
+  }
+
+  // Atomically claim this appointment before creating its Google event.
+  // pushUnsyncedAppointments is invoked from three independent triggers
+  // (OAuth callback, manual "Sync now", daily cron) that can genuinely
+  // overlap for the same trainer — without this, two concurrent calls both
+  // see google_event_id as null and both call insertEvent, creating two
+  // distinct real Google events for the same appointment (this is exactly
+  // what produced the double-booked pairs found in production). The
+  // conditional UPDATE relies on Postgres row locking: only one concurrent
+  // caller can flip google_event_id from null to the claim token, so the
+  // loser sees claimed === null and backs off instead of double-creating.
+  const claimToken = `pending:${randomUUID()}`;
+  const { data: claimed } = await supabase
+    .from("appointments")
+    .update({ google_event_id: claimToken })
+    .eq("id", appointment.id)
+    .is("google_event_id", null)
+    .select()
+    .maybeSingle();
+  if (!claimed) return;
+
+  try {
     const event = await insertEvent(
       accessToken,
       connection.google_calendar_id,
@@ -95,6 +118,15 @@ export async function pushAppointmentToGoogle(
         google_synced_at: new Date().toISOString(),
       })
       .eq("id", appointment.id);
+  } catch (err) {
+    // Release the claim so a later retry can pick this appointment back up
+    // instead of leaving it stuck on the placeholder forever.
+    await supabase
+      .from("appointments")
+      .update({ google_event_id: null })
+      .eq("id", appointment.id)
+      .eq("google_event_id", claimToken);
+    throw err;
   }
 }
 
