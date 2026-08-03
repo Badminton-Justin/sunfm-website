@@ -18,14 +18,7 @@ export function buildTrainerColorMap(trainers: Trainer[]) {
   return map;
 }
 
-function lightenHex(hex: string, amount: number) {
-  const num = parseInt(hex.replace("#", ""), 16);
-  const r = (num >> 16) & 0xff;
-  const g = (num >> 8) & 0xff;
-  const b = num & 0xff;
-  const mix = (channel: number) => Math.round(channel + (255 - channel) * amount);
-  return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
-}
+const CONSULTATION_COLOR = "#6B4E9E"; // fixed purple, regardless of trainer
 
 export interface ChipStyle {
   background: string;
@@ -33,20 +26,16 @@ export interface ChipStyle {
   subtleTextClass: string;
 }
 
-// Sessions render as a lighter tint of the trainer's color, consultations
-// (and anything without a recognized [Type] prefix) stay at the full/darker
-// shade — same hue per trainer, just a shade apart so the two are
-// distinguishable at a glance without adding another color to track.
+// Sessions use the trainer's normal color (same as any untyped appointment).
+// Consultations are always this one purple, regardless of which trainer —
+// a distinct color rather than a shade of the trainer's own.
 export function getChipStyle(clientName: string, baseColor: string): ChipStyle {
-  if (appointmentTypeFromName(clientName) === "session") {
-    return {
-      background: lightenHex(baseColor, 0.55),
-      textClass: "text-black/80",
-      subtleTextClass: "text-black/50",
-    };
-  }
+  const background =
+    appointmentTypeFromName(clientName) === "consultation"
+      ? CONSULTATION_COLOR
+      : baseColor;
   return {
-    background: baseColor,
+    background,
     textClass: "text-white",
     subtleTextClass: "text-white/80",
   };
