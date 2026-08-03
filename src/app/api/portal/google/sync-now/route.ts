@@ -32,13 +32,13 @@ export async function POST() {
   }
 
   try {
-    await pullChangesFromGoogle(supabase, connection);
+    const pullSummary = await pullChangesFromGoogle(supabase, connection);
     await pushUnsyncedAppointments(supabase, user.id);
     // Self-heal: if the webhook subscription was never registered (e.g. the
     // original connect got cut off before reaching this step) or has gone
     // stale, this quietly (re)establishes it.
     await renewWatchChannelIfNeeded(supabase, connection);
-    return NextResponse.json({ synced: true });
+    return NextResponse.json({ synced: true, pull: pullSummary });
   } catch (err) {
     console.error("Manual sync-now failed", err);
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });

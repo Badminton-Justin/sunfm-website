@@ -146,13 +146,22 @@ async function applyGoogleEventToLocal(
   if (error) throw error;
 }
 
+export interface PullSummary {
+  calendarId: string;
+  mode: "incremental" | "initial";
+  fetched: number;
+  applied: number;
+  failed: number;
+  errors: string[];
+}
+
 // Pulls changes from Google (incremental via stored sync_token, or a fresh
 // full sync if there's no token yet / the stored one has expired) and
 // applies them to our appointments table.
 export async function pullChangesFromGoogle(
   supabase: SupabaseClient,
   connection: GoogleCalendarConnection
-) {
+): Promise<PullSummary> {
   const accessToken = await getValidAccessToken(supabase, connection);
 
   let page = connection.sync_token
@@ -162,8 +171,10 @@ export async function pullChangesFromGoogle(
         connection.sync_token
       )
     : null;
+  let mode: PullSummary["mode"] = "incremental";
 
   if (!page || page.syncTokenInvalid) {
+    mode = "initial";
     page = await listEventsInitial(
       accessToken,
       connection.google_calendar_id,
@@ -171,18 +182,20 @@ export async function pullChangesFromGoogle(
     );
   }
 
+  let applied = 0;
+  const errors: string[] = [];
+
   for (const event of page.items) {
     try {
       await applyGoogleEventToLocal(supabase, connection.trainer_id, event);
+      applied++;
     } catch (err) {
       // One malformed/unexpected event must not block the rest of the batch
       // or leave sync_token stuck re-fetching (and re-failing on) the same
       // event forever — log it and keep going.
-      console.error(
-        "Failed to apply Google event to local appointment",
-        event.id,
-        err
-      );
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("Failed to apply Google event to local appointment", event.id, err);
+      errors.push(`${event.id}: ${message}`);
     }
   }
 
@@ -192,6 +205,15 @@ export async function pullChangesFromGoogle(
       .update({ sync_token: page.nextSyncToken })
       .eq("trainer_id", connection.trainer_id);
   }
+
+  return {
+    calendarId: connection.google_calendar_id,
+    mode,
+    fetched: page.items.length,
+    applied,
+    failed: page.items.length - applied,
+    errors,
+  };
 }
 
 // Pushes any local appointments that predate the connection (no
