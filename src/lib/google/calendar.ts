@@ -117,17 +117,24 @@ async function listEventsPaged(
   throw new Error(`events.list exceeded ${MAX_PAGES} pages — aborting`);
 }
 
-// Initial sync: bootstrap a sync token, scoped to events from `timeMin`
-// onward. Note: orderBy is intentionally omitted — it's incompatible with
-// syncToken-based incremental fetching on later calls.
+// Initial sync: bootstrap a sync token, scoped to events within
+// [timeMin, timeMax]. Note: orderBy is intentionally omitted — it's
+// incompatible with syncToken-based incremental fetching on later calls.
+// A bounded timeMax matters more than it looks: an unbounded recurring
+// weekly event expands into one instance per week forever, and asking
+// Google to expand every such series with no upper bound appears to blow
+// past whatever it's willing to return in one query, silently truncating
+// the rest rather than erroring.
 export function listEventsInitial(
   accessToken: string,
   calendarId: string,
-  timeMin: string
+  timeMin: string,
+  timeMax: string
 ) {
   return listEventsPaged(accessToken, calendarId, {
     singleEvents: "true",
     timeMin,
+    timeMax,
     maxResults: "250",
   });
 }

@@ -13,11 +13,22 @@ import {
   type GoogleEvent,
 } from "./calendar";
 
-const INITIAL_SYNC_WINDOW_DAYS = 30;
+const INITIAL_SYNC_PAST_WINDOW_DAYS = 30;
+// A recurring weekly event with no end date expands into one instance per
+// week forever — asking Google to expand that unbounded (5+ years deep, as
+// happened here) appears to blow past however many series' worth of
+// instances it's willing to return in one query, silently truncating the
+// rest. A gym calendar has no real use for synced visibility that far out
+// anyway, so bound it instead of chasing Google's exact internal limit.
+const INITIAL_SYNC_FUTURE_WINDOW_DAYS = 180;
 const CHANNEL_RENEWAL_MARGIN_MS = 24 * 60 * 60 * 1000; // renew within 24h of expiry
 
 function daysAgoIso(days: number) {
   return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+}
+
+function daysFromNowIso(days: number) {
+  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 }
 
 export async function getConnection(
@@ -192,7 +203,8 @@ export async function pullChangesFromGoogle(
     page = await listEventsInitial(
       accessToken,
       connection.google_calendar_id,
-      daysAgoIso(INITIAL_SYNC_WINDOW_DAYS)
+      daysAgoIso(INITIAL_SYNC_PAST_WINDOW_DAYS),
+      daysFromNowIso(INITIAL_SYNC_FUTURE_WINDOW_DAYS)
     );
   }
 
