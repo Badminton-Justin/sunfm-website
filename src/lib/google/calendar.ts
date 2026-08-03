@@ -78,7 +78,12 @@ interface EventsPage {
 // Generous, but a hard ceiling so a pagination bug can never turn into a
 // runaway loop (a real incident: resending syncToken alongside pageToken on
 // later pages confused the API into never terminating cleanly).
-const MAX_PAGES = 5;
+//
+// At 250/page the old ceiling of 5 capped a full sync at 1250 events, which
+// one busy trainer reaches inside the 210-day sync window (~6 sessions/day)
+// — and it *threw* at the limit rather than degrading, so crossing it would
+// have taken sync down entirely rather than slowing it.
+const MAX_PAGES = 20;
 
 async function listEventsPaged(
   accessToken: string,
@@ -183,12 +188,16 @@ export async function insertEvent(
   return res.json();
 }
 
+// Returns null when Google no longer has the event (404/410) rather than
+// throwing, so the caller can recreate it instead of getting permanently
+// stuck pointing at a dead id — the failure mode when an appointment is
+// canceled (which deletes the Google event) and later re-booked.
 export async function updateEvent(
   accessToken: string,
   calendarId: string,
   eventId: string,
   fields: EventFields
-): Promise<GoogleEvent> {
+): Promise<GoogleEvent | null> {
   const res = await googleFetch(
     accessToken,
     `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
@@ -196,12 +205,17 @@ export async function updateEvent(
       method: "PATCH",
       body: JSON.stringify({
         summary: fields.summary,
-        description: fields.description ?? undefined,
+        // Empty string, not undefined: JSON.stringify drops undefined keys,
+        // and a PATCH that omits `description` leaves Google's copy intact.
+        // Clearing notes locally would then never propagate — and the next
+        // pull would copy the stale description back over the cleared field.
+        description: fields.description ?? "",
         start: { dateTime: fields.startIso },
         end: { dateTime: fields.endIso },
       }),
     }
   );
+  if (res.status === 404 || res.status === 410) return null;
   if (!res.ok) throw new Error(`events.patch failed: ${await res.text()}`);
   return res.json();
 }
@@ -224,7 +238,23 @@ export async function deleteEvent(
 
 export interface WatchResult {
   resourceId: string;
-  expiration: string; // epoch millis, as a string
+  expiresAtIso: string;
+}
+
+// Google documents `expiration` as epoch millis in a string, but it is
+// optional in the response schema. Parsing it unguarded meant
+// `new Date(NaN).toISOString()` throwing a RangeError *after* the channel was
+// already live on Google's side — orphaning a real subscription we'd have no
+// record of, and surfacing as a generic "connect failed". Fall back to
+// Google's documented default TTL of one week instead.
+const DEFAULT_CHANNEL_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+function parseChannelExpiration(raw: unknown): string {
+  const millis = Number(raw);
+  if (!Number.isFinite(millis) || millis <= 0) {
+    return new Date(Date.now() + DEFAULT_CHANNEL_TTL_MS).toISOString();
+  }
+  return new Date(millis).toISOString();
 }
 
 export async function watchEvents(
@@ -247,7 +277,11 @@ export async function watchEvents(
     }
   );
   if (!res.ok) throw new Error(`events.watch failed: ${await res.text()}`);
-  return res.json();
+  const body = await res.json();
+  return {
+    resourceId: body.resourceId,
+    expiresAtIso: parseChannelExpiration(body.expiration),
+  };
 }
 
 export async function stopChannel(

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { pullChangesFromGoogle } from "@/lib/google/sync";
 
@@ -37,13 +37,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  try {
-    await pullChangesFromGoogle(supabase, connection);
-  } catch (err) {
-    console.error("Google webhook sync failed", err);
-    // Still 200 — Google will retry future changes via the next ping, and
-    // the daily cron job re-syncs everyone as a safety net regardless.
-  }
+  // Ack immediately and sync afterwards. Google expects a response within
+  // ~30s and backs a channel off (eventually killing it) when it doesn't get
+  // one — but a full pull on a busy calendar can legitimately take longer
+  // than that. Detaching the work keeps the subscription healthy.
+  //
+  // Concurrency is safe: pullChangesFromGoogle takes a per-trainer lock, so
+  // a burst of pings collapses into one run rather than several racing on
+  // the same sync token, and whatever a skipped ping would have covered is
+  // picked up by the run that holds the lock (or the next ping, or the cron).
+  after(async () => {
+    try {
+      await pullChangesFromGoogle(supabase, connection);
+    } catch (err) {
+      console.error("Google webhook sync failed", err);
+      // Nothing to report back to Google — it will ping again on the next
+      // change, and the daily cron re-syncs everyone as a safety net.
+    }
+  });
 
   return NextResponse.json({ ok: true });
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { getValidAccessToken } from "@/lib/google/tokens";
 import { revokeToken } from "@/lib/google/oauth";
 import { stopChannel } from "@/lib/google/calendar";
@@ -15,10 +16,11 @@ export async function POST() {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const connection = await getConnection(supabase, user.id);
+  const service = createServiceClient();
+  const connection = await getConnection(service, user.id);
   if (connection) {
     try {
-      const accessToken = await getValidAccessToken(supabase, connection);
+      const accessToken = await getValidAccessToken(service, connection);
       if (connection.watch_channel_id && connection.watch_resource_id) {
         await stopChannel(
           accessToken,
@@ -33,7 +35,15 @@ export async function POST() {
     }
   }
 
-  await supabase
+  // Drop any queued deletes along with the connection. They're unreachable
+  // without credentials, and leaving them behind would suppress those event
+  // ids from ever being imported again if the trainer reconnects later.
+  await service
+    .from("google_pending_deletions")
+    .delete()
+    .eq("trainer_id", user.id);
+
+  await service
     .from("google_calendar_connections")
     .delete()
     .eq("trainer_id", user.id);

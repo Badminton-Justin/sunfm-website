@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { pushAppointmentToGoogle } from "@/lib/google/sync";
 import type { Appointment } from "@/lib/supabase/types";
+
+// The response waits on a Google API call (capped at 10s on its own), so the
+// platform default leaves no headroom — a 504 here would leave the client
+// unsure whether the appointment was created, and retrying duplicates it.
+export const maxDuration = 30;
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -43,10 +49,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    await pushAppointmentToGoogle(supabase, data as Appointment);
+    // Service client, not the caller's session: RLS on
+    // google_calendar_connections is deliberately self-only with no owner
+    // bypass, so an owner booking on another trainer's behalf would
+    // otherwise find no connection and silently skip the push entirely.
+    // Authorization for the write itself was already enforced by RLS above.
+    await pushAppointmentToGoogle(createServiceClient(), data as Appointment);
   } catch (err) {
-    // Local write already succeeded — Google sync is best-effort and the
-    // daily cron job retries anything still unsynced.
+    // Local write already succeeded — the row stays flagged
+    // google_push_pending and the retry sweep picks it back up.
     console.error("Push to Google Calendar failed", err);
   }
 

@@ -22,6 +22,7 @@ export interface Appointment {
   updated_at: string;
   google_event_id: string | null;
   google_synced_at: string | null;
+  google_push_pending: boolean;
 }
 
 export interface TrainerAvailability {
@@ -44,6 +45,9 @@ export interface GoogleCalendarConnection {
   watch_resource_id: string | null;
   watch_channel_expires_at: string | null;
   watch_verification_token: string | null;
+  sync_window_end: string | null;
+  sync_lock_at: string;
+  consecutive_failed_pulls: number;
   connected_at: string;
   updated_at: string;
 }

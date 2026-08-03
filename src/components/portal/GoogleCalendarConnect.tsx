@@ -7,6 +7,7 @@ interface GoogleCalendarConnectProps {
   isConnected: boolean;
   justConnected?: boolean;
   connectError?: string;
+  connectWarning?: string;
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -14,13 +15,21 @@ const ERROR_MESSAGES: Record<string, string> = {
   invalid_state: "That connection attempt expired — try again.",
   no_refresh_token:
     "Google didn't grant lasting access. Try disconnecting any prior SunFM access in your Google Account settings, then reconnect.",
+  calendar_in_use:
+    "That Google account is already connected to another trainer here. Each trainer needs their own Google account, otherwise both schedules would write to the same calendar.",
   connect_failed: "Something went wrong connecting to Google. Try again.",
+};
+
+const WARNING_MESSAGES: Record<string, string> = {
+  initial_sync:
+    "Connected, but the first sync didn't finish. Your calendar is linked — use Sync now, or it'll catch up on its own overnight.",
 };
 
 export function GoogleCalendarConnect({
   isConnected,
   justConnected,
   connectError,
+  connectWarning,
 }: GoogleCalendarConnectProps) {
   const router = useRouter();
   const [isDisconnecting, setIsDisconnecting] = useState(false);
@@ -37,9 +46,15 @@ export function GoogleCalendarConnect({
 
   return (
     <div className="max-w-lg">
-      {justConnected && (
+      {justConnected && !connectWarning && (
         <div className="mb-4 rounded-xl bg-[#3F6E52]/10 text-[#3F6E52] text-sm font-medium px-4 py-3">
           Google Calendar connected — your schedule is now syncing both ways.
+        </div>
+      )}
+      {connectWarning && (
+        <div className="mb-4 rounded-xl bg-[#B8860B]/10 text-[#8A6508] text-sm font-medium px-4 py-3">
+          {WARNING_MESSAGES[connectWarning] ??
+            "Connected, but the first sync didn't finish."}
         </div>
       )}
       {connectError && (
