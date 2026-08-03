@@ -154,6 +154,7 @@ export function CalendarClient({
         : [...prev, json.appointment]
     );
     setModalValues(null);
+    router.refresh();
     return null;
   };
 
@@ -170,6 +171,7 @@ export function CalendarClient({
         prev.map((a) => (a.id === modalValues.id ? json.appointment : a))
       );
       setModalValues(null);
+      router.refresh();
     }
   };
 

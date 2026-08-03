@@ -3,6 +3,7 @@
 import type { Appointment, Trainer } from "@/lib/supabase/types";
 import { isSameDay, monthGridDays } from "@/lib/portal/date-utils";
 import { compactClientName } from "@/lib/portal/client-display";
+import { getChipStyle } from "./colors";
 
 interface MonthViewProps {
   anchorDate: Date;
@@ -76,21 +77,25 @@ export function MonthView({
                 {day.getDate()}
               </span>
               <div className="space-y-0.5">
-                {shown.map((appt) => (
-                  <div
-                    key={appt.id}
-                    className="text-[10px] leading-tight px-1 py-0.5 rounded text-white truncate"
-                    style={{
-                      background: trainerColorMap.get(appt.trainer_id) ?? "#1a1a1a",
-                    }}
-                  >
-                    {new Date(appt.start_time).toLocaleTimeString("en-US", {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}{" "}
-                    {compactClientName(appt.client_name)}
-                  </div>
-                ))}
+                {shown.map((appt) => {
+                  const chipStyle = getChipStyle(
+                    appt.client_name,
+                    trainerColorMap.get(appt.trainer_id) ?? "#1a1a1a"
+                  );
+                  return (
+                    <div
+                      key={appt.id}
+                      className={`text-[10px] leading-tight px-1 py-0.5 rounded truncate ${chipStyle.textClass}`}
+                      style={{ background: chipStyle.background }}
+                    >
+                      {new Date(appt.start_time).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}{" "}
+                      {compactClientName(appt.client_name)}
+                    </div>
+                  );
+                })}
                 {overflow > 0 && (
                   <p className="text-[10px] text-black/40 pl-1">
                     +{overflow} more

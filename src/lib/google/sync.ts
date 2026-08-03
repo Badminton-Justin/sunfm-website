@@ -174,7 +174,18 @@ export async function pullChangesFromGoogle(
   }
 
   for (const event of page.items) {
-    await applyGoogleEventToLocal(supabase, connection.trainer_id, event);
+    try {
+      await applyGoogleEventToLocal(supabase, connection.trainer_id, event);
+    } catch (err) {
+      // One malformed/unexpected event must not block the rest of the batch
+      // or leave sync_token stuck re-fetching (and re-failing on) the same
+      // event forever — log it and keep going.
+      console.error(
+        "Failed to apply Google event to local appointment",
+        event.id,
+        err
+      );
+    }
   }
 
   if (page.nextSyncToken) {

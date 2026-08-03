@@ -4,6 +4,7 @@ import type { Appointment, Trainer } from "@/lib/supabase/types";
 import { addDays, isSameDay, startOfWeek } from "@/lib/portal/date-utils";
 import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
+import { getChipStyle } from "./colors";
 import {
   HEADER_HEIGHT,
   HOUR_END,
@@ -126,6 +127,7 @@ export function WeekView({
                   const color =
                     trainerColorMap.get(item.appt.trainer_id) ?? "#1a1a1a";
                   const canceled = item.appt.status === "canceled";
+                  const chipStyle = getChipStyle(item.appt.client_name, color);
                   return (
                     <button
                       key={item.appt.id}
@@ -136,13 +138,13 @@ export function WeekView({
                         height: `${height}%`,
                         left: `${lane * widthPct}%`,
                         width: `calc(${widthPct}% - 2px)`,
-                        background: canceled ? "rgba(26,26,26,0.12)" : color,
+                        background: canceled ? "rgba(26,26,26,0.12)" : chipStyle.background,
                         opacity: canceled ? 0.7 : 1,
                       }}
                     >
                       <p
                         className={`text-[10px] font-semibold leading-tight truncate ${
-                          canceled ? "text-black/50 line-through" : "text-white"
+                          canceled ? "text-black/50 line-through" : chipStyle.textClass
                         }`}
                       >
                         {compactClientName(item.appt.client_name)}

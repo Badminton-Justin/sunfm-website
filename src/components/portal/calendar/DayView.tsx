@@ -5,6 +5,7 @@ import type { Appointment, Trainer, TrainerAvailability } from "@/lib/supabase/t
 import { isSameDay } from "@/lib/portal/date-utils";
 import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
+import { getChipStyle } from "./colors";
 import {
   GRID_HEIGHT,
   HEADER_HEIGHT,
@@ -175,6 +176,7 @@ export function DayView({
                     );
                     const widthPct = 100 / laneCount;
                     const canceled = item.appt.status === "canceled";
+                    const chipStyle = getChipStyle(item.appt.client_name, color);
                     return (
                       <button
                         key={item.appt.id}
@@ -188,13 +190,13 @@ export function DayView({
                           height,
                           left: `${lane * widthPct}%`,
                           width: `calc(${widthPct}% - 3px)`,
-                          background: canceled ? "rgba(26,26,26,0.12)" : color,
+                          background: canceled ? "rgba(26,26,26,0.12)" : chipStyle.background,
                           opacity: canceled ? 0.7 : 1,
                         }}
                       >
                         <p
                           className={`text-[11px] font-semibold leading-tight truncate ${
-                            canceled ? "text-black/50 line-through" : "text-white"
+                            canceled ? "text-black/50 line-through" : chipStyle.textClass
                           }`}
                         >
                           {compactClientName(item.appt.client_name)}
@@ -202,7 +204,7 @@ export function DayView({
                         {height > 32 && (
                           <p
                             className={`text-[10px] leading-tight truncate ${
-                              canceled ? "text-black/40" : "text-white/80"
+                              canceled ? "text-black/40" : chipStyle.subtleTextClass
                             }`}
                           >
                             {item.start.toLocaleTimeString("en-US", {
