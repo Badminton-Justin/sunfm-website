@@ -6,7 +6,7 @@ const contentSecurityPolicy = [
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob: https:",
   "media-src 'self' https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev",
-  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.google.com https://*.posthog.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://script.google.com",
+  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.google.com https://*.posthog.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://script.google.com https://*.supabase.co",
   "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.google.com https://td.doubleclick.net",
   "object-src 'none'",
   "base-uri 'self'",
