@@ -41,6 +41,11 @@ export interface GoogleEvent {
   start?: { dateTime?: string; date?: string };
   end?: { dateTime?: string; date?: string };
   updated?: string;
+  // Present only on an unexpanded recurring *master*. Every request we make
+  // sets singleEvents=true, so a well-formed response never carries this —
+  // seeing it means the expansion was lost somewhere and the payload
+  // describes a rule, not a session. See the note in listEventsPaged.
+  recurrence?: string[];
 }
 
 // Finds (or creates) the dedicated "SunFM Schedule" secondary calendar on
@@ -94,10 +99,31 @@ async function listEventsPaged(
   let pageToken: string | undefined;
 
   for (let page = 0; page < MAX_PAGES; page++) {
-    // pageToken is a complete continuation cursor on its own — Google's API
-    // doesn't expect (and may misbehave with) the original filters like
-    // syncToken/timeMin repeated alongside it on later pages.
-    const query = new URLSearchParams(pageToken ? { pageToken } : params);
+    // Every original filter has to be repeated on every page. pageToken is a
+    // cursor, not a self-contained query: sending it alone silently changes
+    // what the request means.
+    //
+    // Dropping singleEvents=true was the damaging one. Without it Google
+    // stops expanding recurring series and returns the *master* event
+    // instead, whose start is the series' DTSTART — so from page 2 onward
+    // every recurring client collapsed from "one row per weekly session"
+    // into a single row dated at the start of the series, frequently on a
+    // day whose real instance had since been moved or deleted. That is both
+    // halves of what this looked like from the outside: phantom overlapping
+    // sessions in the first week, and later weeks emptying out.
+    //
+    // timeMin/timeMax matter too — without them the later pages expand
+    // open-ended recurrences with no upper bound, which is the truncation
+    // this window was introduced to avoid in the first place.
+    //
+    // syncToken is the one exception: it identifies the sync as a whole, and
+    // resending it alongside pageToken previously confused the API into
+    // never terminating cleanly.
+    const query = new URLSearchParams(params);
+    if (pageToken) {
+      query.delete("syncToken");
+      query.set("pageToken", pageToken);
+    }
     const res = await googleFetch(
       accessToken,
       `/calendars/${encodeURIComponent(calendarId)}/events?${query}`
