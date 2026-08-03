@@ -146,6 +146,20 @@ async function applyGoogleEventToLocal(
   if (error) throw error;
 }
 
+// Supabase/Postgrest errors are plain objects, not Error instances — a bare
+// String(err) on those just yields "[object Object]" with no useful detail.
+function extractErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (err && typeof err === "object" && "message" in err) {
+    return String((err as { message: unknown }).message);
+  }
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return String(err);
+  }
+}
+
 export interface PullSummary {
   calendarId: string;
   mode: "incremental" | "initial";
@@ -193,7 +207,7 @@ export async function pullChangesFromGoogle(
       // One malformed/unexpected event must not block the rest of the batch
       // or leave sync_token stuck re-fetching (and re-failing on) the same
       // event forever — log it and keep going.
-      const message = err instanceof Error ? err.message : String(err);
+      const message = extractErrorMessage(err);
       console.error("Failed to apply Google event to local appointment", event.id, err);
       errors.push(`${event.id}: ${message}`);
     }
