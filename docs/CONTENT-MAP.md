@@ -17,9 +17,9 @@ This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it'
 
 ---
 
-## Blog clusters (39 posts as of 2026-08-01)
+## Blog clusters (40 posts as of 2026-08-04)
 
-### 1. Desk-worker self-check cluster (16 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
+### 1. Desk-worker self-check cluster (17 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
 
 This is the "at-home test, pass/borderline/fail, then drills" format. It's the site's signature content type and the one most likely to keep growing, so sub-grouping matters more here than anywhere else.
 
@@ -33,6 +33,7 @@ This is the "at-home test, pass/borderline/fail, then drills" format. It's the s
 - `lumbar-spine-mobility-test-at-home` (2026-07-17) — fills the gap between hip-mobility (ball-and-socket ROM), thoracic-spine (upper-back rotation/extension), and SI-joint (pelvis pain-triage). Tests hip-lumbar dissociation and segmental control rather than pure range. Cross-links with `hip-mobility-test-at-home`, `thoracic-spine-mobility-test-at-home`, and `si-joint-pain-when-sitting-at-a-desk-self-test` in its differential section; the SI-joint post's own differential section now points here instead of to `posture-self-check-at-home` for "pain that's central and moves with spinal bending," since this is the more precise match.
 - `balance-test-at-home-single-leg-checks-over-40` — uses the same 3-test format, but the topic (single-leg balance, tied to longevity/mortality research) sits closer to the strength-for-longevity pillar than to desk-worker pain specifically. Linked bidirectionally with the `strength-training-for-longevity-beginners-guide-over-30` pillar post (2026-07-14), alongside the usual self-check cluster placement.
 - `foot-arch-test-at-home-flat-feet-or-high-arches` (2026-07-20) — the one joint in the kinetic chain the cluster hadn't covered yet (ankle, hip, thoracic spine, hamstring, core, grip, lumbar spine, balance, shoulder were all already claimed). 3 tests (wet footprint, navicular drop, single-leg arch check), plus the short-foot/toe-splay/towel-scrunch drills. Cross-links with `ankle-mobility-test-at-home` (added a reciprocal outbound link there) and `hip-mobility-test-at-home` in its kinetic-chain section.
+- `sitting-rising-test-at-home` (2026-08-04) — the composite self-test the cluster was missing. Sits with `balance-test-at-home-single-leg-checks-over-40` in the longevity-marker sub-thread rather than with the joint-by-joint ROM tests around it in 1a: one score bundles ankle range, hip rotation, deep-range leg strength, and balance, and the post's job is decomposing that score into which of the four owns the deduction. Anchored on the June 2025 European Journal of Preventive Cardiology mortality study (4,282 adults, 46-75, median 12.3 years), which the whole SERP covers as news and abandons at "your score was 6." Links out to `ankle-mobility-test-at-home`, `hip-mobility-test-at-home`, and `balance-test-at-home-single-leg-checks-over-40`, each attached to a distinct follow-up check rather than dropped in as related reading; added a reciprocal inbound link from `strength-training-for-longevity-beginners-guide-over-30` in its grip-and-balance paragraph, which already framed at-home longevity markers. Note for future audits: this post and the balance-test post are now the two "longevity marker" self-tests, so a third one needs a genuinely different measurement (cardio capacity is the open candidate) rather than another mobility-plus-balance composite.
 
 **1b. Shoulder micro-cluster** (3 posts, tightly related, cross-linked in both directions as of 2026-07-11):
 - `shoulder-mobility-test-at-home` — general tightness, no pain
