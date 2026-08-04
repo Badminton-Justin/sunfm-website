@@ -26,7 +26,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
     <div>
       <p className="portal-kicker mb-2">Your Account</p>
       <h1 className="font-display text-4xl text-black mb-8">Settings</h1>
-      <div className="space-y-6">
+      <div className="max-w-lg space-y-6">
         <GoogleCalendarConnect
           isConnected={!!connection}
           justConnected={params.google_connected === "1"}

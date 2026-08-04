@@ -34,39 +34,38 @@ export function DefaultViewSetting({ current }: DefaultViewSettingProps) {
   };
 
   return (
-    <section className="rounded-2xl border border-black/[0.06] bg-[#FDFCF8] p-6">
-      <h2 className="font-display text-xl text-black mb-1">Default view</h2>
-      <p className="text-sm text-black/55 mb-4">
+    <div className="bg-[#FDFCF8] rounded-2xl border border-black/[0.06] shadow-[0_1px_2px_rgba(26,26,26,0.04)] p-6">
+      <p className="text-sm font-semibold text-black mb-1">Default view</p>
+      <p className="text-sm text-black/50 leading-relaxed">
         Which view the schedule opens on.
       </p>
 
-      <div className="flex items-center rounded-full border border-black/10 p-0.5 w-fit">
-        {CALENDAR_VIEWS.map((v) => (
-          <button
-            key={v}
-            type="button"
-            onClick={() => choose(v)}
-            aria-pressed={view === v}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold capitalize transition-colors ${
-              view === v
-                ? "bg-black text-white"
-                : "text-black/50 hover:text-black"
-            }`}
-          >
-            {v}
-          </button>
-        ))}
+      {/* "Saving…" sits beside the control rather than under it — a reserved
+          line below would leave the card padded out with dead space. */}
+      <div className="mt-5 flex items-center gap-3">
+        <div className="flex items-center rounded-full border border-black/10 p-0.5">
+          {CALENDAR_VIEWS.map((v) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => choose(v)}
+              aria-pressed={view === v}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold capitalize transition-colors ${
+                view === v
+                  ? "bg-black text-white"
+                  : "text-black/50 hover:text-black"
+              }`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+        {saving && <span className="text-xs text-black/35">Saving…</span>}
       </div>
 
-      <p className="text-xs text-black/40 mt-3 h-4">
-        {error ? (
-          <span className="text-[#CB4538] font-medium">{error}</span>
-        ) : saving ? (
-          "Saving…"
-        ) : (
-          ""
-        )}
-      </p>
-    </section>
+      {error && (
+        <p className="text-sm font-medium text-[#CB4538] mt-3">{error}</p>
+      )}
+    </div>
   );
 }

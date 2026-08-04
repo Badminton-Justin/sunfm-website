@@ -45,7 +45,8 @@ export function GoogleCalendarConnect({
   };
 
   return (
-    <div className="max-w-lg">
+    // Width comes from the settings page, so every card lines up.
+    <div>
       {justConnected && !connectWarning && (
         <div className="mb-4 rounded-xl bg-[#3F6E52]/10 text-[#3F6E52] text-sm font-medium px-4 py-3">
           Google Calendar connected — your schedule is now syncing both ways.
