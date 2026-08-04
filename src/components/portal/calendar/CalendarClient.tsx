@@ -99,8 +99,11 @@ export function CalendarClient({
       view === "day" ? addDays(d, 1) : view === "week" ? addDays(d, 7) : addMonths(d, 1)
     );
 
-  const openCreateAt = (trainerId: string, start: Date) => {
-    const end = new Date(start.getTime() + 60 * 60 * 1000);
+  const openCreateAt = (
+    trainerId: string,
+    start: Date,
+    end = new Date(start.getTime() + 60 * 60 * 1000)
+  ) => {
     setModalValues({
       id: null,
       trainer_id: trainerId,
@@ -417,7 +420,7 @@ export function CalendarClient({
               appointments={appointments}
               availability={availability}
               trainerColorMap={trainerColorMap}
-              onSlotClick={openCreateAt}
+              onSlotSelect={openCreateAt}
               onEventClick={openEdit}
               onMoveAppointment={handleMoveAppointment}
             />
@@ -434,7 +437,9 @@ export function CalendarClient({
               }}
               onEventClick={openEdit}
               onMoveAppointment={handleMoveAppointment}
+              onSlotSelect={openCreateAt}
               canEdit={canEditAppointment}
+              currentTrainerId={currentTrainer.id}
             />
           )}
           {view === "month" && (

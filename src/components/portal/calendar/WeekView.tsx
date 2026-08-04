@@ -6,6 +6,8 @@ import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
 import { getChipStyle } from "./colors";
 import { useEventDrag } from "./useEventDrag";
+import { useSlotSelect } from "./useSlotSelect";
+import { SlotPreview } from "./SlotPreview";
 import {
   HEADER_HEIGHT,
   HOUR_END,
@@ -13,6 +15,8 @@ import {
   TOTAL_HOURS,
   durationToHeightPercent,
   hourLabel,
+  minutesToHeightPercent,
+  minutesToOffsetPercent,
   timeToOffsetPercent,
 } from "./grid-constants";
 
@@ -24,7 +28,11 @@ interface WeekViewProps {
   onDayHeaderClick: (date: Date) => void;
   onEventClick: (appt: Appointment) => void;
   onMoveAppointment: (appt: Appointment, newStart: Date) => void;
+  onSlotSelect: (trainerId: string, start: Date, end: Date) => void;
   canEdit: (appt: Appointment) => boolean;
+  // Week columns are days, not trainers, so a new appointment here belongs to
+  // whoever is signed in.
+  currentTrainerId: string;
 }
 
 export function WeekView({
@@ -35,7 +43,9 @@ export function WeekView({
   onDayHeaderClick,
   onEventClick,
   onMoveAppointment,
+  onSlotSelect,
   canEdit,
+  currentTrainerId,
 }: WeekViewProps) {
   const weekStart = startOfWeek(anchorDate);
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -57,6 +67,24 @@ export function WeekView({
       const moved = new Date(start.getTime() + deltaMinutes * 60000);
       moved.setDate(moved.getDate() + (columnIndex - fromIndex));
       onMoveAppointment(appt, moved);
+    },
+  });
+
+  const {
+    selection,
+    startSelect,
+    handleMove: handleSlotMove,
+    endSelect,
+    cancelSelect,
+  } = useSlotSelect({
+    onSelect: (key, startMinutes, endMinutes) => {
+      const day = days[Number(key)];
+      const at = (minutes: number) => {
+        const d = new Date(day);
+        d.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
+        return d;
+      };
+      onSlotSelect(currentTrainerId, at(startMinutes), at(endMinutes));
     },
   });
 
@@ -129,13 +157,32 @@ export function WeekView({
             return (
               <div
                 key={day.toISOString()}
-                className="relative border-r border-black/[0.06] last:border-r-0"
+                // pan-y, not none: a touch drag over empty grid should still
+                // scroll the page. It arrives as a pointercancel, which
+                // abandons the selection rather than booking one.
+                className="relative border-r border-black/[0.06] last:border-r-0 cursor-pointer touch-pan-y"
+                onPointerDown={(e) => startSelect(e, String(dayIndex))}
+                onPointerMove={handleSlotMove}
+                onPointerUp={endSelect}
+                onPointerCancel={cancelSelect}
                 style={{
                   // No line at 0% — the header row's own bottom border already
                   // marks the top edge, so a line there just doubles it up.
                   backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent calc(100% / ${TOTAL_HOURS} - 1px), rgba(26,26,26,0.07) calc(100% / ${TOTAL_HOURS} - 1px), rgba(26,26,26,0.07) calc(100% / ${TOTAL_HOURS}))`,
                 }}
               >
+                {selection?.key === String(dayIndex) && (
+                  <SlotPreview
+                    compact
+                    startMinutes={selection.startMinutes}
+                    endMinutes={selection.endMinutes}
+                    top={`${minutesToOffsetPercent(selection.startMinutes)}%`}
+                    height={`${minutesToHeightPercent(
+                      selection.endMinutes - selection.startMinutes
+                    )}%`}
+                  />
+                )}
+
                 {laidOut.map(({ item, lane, laneCount }) => {
                   const top = timeToOffsetPercent(item.start);
                   const height = Math.max(
@@ -156,7 +203,12 @@ export function WeekView({
                         if (wasDragged()) return;
                         onEventClick(item.appt);
                       }}
-                      onPointerDown={(e) => startDrag(e, item.appt, dayIndex)}
+                      onPointerDown={(e) => {
+                        // Otherwise this also starts a slot selection on the
+                        // column underneath.
+                        e.stopPropagation();
+                        startDrag(e, item.appt, dayIndex);
+                      }}
                       onPointerMove={handleMove}
                       onPointerUp={endDrag}
                       onPointerCancel={endDrag}

@@ -33,3 +33,21 @@ export function durationToHeightPercent(start: Date, end: Date) {
   const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
   return (hours / TOTAL_HOURS) * 100;
 }
+
+// Minutes-from-midnight variants, for the in-progress slot selection — it has
+// no Date yet, only a position on the grid.
+export function minutesToOffsetPx(minutes: number) {
+  return (minutes / 60 - HOUR_START) * PX_PER_HOUR;
+}
+
+export function minutesToHeightPx(durationMinutes: number) {
+  return (durationMinutes / 60) * PX_PER_HOUR;
+}
+
+export function minutesToOffsetPercent(minutes: number) {
+  return ((minutes / 60 - HOUR_START) / TOTAL_HOURS) * 100;
+}
+
+export function minutesToHeightPercent(durationMinutes: number) {
+  return (durationMinutes / 60 / TOTAL_HOURS) * 100;
+}

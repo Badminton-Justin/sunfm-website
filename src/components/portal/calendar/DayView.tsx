@@ -7,6 +7,8 @@ import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
 import { getChipStyle } from "./colors";
 import { useEventDrag } from "./useEventDrag";
+import { useSlotSelect } from "./useSlotSelect";
+import { SlotPreview } from "./SlotPreview";
 import {
   GRID_HEIGHT,
   HEADER_HEIGHT,
@@ -15,6 +17,8 @@ import {
   PX_PER_HOUR,
   durationToHeightPx,
   hourLabel,
+  minutesToHeightPx,
+  minutesToOffsetPx,
   timeToOffsetPx,
 } from "./grid-constants";
 
@@ -25,7 +29,7 @@ interface DayViewProps {
   appointments: Appointment[];
   availability: TrainerAvailability[];
   trainerColorMap: Map<string, string>;
-  onSlotClick: (trainerId: string, start: Date) => void;
+  onSlotSelect: (trainerId: string, start: Date, end: Date) => void;
   onEventClick: (appt: Appointment) => void;
   onMoveAppointment: (appt: Appointment, newStart: Date) => void;
 }
@@ -37,7 +41,7 @@ export function DayView({
   appointments,
   availability,
   trainerColorMap,
-  onSlotClick,
+  onSlotSelect,
   onEventClick,
   onMoveAppointment,
 }: DayViewProps) {
@@ -68,19 +72,23 @@ export function DayView({
       ),
   });
 
-  const handleColumnClick = (
-    e: React.MouseEvent<HTMLDivElement>,
-    trainerId: string
-  ) => {
-    if (!canEdit(trainerId)) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const y = e.clientY - rect.top;
-    const rawMinutes = HOUR_START * 60 + (y / PX_PER_HOUR) * 60;
-    const snapped = Math.round(rawMinutes / 15) * 15;
-    const clicked = new Date(date);
-    clicked.setHours(Math.floor(snapped / 60), snapped % 60, 0, 0);
-    onSlotClick(trainerId, clicked);
+  const atMinutes = (minutes: number) => {
+    const d = new Date(date);
+    d.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
+    return d;
   };
+
+  const {
+    selection,
+    startSelect,
+    handleMove: handleSlotMove,
+    endSelect,
+    cancelSelect,
+  } = useSlotSelect({
+    canSelect: canEdit,
+    onSelect: (trainerId, startMinutes, endMinutes) =>
+      onSlotSelect(trainerId, atMinutes(startMinutes), atMinutes(endMinutes)),
+  });
 
   if (trainers.length === 0) {
     return (
@@ -149,7 +157,12 @@ export function DayView({
                 </div>
 
                 <div
-                  className={`relative ${editable ? "cursor-pointer" : ""}`}
+                  // pan-y, not none: a touch drag over empty grid should still
+                  // scroll the page. It arrives as a pointercancel, which
+                  // abandons the selection rather than booking one.
+                  className={`relative touch-pan-y ${
+                    editable ? "cursor-pointer" : ""
+                  }`}
                   style={{
                     height: GRID_HEIGHT,
                     // No line at 0 — the header row's own bottom border
@@ -157,7 +170,10 @@ export function DayView({
                     backgroundImage:
                       `repeating-linear-gradient(to bottom, transparent 0, transparent ${PX_PER_HOUR - 1}px, rgba(26,26,26,0.07) ${PX_PER_HOUR - 1}px, rgba(26,26,26,0.07) ${PX_PER_HOUR}px)`,
                   }}
-                  onClick={(e) => handleColumnClick(e, t.id)}
+                  onPointerDown={(e) => startSelect(e, t.id)}
+                  onPointerMove={handleSlotMove}
+                  onPointerUp={endSelect}
+                  onPointerCancel={cancelSelect}
                 >
                   {windows.map((w) => {
                     const [sh, sm] = w.start_time.split(":").map(Number);
@@ -172,6 +188,17 @@ export function DayView({
                       />
                     );
                   })}
+
+                  {selection?.key === t.id && (
+                    <SlotPreview
+                      startMinutes={selection.startMinutes}
+                      endMinutes={selection.endMinutes}
+                      top={minutesToOffsetPx(selection.startMinutes)}
+                      height={minutesToHeightPx(
+                        selection.endMinutes - selection.startMinutes
+                      )}
+                    />
+                  )}
 
                   {isSameDay(date, now) && (
                     <div
