@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireTrainer } from "@/lib/supabase/trainer";
 import { GoogleCalendarConnect } from "@/components/portal/GoogleCalendarConnect";
+import { DefaultViewSetting } from "@/components/portal/DefaultViewSetting";
 
 interface SettingsPageProps {
   searchParams: Promise<{
@@ -25,12 +26,15 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
     <div>
       <p className="portal-kicker mb-2">Your Account</p>
       <h1 className="font-display text-4xl text-black mb-8">Settings</h1>
-      <GoogleCalendarConnect
-        isConnected={!!connection}
-        justConnected={params.google_connected === "1"}
-        connectError={params.google_error}
-        connectWarning={params.google_warning}
-      />
+      <div className="space-y-6">
+        <GoogleCalendarConnect
+          isConnected={!!connection}
+          justConnected={params.google_connected === "1"}
+          connectError={params.google_error}
+          connectWarning={params.google_warning}
+        />
+        <DefaultViewSetting current={trainer.default_calendar_view} />
+      </div>
     </div>
   );
 }

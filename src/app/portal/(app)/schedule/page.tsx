@@ -25,6 +25,7 @@ export default async function SchedulePage() {
         trainers={trainers ?? []}
         initialAppointments={appointments ?? []}
         availability={availability ?? []}
+        initialView={trainer.default_calendar_view}
       />
     </div>
   );

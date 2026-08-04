@@ -1,10 +1,16 @@
 export type TrainerRole = "owner" | "trainer";
 
+export type CalendarView = "day" | "week" | "month";
+
+export const CALENDAR_VIEWS: CalendarView[] = ["day", "week", "month"];
+
 export interface Trainer {
   id: string;
   name: string;
   email: string;
   role: TrainerRole;
+  // Which view the schedule page opens on — see migration 0010.
+  default_calendar_view: CalendarView;
   created_at: string;
 }
 

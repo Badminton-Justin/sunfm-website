@@ -2,7 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Appointment, Trainer, TrainerAvailability } from "@/lib/supabase/types";
+import {
+  CALENDAR_VIEWS,
+  type Appointment,
+  type CalendarView,
+  type Trainer,
+  type TrainerAvailability,
+} from "@/lib/supabase/types";
 import {
   addDays,
   addMonths,
@@ -19,13 +25,12 @@ import { TrainerSidebar } from "./TrainerSidebar";
 import { AppointmentModal, type AppointmentFormValues } from "./AppointmentModal";
 import { SeriesScopeDialog, type SeriesScope } from "./SeriesScopeDialog";
 
-type ViewMode = "day" | "week" | "month";
-
 interface CalendarClientProps {
   currentTrainer: Trainer;
   trainers: Trainer[];
   initialAppointments: Appointment[];
   availability: TrainerAvailability[];
+  initialView: CalendarView;
 }
 
 export function CalendarClient({
@@ -33,10 +38,11 @@ export function CalendarClient({
   trainers,
   initialAppointments,
   availability,
+  initialView,
 }: CalendarClientProps) {
   const router = useRouter();
   const [appointments, setAppointments] = useState(initialAppointments);
-  const [view, setView] = useState<ViewMode>("day");
+  const [view, setView] = useState<CalendarView>(initialView);
   const [anchorDate, setAnchorDate] = useState(() => new Date());
   const [visibleTrainerIds, setVisibleTrainerIds] = useState(
     () => new Set(trainers.map((t) => t.id))
@@ -335,7 +341,7 @@ export function CalendarClient({
 
         <div className="flex items-center gap-3">
           <div className="flex items-center rounded-full border border-black/10 p-0.5">
-            {(["day", "week", "month"] as ViewMode[]).map((v) => (
+            {CALENDAR_VIEWS.map((v) => (
               <button
                 key={v}
                 onClick={() => setView(v)}
