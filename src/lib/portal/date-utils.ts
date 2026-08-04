@@ -1,3 +1,19 @@
+// `YYYY-MM-DDTHH:mm` in the browser's local zone — the wire format the
+// appointment form passes around before it gets converted to a UTC ISO string.
+export function toDatetimeLocal(date: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export function parseDatetimeLocal(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(value);
+  if (!match) return null;
+  const [, y, mo, d, h, mi] = match;
+  return new Date(+y, +mo - 1, +d, +h, +mi);
+}
+
 export function isSameDay(a: Date, b: Date) {
   return (
     a.getFullYear() === b.getFullYear() &&

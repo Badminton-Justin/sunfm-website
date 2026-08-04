@@ -7,7 +7,14 @@ import {
   parseAppointmentName,
   type AppointmentType,
 } from "@/lib/portal/client-display";
+import { parseDatetimeLocal, toDatetimeLocal } from "@/lib/portal/date-utils";
+import {
+  endTimeOptions,
+  minuteOfDay,
+  startTimeOptions,
+} from "@/lib/portal/time-options";
 import { Select } from "@/components/portal/Select";
+import { DatePicker } from "@/components/portal/DatePicker";
 
 export interface AppointmentFormValues {
   id: string | null;
@@ -35,6 +42,19 @@ const TYPE_OPTIONS: { value: AppointmentType; label: string }[] = [
   { value: "consultation", label: "Consultation" },
 ];
 
+const DEFAULT_DURATION = 60;
+
+// The form thinks in "when it starts" + "how long it runs"; the two
+// datetime-local strings the caller wants are derived from that on save.
+function initialSchedule(initial: AppointmentFormValues) {
+  const start = parseDatetimeLocal(initial.start_time) ?? new Date();
+  const end = parseDatetimeLocal(initial.end_time);
+  const minutes = end
+    ? Math.round((end.getTime() - start.getTime()) / 60000)
+    : DEFAULT_DURATION;
+  return { start, duration: minutes > 0 ? minutes : DEFAULT_DURATION };
+}
+
 export function AppointmentModal({
   initial,
   trainers,
@@ -49,6 +69,7 @@ export function AppointmentModal({
   const isNew = !initial.id;
 
   const [form, setForm] = useState(initial);
+  const [schedule, setSchedule] = useState(() => initialSchedule(initial));
   const [apptType, setApptType] = useState<AppointmentType>(parsed.type);
   const [nameOnly, setNameOnly] = useState(parsed.name);
   const [repeatWeekly, setRepeatWeekly] = useState(false);
@@ -57,6 +78,25 @@ export function AppointmentModal({
   const [isSaving, setIsSaving] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
 
+  const startMinutes = minuteOfDay(schedule.start);
+  const endAt = new Date(schedule.start.getTime() + schedule.duration * 60000);
+
+  const setStartDate = (date: Date) => {
+    setSchedule((s) => {
+      const start = new Date(s.start);
+      start.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+      return { ...s, start };
+    });
+  };
+
+  const setStartMinutes = (minutes: number) => {
+    setSchedule((s) => {
+      const start = new Date(s.start);
+      start.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
+      return { ...s, start };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -64,6 +104,8 @@ export function AppointmentModal({
     const err = await onSave({
       ...form,
       client_name: buildAppointmentName(apptType, nameOnly),
+      start_time: toDatetimeLocal(schedule.start),
+      end_time: toDatetimeLocal(endAt),
       repeatWeeks: isNew && repeatWeekly ? repeatWeeks : undefined,
     });
     setIsSaving(false);
@@ -135,30 +177,54 @@ export function AppointmentModal({
             />
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="portal-kicker block mb-1.5">Start</label>
-              <input
-                type="datetime-local"
-                required
-                value={form.start_time}
-                onChange={(e) =>
-                  setForm({ ...form, start_time: e.target.value })
-                }
-                className="w-full px-3 py-2.5 rounded-xl border border-black/10 bg-white focus:outline-none focus:border-[#CB4538] transition-colors"
-              />
-            </div>
-            <div>
-              <label className="portal-kicker block mb-1.5">End</label>
-              <input
-                type="datetime-local"
-                required
-                value={form.end_time}
-                onChange={(e) =>
-                  setForm({ ...form, end_time: e.target.value })
-                }
-                className="w-full px-3 py-2.5 rounded-xl border border-black/10 bg-white focus:outline-none focus:border-[#CB4538] transition-colors"
-              />
+          <div>
+            <label className="portal-kicker block mb-1.5">When</label>
+            <DatePicker
+              value={schedule.start}
+              onChange={setStartDate}
+              ariaLabel="Appointment date"
+            />
+            <div className="grid grid-cols-2 gap-3 mt-2.5">
+              <div>
+                <label
+                  htmlFor="appt-start-time"
+                  className="block text-[11px] font-medium text-black/40 mb-1"
+                >
+                  Starts
+                </label>
+                <Select
+                  id="appt-start-time"
+                  value={startMinutes}
+                  onChange={(e) => setStartMinutes(Number(e.target.value))}
+                >
+                  {startTimeOptions(startMinutes).map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <label
+                  htmlFor="appt-end-time"
+                  className="block text-[11px] font-medium text-black/40 mb-1"
+                >
+                  Ends
+                </label>
+                <Select
+                  id="appt-end-time"
+                  value={schedule.duration}
+                  onChange={(e) =>
+                    setSchedule((s) => ({ ...s, duration: Number(e.target.value) }))
+                  }
+                >
+                  {endTimeOptions(startMinutes, schedule.duration).map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
             </div>
           </div>
 

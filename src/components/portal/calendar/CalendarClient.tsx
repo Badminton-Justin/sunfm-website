@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Appointment, Trainer, TrainerAvailability } from "@/lib/supabase/types";
-import { addDays, addMonths, formatPeriodLabel } from "@/lib/portal/date-utils";
+import {
+  addDays,
+  addMonths,
+  formatPeriodLabel,
+  parseDatetimeLocal,
+  toDatetimeLocal,
+} from "@/lib/portal/date-utils";
 import { buildTrainerColorMap } from "./colors";
 import { DayView } from "./DayView";
 import { WeekView } from "./WeekView";
@@ -18,13 +24,6 @@ interface CalendarClientProps {
   trainers: Trainer[];
   initialAppointments: Appointment[];
   availability: TrainerAvailability[];
-}
-
-function toDatetimeLocal(date: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 export function CalendarClient({
@@ -129,8 +128,8 @@ export function CalendarClient({
     // shifted a week apart from the last.
     const occurrences =
       !values.id && values.repeatWeeks ? Math.max(1, values.repeatWeeks) : 1;
-    const baseStart = new Date(values.start_time);
-    const baseEnd = new Date(values.end_time);
+    const baseStart = parseDatetimeLocal(values.start_time) ?? new Date();
+    const baseEnd = parseDatetimeLocal(values.end_time) ?? new Date();
     const created: Appointment[] = [];
 
     for (let i = 0; i < occurrences; i++) {
