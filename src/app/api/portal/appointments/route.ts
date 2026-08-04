@@ -21,7 +21,8 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { trainer_id, client_name, start_time, end_time, notes } = body;
+  const { trainer_id, client_name, start_time, end_time, notes, series_id } =
+    body;
 
   if (!trainer_id || !client_name || !start_time || !end_time) {
     return NextResponse.json(
@@ -40,7 +41,14 @@ export async function POST(request: Request) {
   // RLS enforces that a non-owner trainer can only create appointments for themselves.
   const { data, error } = await supabase
     .from("appointments")
-    .insert({ trainer_id, client_name, start_time, end_time, notes: notes ?? null })
+    .insert({
+      trainer_id,
+      client_name,
+      start_time,
+      end_time,
+      notes: notes ?? null,
+      series_id: series_id ?? null,
+    })
     .select()
     .single();
 

@@ -15,6 +15,7 @@ import {
 } from "@/lib/portal/time-options";
 import { Select } from "@/components/portal/Select";
 import { DatePicker } from "@/components/portal/DatePicker";
+import { SeriesScopeDialog, type SeriesScope } from "./SeriesScopeDialog";
 
 export interface AppointmentFormValues {
   id: string | null;
@@ -32,9 +33,13 @@ interface AppointmentModalProps {
   canPickTrainer: boolean;
   canManage: boolean; // owner, or this trainer's own appointment — gates cancel
   isCanceled?: boolean;
-  onSave: (values: AppointmentFormValues) => Promise<string | null>; // returns error message, or null on success
+  isSeries?: boolean; // booked as part of a "Repeat weekly" batch
+  onSave: (
+    values: AppointmentFormValues,
+    scope: SeriesScope
+  ) => Promise<string | null>; // returns error message, or null on success
   onCancelAppointment?: () => Promise<void>;
-  onDelete?: () => Promise<string | null>; // returns error message, or null on success
+  onDelete?: (scope: SeriesScope) => Promise<string | null>;
   onClose: () => void;
 }
 
@@ -62,6 +67,7 @@ export function AppointmentModal({
   canPickTrainer,
   canManage,
   isCanceled,
+  isSeries,
   onSave,
   onCancelAppointment,
   onDelete,
@@ -79,6 +85,7 @@ export function AppointmentModal({
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [confirming, setConfirming] = useState<"cancel" | "delete" | null>(null);
+  const [scopeAsk, setScopeAsk] = useState<"save" | "delete" | null>(null);
   const [isWorking, setIsWorking] = useState(false);
 
   // An already-canceled appointment has nothing left to cancel — deleting is
@@ -106,27 +113,41 @@ export function AppointmentModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // One of a repeat batch: ask whether the edit lands on this session alone
+    // or carries through the rest before writing anything.
+    if (isSeries) {
+      setScopeAsk("save");
+      return;
+    }
+    await runSave("one");
+  };
+
+  const runSave = async (scope: SeriesScope) => {
     setError("");
     setIsSaving(true);
-    const err = await onSave({
-      ...form,
-      client_name: buildAppointmentName(apptType, nameOnly),
-      start_time: toDatetimeLocal(schedule.start),
-      end_time: toDatetimeLocal(endAt),
-      repeatWeeks: isNew && repeatWeekly ? repeatWeeks : undefined,
-    });
+    const err = await onSave(
+      {
+        ...form,
+        client_name: buildAppointmentName(apptType, nameOnly),
+        start_time: toDatetimeLocal(schedule.start),
+        end_time: toDatetimeLocal(endAt),
+        repeatWeeks: isNew && repeatWeekly ? repeatWeeks : undefined,
+      },
+      scope
+    );
     setIsSaving(false);
+    setScopeAsk(null);
     if (err) setError(err);
   };
 
   // Cancel keeps the row (struck through on the calendar); delete drops it for
   // good, here and on Google Calendar. Both close the modal on success.
-  const runConfirmed = async () => {
+  const runConfirmed = async (scope: SeriesScope = "one") => {
     setError("");
     setIsWorking(true);
     let err: string | null = null;
-    if (confirming === "delete") {
-      err = (await onDelete?.()) ?? null;
+    if (confirming === "delete" || scopeAsk === "delete") {
+      err = (await onDelete?.(scope)) ?? null;
     } else {
       await onCancelAppointment?.();
     }
@@ -134,6 +155,7 @@ export function AppointmentModal({
     if (err) {
       setError(err);
       setConfirming(null);
+      setScopeAsk(null);
     }
   };
 
@@ -330,7 +352,7 @@ export function AppointmentModal({
                     </button>
                     <button
                       type="button"
-                      onClick={runConfirmed}
+                      onClick={() => runConfirmed("one")}
                       disabled={isWorking}
                       className="flex-1 px-4 py-2 rounded-full bg-[#CB4538] text-white text-sm font-semibold hover:bg-[#B03B30] transition-colors disabled:opacity-50"
                     >
@@ -361,7 +383,9 @@ export function AppointmentModal({
                   {onDelete && (
                     <button
                       type="button"
-                      onClick={() => setConfirming("delete")}
+                      onClick={() =>
+                        isSeries ? setScopeAsk("delete") : setConfirming("delete")
+                      }
                       className="text-black/40 hover:text-[#CB4538] transition-colors"
                     >
                       Delete permanently
@@ -373,6 +397,31 @@ export function AppointmentModal({
           )}
         </form>
       </div>
+
+      {scopeAsk && (
+        <SeriesScopeDialog
+          title="This appointment repeats"
+          detail={
+            scopeAsk === "delete"
+              ? "Deleting also removes it from Google Calendar, and can't be undone."
+              : "Later sessions shift by the same amount and pick up the same details."
+          }
+          oneLabel={
+            scopeAsk === "delete" ? "Delete this appointment" : "Save this appointment"
+          }
+          followingLabel={
+            scopeAsk === "delete"
+              ? "Delete this and all later ones"
+              : "Save this and all later ones"
+          }
+          destructive={scopeAsk === "delete"}
+          busy={isSaving || isWorking}
+          onChoose={(scope) =>
+            scopeAsk === "delete" ? runConfirmed(scope) : runSave(scope)
+          }
+          onCancel={() => setScopeAsk(null)}
+        />
+      )}
     </div>
   );
 }

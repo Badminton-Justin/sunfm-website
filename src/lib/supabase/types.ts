@@ -18,6 +18,9 @@ export interface Appointment {
   end_time: string;
   notes: string | null;
   status: AppointmentStatus;
+  // Shared by the occurrences booked together via "Repeat weekly"; null for a
+  // one-off. Not a recurrence rule — see migration 0009.
+  series_id: string | null;
   created_at: string;
   updated_at: string;
   google_event_id: string | null;

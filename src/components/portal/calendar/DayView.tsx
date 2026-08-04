@@ -6,6 +6,7 @@ import { isSameDay } from "@/lib/portal/date-utils";
 import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
 import { getChipStyle } from "./colors";
+import { useEventDrag } from "./useEventDrag";
 import {
   GRID_HEIGHT,
   HEADER_HEIGHT,
@@ -26,6 +27,7 @@ interface DayViewProps {
   trainerColorMap: Map<string, string>;
   onSlotClick: (trainerId: string, start: Date) => void;
   onEventClick: (appt: Appointment) => void;
+  onMoveAppointment: (appt: Appointment, newStart: Date) => void;
 }
 
 export function DayView({
@@ -37,6 +39,7 @@ export function DayView({
   trainerColorMap,
   onSlotClick,
   onEventClick,
+  onMoveAppointment,
 }: DayViewProps) {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -52,6 +55,18 @@ export function DayView({
 
   const canEdit = (trainerId: string) =>
     currentTrainer.role === "owner" || trainerId === currentTrainer.id;
+
+  // columnCount 1: the columns here are trainers, and reassigning one would
+  // mean moving the event between two people's Google calendars.
+  const { drag, startDrag, handleMove, endDrag, wasDragged } = useEventDrag({
+    columnCount: 1,
+    canDrag: (appt) => appt.status !== "canceled" && canEdit(appt.trainer_id),
+    onMove: (appt, deltaMinutes) =>
+      onMoveAppointment(
+        appt,
+        new Date(new Date(appt.start_time).getTime() + deltaMinutes * 60000)
+      ),
+  });
 
   const handleColumnClick = (
     e: React.MouseEvent<HTMLDivElement>,
@@ -177,14 +192,30 @@ export function DayView({
                     const widthPct = 100 / laneCount;
                     const canceled = item.appt.status === "canceled";
                     const chipStyle = getChipStyle(item.appt.client_name, color);
+                    const dragging = drag?.id === item.appt.id;
+                    const draggable = !canceled && editable;
+                    // While dragging, the chip reads out where it would land.
+                    const shownStart = dragging
+                      ? new Date(item.start.getTime() + drag.deltaMinutes * 60000)
+                      : item.start;
                     return (
                       <button
                         key={item.appt.id}
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (wasDragged()) return;
                           onEventClick(item.appt);
                         }}
-                        className="absolute rounded-lg px-1.5 py-1 text-left overflow-hidden shadow-sm hover:brightness-110 transition-[filter]"
+                        onPointerDown={(e) => {
+                          e.stopPropagation();
+                          startDrag(e, item.appt, 0);
+                        }}
+                        onPointerMove={handleMove}
+                        onPointerUp={endDrag}
+                        onPointerCancel={endDrag}
+                        className={`absolute rounded-lg px-1.5 py-1 text-left overflow-hidden shadow-sm hover:brightness-110 transition-[filter] touch-none ${
+                          draggable ? "cursor-grab active:cursor-grabbing" : ""
+                        }`}
                         style={{
                           top,
                           height,
@@ -192,6 +223,13 @@ export function DayView({
                           width: `calc(${widthPct}% - 3px)`,
                           background: canceled ? "rgba(26,26,26,0.12)" : chipStyle.background,
                           opacity: canceled ? 0.7 : 1,
+                          transform: dragging
+                            ? `translateY(${drag.offsetY}px)`
+                            : undefined,
+                          zIndex: dragging ? 30 : undefined,
+                          boxShadow: dragging
+                            ? "0 8px 20px rgba(26,26,26,0.25)"
+                            : undefined,
                         }}
                       >
                         <p
@@ -207,7 +245,7 @@ export function DayView({
                               canceled ? "text-black/40" : chipStyle.subtleTextClass
                             }`}
                           >
-                            {item.start.toLocaleTimeString("en-US", {
+                            {shownStart.toLocaleTimeString("en-US", {
                               hour: "numeric",
                               minute: "2-digit",
                             })}

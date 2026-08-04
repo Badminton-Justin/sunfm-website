@@ -10,12 +10,14 @@ import {
   parseDatetimeLocal,
   toDatetimeLocal,
 } from "@/lib/portal/date-utils";
+import { compactClientName } from "@/lib/portal/client-display";
 import { buildTrainerColorMap } from "./colors";
 import { DayView } from "./DayView";
 import { WeekView } from "./WeekView";
 import { MonthView } from "./MonthView";
 import { TrainerSidebar } from "./TrainerSidebar";
 import { AppointmentModal, type AppointmentFormValues } from "./AppointmentModal";
+import { SeriesScopeDialog, type SeriesScope } from "./SeriesScopeDialog";
 
 type ViewMode = "day" | "week" | "month";
 
@@ -43,6 +45,11 @@ export function CalendarClient({
     null
   );
   const [isSyncing, setIsSyncing] = useState(false);
+  const [moveError, setMoveError] = useState("");
+  const [pendingMove, setPendingMove] = useState<{
+    original: Appointment;
+    optimistic: Appointment;
+  } | null>(null);
 
   // initialAppointments only changes when router.refresh() re-runs the
   // server component with fresh data (e.g. after "Sync now") — pick that up.
@@ -121,13 +128,16 @@ export function CalendarClient({
     : null;
 
   const handleSave = async (
-    values: AppointmentFormValues
+    values: AppointmentFormValues,
+    scope: SeriesScope
   ): Promise<string | null> => {
-    // repeatWeeks only applies to brand-new appointments — each occurrence
-    // is created independently (its own row, its own Google event), just
-    // shifted a week apart from the last.
+    // repeatWeeks only applies to brand-new appointments — each occurrence is
+    // created independently (its own row, its own Google event), just shifted
+    // a week apart from the last. They share a series_id purely so the portal
+    // can later ask "this one, or this and the rest?".
     const occurrences =
       !values.id && values.repeatWeeks ? Math.max(1, values.repeatWeeks) : 1;
+    const seriesId = occurrences > 1 ? crypto.randomUUID() : null;
     const baseStart = parseDatetimeLocal(values.start_time) ?? new Date();
     const baseEnd = parseDatetimeLocal(values.end_time) ?? new Date();
     const created: Appointment[] = [];
@@ -144,6 +154,7 @@ export function CalendarClient({
         start_time: start.toISOString(),
         end_time: end.toISOString(),
         notes: values.notes || null,
+        ...(values.id ? { scope } : { series_id: seriesId }),
       };
 
       const res = await fetch(
@@ -163,6 +174,8 @@ export function CalendarClient({
         return occurrences > 1 ? `Week ${i + 1} of ${occurrences}: ${message}` : message;
       }
       created.push(json.appointment);
+      // A "following" edit also rewrites the later occurrences server-side.
+      if (values.id && json.appointments) mergeAppointments(json.appointments);
     }
 
     setAppointments((prev) =>
@@ -175,19 +188,85 @@ export function CalendarClient({
     return null;
   };
 
-  // Hard delete — the row goes, and the API drops the matching Google Calendar
-  // event (queuing the deletion so a later sync can't re-import it).
-  const handleDelete = async (): Promise<string | null> => {
-    if (!modalValues?.id) return null;
-    const id = modalValues.id;
-    const res = await fetch(`/api/portal/appointments/${id}`, {
-      method: "DELETE",
+  const mergeAppointments = (updated: Appointment[]) => {
+    setAppointments((prev) =>
+      prev.map((a) => updated.find((u) => u.id === a.id) ?? a)
+    );
+  };
+
+  const canEditAppointment = (appt: Appointment) =>
+    isOwner || appt.trainer_id === currentTrainer.id;
+
+  // Drag-to-reschedule. The drop shows immediately — including while the
+  // series prompt is up, so the chip doesn't snap back and jump again — and is
+  // rolled back if the PATCH is refused or the prompt is dismissed.
+  const handleMoveAppointment = (appt: Appointment, newStart: Date) => {
+    const durationMs =
+      new Date(appt.end_time).getTime() - new Date(appt.start_time).getTime();
+    const optimistic = {
+      ...appt,
+      start_time: newStart.toISOString(),
+      end_time: new Date(newStart.getTime() + durationMs).toISOString(),
+    };
+
+    setMoveError("");
+    setAppointments((prev) =>
+      prev.map((a) => (a.id === appt.id ? optimistic : a))
+    );
+
+    if (appt.series_id) {
+      setPendingMove({ original: appt, optimistic });
+      return;
+    }
+    void commitMove(appt, optimistic, "one");
+  };
+
+  const commitMove = async (
+    original: Appointment,
+    optimistic: Appointment,
+    scope: SeriesScope
+  ) => {
+    const rollback = () =>
+      setAppointments((prev) =>
+        prev.map((a) => (a.id === original.id ? original : a))
+      );
+
+    const res = await fetch(`/api/portal/appointments/${original.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        start_time: optimistic.start_time,
+        end_time: optimistic.end_time,
+        scope,
+      }),
     });
+
     if (!res.ok) {
       const json = await res.json().catch(() => ({}));
+      rollback();
+      setMoveError(json.error ?? "Could not move that appointment.");
+      return;
+    }
+
+    const json = await res.json();
+    mergeAppointments(json.appointments ?? [json.appointment]);
+    router.refresh();
+  };
+
+  // Hard delete — the rows go, and the API drops the matching Google Calendar
+  // events (queuing the deletions so a later sync can't re-import them).
+  const handleDelete = async (scope: SeriesScope): Promise<string | null> => {
+    if (!modalValues?.id) return null;
+    const res = await fetch(
+      `/api/portal/appointments/${modalValues.id}?scope=${scope}`,
+      { method: "DELETE" }
+    );
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
       return json.error ?? "Could not delete the appointment.";
     }
-    setAppointments((prev) => prev.filter((a) => a.id !== id));
+    const removed = new Set<string>(json.deletedIds ?? [modalValues.id]);
+    setAppointments((prev) => prev.filter((a) => !removed.has(a.id)));
     setModalValues(null);
     router.refresh();
     return null;
@@ -300,6 +379,17 @@ export function CalendarClient({
         />
 
         <div className="flex-1 min-w-0">
+          {moveError && (
+            <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-[#CB4538]/25 bg-[#CB4538]/5 px-3.5 py-2.5">
+              <p className="text-sm font-medium text-[#CB4538]">{moveError}</p>
+              <button
+                onClick={() => setMoveError("")}
+                className="text-xs font-semibold text-[#CB4538]/60 hover:text-[#CB4538] transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
           {view === "day" && (
             <DayView
               date={anchorDate}
@@ -310,6 +400,7 @@ export function CalendarClient({
               trainerColorMap={trainerColorMap}
               onSlotClick={openCreateAt}
               onEventClick={openEdit}
+              onMoveAppointment={handleMoveAppointment}
             />
           )}
           {view === "week" && (
@@ -323,6 +414,8 @@ export function CalendarClient({
                 setView("day");
               }}
               onEventClick={openEdit}
+              onMoveAppointment={handleMoveAppointment}
+              canEdit={canEditAppointment}
             />
           )}
           {view === "month" && (
@@ -351,12 +444,46 @@ export function CalendarClient({
             editingAppt?.trainer_id === currentTrainer.id
           }
           isCanceled={editingAppt?.status === "canceled"}
+          isSeries={!!editingAppt?.series_id}
           onSave={handleSave}
           onCancelAppointment={
             modalValues.id ? handleCancelAppointment : undefined
           }
           onDelete={modalValues.id ? handleDelete : undefined}
           onClose={() => setModalValues(null)}
+        />
+      )}
+
+      {pendingMove && (
+        <SeriesScopeDialog
+          title="This appointment repeats"
+          detail={`Moving ${compactClientName(
+            pendingMove.original.client_name
+          )} to ${new Date(pendingMove.optimistic.start_time).toLocaleString(
+            "en-US",
+            {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+            }
+          )}. Later sessions shift by the same amount.`}
+          oneLabel="Move this appointment"
+          followingLabel="Move this and all later ones"
+          onChoose={(scope) => {
+            const move = pendingMove;
+            setPendingMove(null);
+            void commitMove(move.original, move.optimistic, scope);
+          }}
+          onCancel={() => {
+            setAppointments((prev) =>
+              prev.map((a) =>
+                a.id === pendingMove.original.id ? pendingMove.original : a
+              )
+            );
+            setPendingMove(null);
+          }}
         />
       )}
     </div>

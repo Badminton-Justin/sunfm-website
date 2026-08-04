@@ -5,6 +5,7 @@ import { addDays, isSameDay, startOfWeek } from "@/lib/portal/date-utils";
 import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
 import { getChipStyle } from "./colors";
+import { useEventDrag } from "./useEventDrag";
 import {
   HEADER_HEIGHT,
   HOUR_END,
@@ -22,6 +23,8 @@ interface WeekViewProps {
   trainerColorMap: Map<string, string>;
   onDayHeaderClick: (date: Date) => void;
   onEventClick: (appt: Appointment) => void;
+  onMoveAppointment: (appt: Appointment, newStart: Date) => void;
+  canEdit: (appt: Appointment) => boolean;
 }
 
 export function WeekView({
@@ -31,6 +34,8 @@ export function WeekView({
   trainerColorMap,
   onDayHeaderClick,
   onEventClick,
+  onMoveAppointment,
+  canEdit,
 }: WeekViewProps) {
   const weekStart = startOfWeek(anchorDate);
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -40,6 +45,20 @@ export function WeekView({
     (_, i) => HOUR_START + i
   );
   const visibleTrainerIds = new Set(trainers.map((t) => t.id));
+
+  // Columns are days here, so dragging sideways reschedules to another day —
+  // same trainer, same Google calendar.
+  const { drag, startDrag, handleMove, endDrag, wasDragged } = useEventDrag({
+    columnCount: days.length,
+    canDrag: (appt) => appt.status !== "canceled" && canEdit(appt),
+    onMove: (appt, deltaMinutes, columnIndex) => {
+      const start = new Date(appt.start_time);
+      const fromIndex = days.findIndex((d) => isSameDay(d, start));
+      const moved = new Date(start.getTime() + deltaMinutes * 60000);
+      moved.setDate(moved.getDate() + (columnIndex - fromIndex));
+      onMoveAppointment(appt, moved);
+    },
+  });
 
   return (
     <div
@@ -93,7 +112,7 @@ export function WeekView({
         </div>
 
         <div className="flex-1 grid grid-cols-7">
-          {days.map((day) => {
+          {days.map((day, dayIndex) => {
             const dayAppointments = appointments.filter(
               (a) =>
                 visibleTrainerIds.has(a.trainer_id) &&
@@ -128,11 +147,22 @@ export function WeekView({
                     trainerColorMap.get(item.appt.trainer_id) ?? "#1a1a1a";
                   const canceled = item.appt.status === "canceled";
                   const chipStyle = getChipStyle(item.appt.client_name, color);
+                  const dragging = drag?.id === item.appt.id;
+                  const draggable = !canceled && canEdit(item.appt);
                   return (
                     <button
                       key={item.appt.id}
-                      onClick={() => onEventClick(item.appt)}
-                      className="absolute rounded-md px-1 py-0.5 text-left overflow-hidden shadow-sm hover:brightness-110 transition-[filter]"
+                      onClick={() => {
+                        if (wasDragged()) return;
+                        onEventClick(item.appt);
+                      }}
+                      onPointerDown={(e) => startDrag(e, item.appt, dayIndex)}
+                      onPointerMove={handleMove}
+                      onPointerUp={endDrag}
+                      onPointerCancel={endDrag}
+                      className={`absolute rounded-md px-1 py-0.5 text-left overflow-hidden shadow-sm hover:brightness-110 transition-[filter] touch-none ${
+                        draggable ? "cursor-grab active:cursor-grabbing" : ""
+                      }`}
                       style={{
                         top: `${top}%`,
                         height: `${height}%`,
@@ -140,6 +170,13 @@ export function WeekView({
                         width: `calc(${widthPct}% - 2px)`,
                         background: canceled ? "rgba(26,26,26,0.12)" : chipStyle.background,
                         opacity: canceled ? 0.7 : 1,
+                        transform: dragging
+                          ? `translate(${drag.offsetX}px, ${drag.offsetY}px)`
+                          : undefined,
+                        zIndex: dragging ? 30 : undefined,
+                        boxShadow: dragging
+                          ? "0 8px 20px rgba(26,26,26,0.25)"
+                          : undefined,
                       }}
                     >
                       <p
