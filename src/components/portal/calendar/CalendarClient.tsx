@@ -175,6 +175,24 @@ export function CalendarClient({
     return null;
   };
 
+  // Hard delete — the row goes, and the API drops the matching Google Calendar
+  // event (queuing the deletion so a later sync can't re-import it).
+  const handleDelete = async (): Promise<string | null> => {
+    if (!modalValues?.id) return null;
+    const id = modalValues.id;
+    const res = await fetch(`/api/portal/appointments/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      return json.error ?? "Could not delete the appointment.";
+    }
+    setAppointments((prev) => prev.filter((a) => a.id !== id));
+    setModalValues(null);
+    router.refresh();
+    return null;
+  };
+
   const handleCancelAppointment = async () => {
     if (!modalValues?.id) return;
     const res = await fetch(`/api/portal/appointments/${modalValues.id}`, {
@@ -337,6 +355,7 @@ export function CalendarClient({
           onCancelAppointment={
             modalValues.id ? handleCancelAppointment : undefined
           }
+          onDelete={modalValues.id ? handleDelete : undefined}
           onClose={() => setModalValues(null)}
         />
       )}

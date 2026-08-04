@@ -34,6 +34,7 @@ interface AppointmentModalProps {
   isCanceled?: boolean;
   onSave: (values: AppointmentFormValues) => Promise<string | null>; // returns error message, or null on success
   onCancelAppointment?: () => Promise<void>;
+  onDelete?: () => Promise<string | null>; // returns error message, or null on success
   onClose: () => void;
 }
 
@@ -63,6 +64,7 @@ export function AppointmentModal({
   isCanceled,
   onSave,
   onCancelAppointment,
+  onDelete,
   onClose,
 }: AppointmentModalProps) {
   const parsed = parseAppointmentName(initial.client_name);
@@ -76,7 +78,12 @@ export function AppointmentModal({
   const [repeatWeeks, setRepeatWeeks] = useState(4);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [isCanceling, setIsCanceling] = useState(false);
+  const [confirming, setConfirming] = useState<"cancel" | "delete" | null>(null);
+  const [isWorking, setIsWorking] = useState(false);
+
+  // An already-canceled appointment has nothing left to cancel — deleting is
+  // the only way to clear it off the calendar.
+  const showCancel = !isCanceled && !!onCancelAppointment;
 
   const startMinutes = minuteOfDay(schedule.start);
   const endAt = new Date(schedule.start.getTime() + schedule.duration * 60000);
@@ -112,12 +119,22 @@ export function AppointmentModal({
     if (err) setError(err);
   };
 
-  const handleCancelAppointment = async () => {
-    if (!onCancelAppointment) return;
-    if (!confirm(`Cancel the appointment with ${nameOnly}?`)) return;
-    setIsCanceling(true);
-    await onCancelAppointment();
-    setIsCanceling(false);
+  // Cancel keeps the row (struck through on the calendar); delete drops it for
+  // good, here and on Google Calendar. Both close the modal on success.
+  const runConfirmed = async () => {
+    setError("");
+    setIsWorking(true);
+    let err: string | null = null;
+    if (confirming === "delete") {
+      err = (await onDelete?.()) ?? null;
+    } else {
+      await onCancelAppointment?.();
+    }
+    setIsWorking(false);
+    if (err) {
+      setError(err);
+      setConfirming(null);
+    }
   };
 
   return (
@@ -293,16 +310,65 @@ export function AppointmentModal({
             </button>
           </div>
 
-          {form.id && canManage && !isCanceled && onCancelAppointment && (
-            <div className="flex pt-3 border-t border-black/[0.06]">
-              <button
-                type="button"
-                onClick={handleCancelAppointment}
-                disabled={isCanceling}
-                className="flex-1 text-sm font-medium text-[#CB4538]/70 hover:text-[#CB4538] transition-colors disabled:opacity-50"
-              >
-                {isCanceling ? "Canceling…" : "Cancel appointment"}
-              </button>
+          {form.id && canManage && (showCancel || onDelete) && (
+            <div className="pt-3 border-t border-black/[0.06]">
+              {confirming ? (
+                <div>
+                  <p className="text-sm text-black/60 text-center mb-3">
+                    {confirming === "delete"
+                      ? `Delete ${nameOnly || "this appointment"} for good? It also disappears from Google Calendar, and this can't be undone.`
+                      : `Cancel the appointment with ${nameOnly}? It stays on the calendar, struck through.`}
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setConfirming(null)}
+                      disabled={isWorking}
+                      className="flex-1 px-4 py-2 rounded-full border border-black/15 text-black/60 text-sm font-medium hover:bg-black/5 transition-colors disabled:opacity-50"
+                    >
+                      Keep it
+                    </button>
+                    <button
+                      type="button"
+                      onClick={runConfirmed}
+                      disabled={isWorking}
+                      className="flex-1 px-4 py-2 rounded-full bg-[#CB4538] text-white text-sm font-semibold hover:bg-[#B03B30] transition-colors disabled:opacity-50"
+                    >
+                      {isWorking
+                        ? "Working…"
+                        : confirming === "delete"
+                        ? "Delete"
+                        : "Cancel it"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-4 text-sm font-medium">
+                  {showCancel && (
+                    <button
+                      type="button"
+                      onClick={() => setConfirming("cancel")}
+                      className="text-[#CB4538]/70 hover:text-[#CB4538] transition-colors"
+                    >
+                      Cancel appointment
+                    </button>
+                  )}
+                  {showCancel && onDelete && (
+                    <span className="text-black/15" aria-hidden="true">
+                      |
+                    </span>
+                  )}
+                  {onDelete && (
+                    <button
+                      type="button"
+                      onClick={() => setConfirming("delete")}
+                      className="text-black/40 hover:text-[#CB4538] transition-colors"
+                    >
+                      Delete permanently
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </form>
