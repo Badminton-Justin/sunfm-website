@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { deleteAppointmentFromGoogle, pushAppointmentToGoogle } from "@/lib/google/sync";
+import {
+  deleteAppointmentFromGoogle,
+  pushAppointmentToGoogle,
+  type PushOptions,
+} from "@/lib/google/sync";
 import type { Appointment } from "@/lib/supabase/types";
 
 // Both handlers wait on a Google API call (capped at 10s on its own), so the
@@ -14,12 +18,12 @@ export const maxDuration = 30;
 // google_push_pending, so the retry sweep finishes the job either way.
 const GOOGLE_BATCH = 5;
 
-async function pushAll(appointments: Appointment[]) {
+async function pushAll(appointments: Appointment[], options?: PushOptions) {
   const service = createServiceClient();
   for (let i = 0; i < appointments.length; i += GOOGLE_BATCH) {
     const batch = appointments.slice(i, i + GOOGLE_BATCH);
     const results = await Promise.allSettled(
-      batch.map((appt) => pushAppointmentToGoogle(service, appt))
+      batch.map((appt) => pushAppointmentToGoogle(service, appt, options))
     );
     for (const r of results) {
       if (r.status === "rejected") {
@@ -161,9 +165,13 @@ export async function PATCH(
     }
   }
 
+  // Un-cancelling is the one case that may legitimately create an event for a
+  // session already in the past: the user asked for it back explicitly.
+  const isRestore = status === "booked" && before.status === "canceled";
+
   // Service client — see the note in ../route.ts. Rows stay flagged
   // google_push_pending if this fails, so the retry sweep will catch them.
-  await pushAll(touched);
+  await pushAll(touched, { backfillPast: isRestore });
 
   return NextResponse.json({ appointment: data, appointments: touched });
 }

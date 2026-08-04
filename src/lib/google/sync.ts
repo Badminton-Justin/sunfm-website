@@ -251,9 +251,16 @@ async function claimForInsert(
 
 // Push a local create/update/cancel to the trainer's connected Google
 // Calendar. No-op if they haven't connected one.
+export interface PushOptions {
+  // Recreate the Google event even for a session that has already ended.
+  // Only ever set by an explicit user action — see the guard below.
+  backfillPast?: boolean;
+}
+
 export async function pushAppointmentToGoogle(
   supabase: SupabaseClient,
-  appointment: Appointment
+  appointment: Appointment,
+  options: PushOptions = {}
 ) {
   const connection = await getConnection(supabase, appointment.trainer_id);
   if (!connection) return;
@@ -336,7 +343,11 @@ export async function pushAppointmentToGoogle(
   // history onto the calendar has no value. The retry sweep reaches 30 days
   // back so that edits and cancellations of recent sessions still propagate;
   // this stops that reach from also back-filling events for them.
-  if (Date.parse(appointment.end_time) < Date.now()) {
+  //
+  // backfillPast lifts it for a deliberate request. Someone restoring a
+  // canceled session asked for that event back, and answering "it's in the
+  // past" would leave the portal and the calendar disagreeing.
+  if (!options.backfillPast && Date.parse(appointment.end_time) < Date.now()) {
     await supabase
       .from("appointments")
       .update({ google_synced_at: nowIso(), google_push_pending: false })

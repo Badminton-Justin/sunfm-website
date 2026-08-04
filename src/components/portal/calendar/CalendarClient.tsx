@@ -253,25 +253,32 @@ export function CalendarClient({
     router.refresh();
   };
 
-  // Un-cancel. The push path already handles a re-booked appointment: the
-  // stored google_event_id points at the event the cancel deleted, Google
-  // reports it gone, and a replacement is created in its place.
-  const handleRestore = async (): Promise<string | null> => {
+  // Cancel and restore are the same write: status, plus the scope that decides
+  // whether the later occurrences of a repeat come along.
+  const setStatus = async (
+    status: "booked" | "canceled",
+    scope: SeriesScope,
+    failureMessage: string
+  ): Promise<string | null> => {
     if (!modalValues?.id) return null;
     const res = await fetch(`/api/portal/appointments/${modalValues.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "booked" }),
+      body: JSON.stringify({ status, scope }),
     });
     const json = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      return json.error ?? "Could not restore the appointment.";
-    }
-    mergeAppointments([json.appointment]);
+    if (!res.ok) return json.error ?? failureMessage;
+    mergeAppointments(json.appointments ?? [json.appointment]);
     setModalValues(null);
     router.refresh();
     return null;
   };
+
+  // Un-cancel. The push path already handles a re-booked appointment: the
+  // stored google_event_id points at the event the cancel deleted, Google
+  // reports it gone, and a replacement is created in its place.
+  const handleRestore = (scope: SeriesScope) =>
+    setStatus("booked", scope, "Could not restore the appointment.");
 
   // Hard delete — the rows go, and the API drops the matching Google Calendar
   // events (queuing the deletions so a later sync can't re-import them).
@@ -292,22 +299,8 @@ export function CalendarClient({
     return null;
   };
 
-  const handleCancelAppointment = async () => {
-    if (!modalValues?.id) return;
-    const res = await fetch(`/api/portal/appointments/${modalValues.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "canceled" }),
-    });
-    const json = await res.json();
-    if (res.ok) {
-      setAppointments((prev) =>
-        prev.map((a) => (a.id === modalValues.id ? json.appointment : a))
-      );
-      setModalValues(null);
-      router.refresh();
-    }
-  };
+  const handleCancelAppointment = (scope: SeriesScope) =>
+    setStatus("canceled", scope, "Could not cancel the appointment.");
 
   return (
     <div>

@@ -38,11 +38,13 @@ interface AppointmentModalProps {
     values: AppointmentFormValues,
     scope: SeriesScope
   ) => Promise<string | null>; // returns error message, or null on success
-  onCancelAppointment?: () => Promise<void>;
-  onRestore?: () => Promise<string | null>;
+  onCancelAppointment?: (scope: SeriesScope) => Promise<string | null>;
+  onRestore?: (scope: SeriesScope) => Promise<string | null>;
   onDelete?: (scope: SeriesScope) => Promise<string | null>;
   onClose: () => void;
 }
+
+type Action = "save" | "cancel" | "restore" | "delete";
 
 const TYPE_OPTIONS: { value: AppointmentType; label: string }[] = [
   { value: "session", label: "Session" },
@@ -50,6 +52,33 @@ const TYPE_OPTIONS: { value: AppointmentType; label: string }[] = [
 ];
 
 const DEFAULT_DURATION = 60;
+
+const SCOPE_COPY: Record<
+  Action,
+  { verb: string; detail: string; destructive?: boolean }
+> = {
+  save: {
+    verb: "Save",
+    detail:
+      "Later sessions shift by the same amount and pick up the same details.",
+  },
+  cancel: {
+    verb: "Cancel",
+    detail:
+      "Canceling takes it off Google Calendar. The booking stays here, struck through, and can be restored.",
+    destructive: true,
+  },
+  restore: {
+    verb: "Restore",
+    detail: "Books it again and puts the Google Calendar event back.",
+  },
+  delete: {
+    verb: "Delete",
+    detail:
+      "Deleting also removes it from Google Calendar, and can't be undone.",
+    destructive: true,
+  },
+};
 
 // The form thinks in "when it starts" + "how long it runs"; the two
 // datetime-local strings the caller wants are derived from that on save.
@@ -87,7 +116,7 @@ export function AppointmentModal({
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [confirming, setConfirming] = useState<"cancel" | "delete" | null>(null);
-  const [scopeAsk, setScopeAsk] = useState<"save" | "delete" | null>(null);
+  const [scopeAsk, setScopeAsk] = useState<Action | null>(null);
   const [isWorking, setIsWorking] = useState(false);
 
   // An already-canceled appointment has nothing left to cancel; it gets
@@ -95,19 +124,8 @@ export function AppointmentModal({
   const showCancel = !isCanceled && !!onCancelAppointment;
   const showRestore = !!isCanceled && !!onRestore;
 
-  const runRestore = async () => {
-    setError("");
-    setIsWorking(true);
-    const err = await onRestore?.();
-    setIsWorking(false);
-    if (err) setError(err);
-  };
-
   const startMinutes = minuteOfDay(schedule.start);
   const endAt = new Date(schedule.start.getTime() + schedule.duration * 60000);
-  // The push path deliberately doesn't create Google events for sessions that
-  // have already finished, so restoring one only changes the portal.
-  const hasHappened = endAt.getTime() < Date.now();
 
   const setStartDate = (date: Date) => {
     setSchedule((s) => {
@@ -125,52 +143,55 @@ export function AppointmentModal({
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // One of a repeat batch: ask whether the edit lands on this session alone
-    // or carries through the rest before writing anything.
+  // Every write goes through here. One of a repeat batch asks whether it lands
+  // on this session alone or carries through the later ones first; a one-off
+  // goes straight through as "one", which the server treats the same way.
+  const start = (action: Action) => {
     if (isSeries) {
-      setScopeAsk("save");
+      setScopeAsk(action);
       return;
     }
-    await runSave("one");
-  };
-
-  const runSave = async (scope: SeriesScope) => {
-    setError("");
-    setIsSaving(true);
-    const err = await onSave(
-      {
-        ...form,
-        client_name: buildAppointmentName(apptType, nameOnly),
-        start_time: toDatetimeLocal(schedule.start),
-        end_time: toDatetimeLocal(endAt),
-        repeatWeeks: isNew && repeatWeekly ? repeatWeeks : undefined,
-      },
-      scope
-    );
-    setIsSaving(false);
-    setScopeAsk(null);
-    if (err) setError(err);
-  };
-
-  // Cancel keeps the row (struck through on the calendar); delete drops it for
-  // good, here and on Google Calendar. Both close the modal on success.
-  const runConfirmed = async (scope: SeriesScope = "one") => {
-    setError("");
-    setIsWorking(true);
-    let err: string | null = null;
-    if (confirming === "delete" || scopeAsk === "delete") {
-      err = (await onDelete?.(scope)) ?? null;
-    } else {
-      await onCancelAppointment?.();
+    if (action === "save" || action === "restore") {
+      void run(action, "one");
+      return;
     }
-    setIsWorking(false);
+    setConfirming(action); // cancel and delete confirm before firing
+  };
+
+  const run = async (action: Action, scope: SeriesScope) => {
+    setError("");
+    const busy = action === "save" ? setIsSaving : setIsWorking;
+    busy(true);
+    let err: string | null = null;
+    if (action === "save") {
+      err = await onSave(
+        {
+          ...form,
+          client_name: buildAppointmentName(apptType, nameOnly),
+          start_time: toDatetimeLocal(schedule.start),
+          end_time: toDatetimeLocal(endAt),
+          repeatWeeks: isNew && repeatWeekly ? repeatWeeks : undefined,
+        },
+        scope
+      );
+    } else if (action === "delete") {
+      err = (await onDelete?.(scope)) ?? null;
+    } else if (action === "cancel") {
+      err = (await onCancelAppointment?.(scope)) ?? null;
+    } else {
+      err = (await onRestore?.(scope)) ?? null;
+    }
+    busy(false);
+    setScopeAsk(null);
     if (err) {
       setError(err);
       setConfirming(null);
-      setScopeAsk(null);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    start("save");
   };
 
   return (
@@ -182,9 +203,8 @@ export function AppointmentModal({
               This appointment is canceled
             </p>
             <p className="text-xs text-black/45 mt-0.5">
-              {hasHappened
-                ? "It was removed from Google Calendar. Restoring books it again here — past sessions aren't re-added to Google."
-                : "It was removed from Google Calendar. Restoring puts the event back."}
+              It was removed from Google Calendar. Restoring puts the event
+              back.
             </p>
           </div>
         )}
@@ -378,7 +398,7 @@ export function AppointmentModal({
                     </button>
                     <button
                       type="button"
-                      onClick={() => runConfirmed("one")}
+                      onClick={() => run(confirming, "one")}
                       disabled={isWorking}
                       className="flex-1 px-4 py-2 rounded-full bg-[#CB4538] text-white text-sm font-semibold hover:bg-[#B03B30] transition-colors disabled:opacity-50"
                     >
@@ -395,7 +415,7 @@ export function AppointmentModal({
                   {showCancel && (
                     <button
                       type="button"
-                      onClick={() => setConfirming("cancel")}
+                      onClick={() => start("cancel")}
                       className="text-[#CB4538]/70 hover:text-[#CB4538] transition-colors"
                     >
                       Cancel appointment
@@ -404,7 +424,7 @@ export function AppointmentModal({
                   {showRestore && (
                     <button
                       type="button"
-                      onClick={runRestore}
+                      onClick={() => start("restore")}
                       disabled={isWorking}
                       className="font-semibold text-black hover:opacity-70 transition-opacity disabled:opacity-50"
                     >
@@ -419,9 +439,7 @@ export function AppointmentModal({
                   {onDelete && (
                     <button
                       type="button"
-                      onClick={() =>
-                        isSeries ? setScopeAsk("delete") : setConfirming("delete")
-                      }
+                      onClick={() => start("delete")}
                       className="text-black/40 hover:text-[#CB4538] transition-colors"
                     >
                       Delete permanently
@@ -437,24 +455,12 @@ export function AppointmentModal({
       {scopeAsk && (
         <SeriesScopeDialog
           title="This appointment repeats"
-          detail={
-            scopeAsk === "delete"
-              ? "Deleting also removes it from Google Calendar, and can't be undone."
-              : "Later sessions shift by the same amount and pick up the same details."
-          }
-          oneLabel={
-            scopeAsk === "delete" ? "Delete this appointment" : "Save this appointment"
-          }
-          followingLabel={
-            scopeAsk === "delete"
-              ? "Delete this and all later ones"
-              : "Save this and all later ones"
-          }
-          destructive={scopeAsk === "delete"}
+          detail={SCOPE_COPY[scopeAsk].detail}
+          oneLabel={`${SCOPE_COPY[scopeAsk].verb} this appointment`}
+          followingLabel={`${SCOPE_COPY[scopeAsk].verb} this and all later ones`}
+          destructive={SCOPE_COPY[scopeAsk].destructive}
           busy={isSaving || isWorking}
-          onChoose={(scope) =>
-            scopeAsk === "delete" ? runConfirmed(scope) : runSave(scope)
-          }
+          onChoose={(scope) => run(scopeAsk, scope)}
           onCancel={() => setScopeAsk(null)}
         />
       )}
