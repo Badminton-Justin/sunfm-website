@@ -1,6 +1,11 @@
 -- Durability fixes for the Google Calendar two-way sync. Run in the Supabase
 -- SQL editor after 0006.
 --
+-- Written to be safely re-runnable: the SQL editor does not wrap a script in
+-- a transaction, so a statement failing partway through leaves the earlier
+-- ones applied. Every statement here is therefore conditional, and running
+-- the file twice is a no-op rather than an error.
+--
 -- Addresses four classes of latent failure:
 --   1. The pull window was anchored once (at connect time) and never moved,
 --      so Google -> portal sync developed a hard horizon that crept toward
@@ -18,7 +23,7 @@ alter table public.google_calendar_connections
   -- token to the original request, so this is the real horizon of what the
   -- incremental feed can ever deliver — the sync layer re-anchors before it
   -- gets close.
-  add column sync_window_end timestamptz,
+  add column if not exists sync_window_end timestamptz,
   -- Short-lived advisory lock. The webhook can fire several times in quick
   -- succession and overlap the cron/manual sync; without this they all pull
   -- with the same sync token and race each other's writes.
@@ -29,7 +34,7 @@ alter table public.google_calendar_connections
   -- PostgREST needs reserved characters quoted inside or(), and getting that
   -- subtly wrong fails the request rather than the predicate — which would
   -- read as "lock unavailable" and silently wedge sync for good.
-  add column sync_lock_at timestamptz not null default '1970-01-01T00:00:00Z',
+  add column if not exists sync_lock_at timestamptz not null default '1970-01-01T00:00:00Z',
   -- Escape hatch for a poison-pill event. We deliberately do not advance the
   -- sync token on a fully-failed batch (see 675cf48), but a single
   -- permanently-unwritable event would then stall the feed indefinitely.
@@ -37,23 +42,38 @@ alter table public.google_calendar_connections
   -- forces a full resync — that re-fetches everything in the window, so the
   -- bad event lands in a batch alongside good ones and the token can move
   -- past it without losing data.
-  add column consecutive_failed_pulls integer not null default 0;
+  add column if not exists consecutive_failed_pulls integer not null default 0;
 
 -- Two trainers connecting the same Google account would resolve to the same
 -- "SunFM Schedule" calendar, and since google_event_id is globally unique
 -- their syncs would fight over trainer_id on every appointment row.
-alter table public.google_calendar_connections
-  add constraint google_calendar_connections_calendar_id_key
-  unique (google_calendar_id);
+--
+-- ADD CONSTRAINT has no IF NOT EXISTS, hence the guard. If this errors with
+-- a duplicate-key violation, two trainers are already sharing one Google
+-- account and that has to be resolved by disconnecting one of them first.
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'google_calendar_connections_calendar_id_key'
+      and conrelid = 'public.google_calendar_connections'::regclass
+  ) then
+    alter table public.google_calendar_connections
+      add constraint google_calendar_connections_calendar_id_key
+      unique (google_calendar_id);
+  end if;
+end $$;
 
 -- ── appointments: pending-push flag ────────────────────────────────────────
 alter table public.appointments
-  add column google_push_pending boolean not null default true;
+  add column if not exists google_push_pending boolean not null default true;
 
 -- Existing rows that already round-tripped to Google are up to date.
 update public.appointments
   set google_push_pending = false
-  where google_event_id is not null and google_synced_at is not null;
+  where google_event_id is not null
+    and google_synced_at is not null
+    and google_push_pending;
 
 -- Flags a row as needing a push whenever a user-visible field changes.
 --
@@ -82,13 +102,14 @@ begin
 end;
 $$;
 
+drop trigger if exists appointments_mark_google_push_pending on public.appointments;
 create trigger appointments_mark_google_push_pending
   before update on public.appointments
   for each row
   execute function public.mark_google_push_pending();
 
 -- Lets the retry sweep find rows needing a push without a sequential scan.
-create index appointments_google_push_pending_idx
+create index if not exists appointments_google_push_pending_idx
   on public.appointments (trainer_id)
   where google_push_pending;
 
@@ -98,7 +119,7 @@ create index appointments_google_push_pending_idx
 -- "booked" by the next full resync. Rows are enqueued *before* the delete is
 -- attempted and removed only on confirmed success, so a crash mid-delete
 -- still leaves a durable record to retry.
-create table public.google_pending_deletions (
+create table if not exists public.google_pending_deletions (
   id uuid primary key default gen_random_uuid(),
   trainer_id uuid not null references public.trainers (id) on delete cascade,
   google_event_id text not null,
@@ -109,6 +130,7 @@ create table public.google_pending_deletions (
   unique (trainer_id, google_event_id)
 );
 
+drop trigger if exists google_pending_deletions_set_updated_at on public.google_pending_deletions;
 create trigger google_pending_deletions_set_updated_at
   before update on public.google_pending_deletions
   for each row
