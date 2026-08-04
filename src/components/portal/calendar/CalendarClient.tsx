@@ -253,6 +253,26 @@ export function CalendarClient({
     router.refresh();
   };
 
+  // Un-cancel. The push path already handles a re-booked appointment: the
+  // stored google_event_id points at the event the cancel deleted, Google
+  // reports it gone, and a replacement is created in its place.
+  const handleRestore = async (): Promise<string | null> => {
+    if (!modalValues?.id) return null;
+    const res = await fetch(`/api/portal/appointments/${modalValues.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "booked" }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      return json.error ?? "Could not restore the appointment.";
+    }
+    mergeAppointments([json.appointment]);
+    setModalValues(null);
+    router.refresh();
+    return null;
+  };
+
   // Hard delete — the rows go, and the API drops the matching Google Calendar
   // events (queuing the deletions so a later sync can't re-import them).
   const handleDelete = async (scope: SeriesScope): Promise<string | null> => {
@@ -449,6 +469,7 @@ export function CalendarClient({
           onCancelAppointment={
             modalValues.id ? handleCancelAppointment : undefined
           }
+          onRestore={modalValues.id ? handleRestore : undefined}
           onDelete={modalValues.id ? handleDelete : undefined}
           onClose={() => setModalValues(null)}
         />

@@ -39,6 +39,7 @@ interface AppointmentModalProps {
     scope: SeriesScope
   ) => Promise<string | null>; // returns error message, or null on success
   onCancelAppointment?: () => Promise<void>;
+  onRestore?: () => Promise<string | null>;
   onDelete?: (scope: SeriesScope) => Promise<string | null>;
   onClose: () => void;
 }
@@ -70,6 +71,7 @@ export function AppointmentModal({
   isSeries,
   onSave,
   onCancelAppointment,
+  onRestore,
   onDelete,
   onClose,
 }: AppointmentModalProps) {
@@ -88,12 +90,24 @@ export function AppointmentModal({
   const [scopeAsk, setScopeAsk] = useState<"save" | "delete" | null>(null);
   const [isWorking, setIsWorking] = useState(false);
 
-  // An already-canceled appointment has nothing left to cancel — deleting is
-  // the only way to clear it off the calendar.
+  // An already-canceled appointment has nothing left to cancel; it gets
+  // restore instead, which re-books it and rebuilds the Google event.
   const showCancel = !isCanceled && !!onCancelAppointment;
+  const showRestore = !!isCanceled && !!onRestore;
+
+  const runRestore = async () => {
+    setError("");
+    setIsWorking(true);
+    const err = await onRestore?.();
+    setIsWorking(false);
+    if (err) setError(err);
+  };
 
   const startMinutes = minuteOfDay(schedule.start);
   const endAt = new Date(schedule.start.getTime() + schedule.duration * 60000);
+  // The push path deliberately doesn't create Google events for sessions that
+  // have already finished, so restoring one only changes the portal.
+  const hasHappened = endAt.getTime() < Date.now();
 
   const setStartDate = (date: Date) => {
     setSchedule((s) => {
@@ -162,6 +176,18 @@ export function AppointmentModal({
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 z-50">
       <div className="bg-[#FDFCF8] rounded-[28px] shadow-2xl p-7 w-full max-w-md border border-black/[0.06] max-h-[90vh] overflow-y-auto">
+        {isCanceled && (
+          <div className="mb-4 rounded-xl bg-black/[0.04] border border-black/[0.07] px-3.5 py-2.5">
+            <p className="text-sm font-semibold text-black/70">
+              This appointment is canceled
+            </p>
+            <p className="text-xs text-black/45 mt-0.5">
+              {hasHappened
+                ? "It was removed from Google Calendar. Restoring books it again here — past sessions aren't re-added to Google."
+                : "It was removed from Google Calendar. Restoring puts the event back."}
+            </p>
+          </div>
+        )}
         <h2 className="font-display text-2xl text-black mb-5">
           {form.id ? "Edit appointment" : "New appointment"}
         </h2>
@@ -332,7 +358,7 @@ export function AppointmentModal({
             </button>
           </div>
 
-          {form.id && canManage && (showCancel || onDelete) && (
+          {form.id && canManage && (showCancel || showRestore || onDelete) && (
             <div className="pt-3 border-t border-black/[0.06]">
               {confirming ? (
                 <div>
@@ -375,7 +401,17 @@ export function AppointmentModal({
                       Cancel appointment
                     </button>
                   )}
-                  {showCancel && onDelete && (
+                  {showRestore && (
+                    <button
+                      type="button"
+                      onClick={runRestore}
+                      disabled={isWorking}
+                      className="font-semibold text-black hover:opacity-70 transition-opacity disabled:opacity-50"
+                    >
+                      {isWorking ? "Restoring…" : "Restore appointment"}
+                    </button>
+                  )}
+                  {(showCancel || showRestore) && onDelete && (
                     <span className="text-black/15" aria-hidden="true">
                       |
                     </span>
