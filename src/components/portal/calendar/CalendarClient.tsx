@@ -140,58 +140,43 @@ export function CalendarClient({
     values: AppointmentFormValues,
     scope: SeriesScope
   ): Promise<string | null> => {
-    // repeatWeeks only applies to brand-new appointments — each occurrence is
-    // created independently (its own row, its own Google event), just shifted
-    // a week apart from the last. They share a series_id purely so the portal
-    // can later ask "this one, or this and the rest?".
-    const occurrences =
-      !values.id && values.repeatWeeks ? Math.max(1, values.repeatWeeks) : 1;
-    const seriesId = occurrences > 1 ? crypto.randomUUID() : null;
-    const baseStart = parseDatetimeLocal(values.start_time) ?? new Date();
-    const baseEnd = parseDatetimeLocal(values.end_time) ?? new Date();
-    const created: Appointment[] = [];
+    // A repeat is expanded server-side. Doing it here meant one request per
+    // week, each waiting on its own Google insert — bearable at 4 weeks,
+    // unusable for an open-ended booking's ~26.
+    const start = parseDatetimeLocal(values.start_time) ?? new Date();
+    const end = parseDatetimeLocal(values.end_time) ?? new Date();
 
-    for (let i = 0; i < occurrences; i++) {
-      const start = new Date(baseStart);
-      start.setDate(start.getDate() + i * 7);
-      const end = new Date(baseEnd);
-      end.setDate(end.getDate() + i * 7);
+    const payload = {
+      trainer_id: values.trainer_id,
+      client_name: values.client_name,
+      start_time: start.toISOString(),
+      end_time: end.toISOString(),
+      notes: values.notes || null,
+      ...(values.id ? { scope } : { repeat: values.repeat }),
+    };
 
-      const payload = {
-        trainer_id: values.trainer_id,
-        client_name: values.client_name,
-        start_time: start.toISOString(),
-        end_time: end.toISOString(),
-        notes: values.notes || null,
-        ...(values.id ? { scope } : { series_id: seriesId }),
-      };
-
-      const res = await fetch(
-        values.id
-          ? `/api/portal/appointments/${values.id}`
-          : "/api/portal/appointments",
-        {
-          method: values.id ? "PATCH" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
-      const json = await res.json();
-
-      if (!res.ok) {
-        const message = json.error ?? "Something went wrong.";
-        return occurrences > 1 ? `Week ${i + 1} of ${occurrences}: ${message}` : message;
+    const res = await fetch(
+      values.id
+        ? `/api/portal/appointments/${values.id}`
+        : "/api/portal/appointments",
+      {
+        method: values.id ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       }
-      created.push(json.appointment);
+    );
+    const json = await res.json();
+
+    if (!res.ok) return json.error ?? "Something went wrong.";
+
+    if (values.id) {
       // A "following" edit also rewrites the later occurrences server-side.
-      if (values.id && json.appointments) mergeAppointments(json.appointments);
+      mergeAppointments(json.appointments ?? [json.appointment]);
+    } else {
+      const created: Appointment[] = json.appointments ?? [json.appointment];
+      setAppointments((prev) => [...prev, ...created]);
     }
 
-    setAppointments((prev) =>
-      values.id
-        ? prev.map((a) => (a.id === values.id ? created[0] : a))
-        : [...prev, ...created]
-    );
     setModalValues(null);
     router.refresh();
     return null;

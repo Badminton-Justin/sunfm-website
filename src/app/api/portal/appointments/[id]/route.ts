@@ -165,6 +165,15 @@ export async function PATCH(
     }
   }
 
+  // Cancelling the rest of a repeat ends it. Without this the nightly top-up
+  // would read the series as still running and book the weeks back.
+  if (scope === "following" && before.series_id && status === "canceled") {
+    await supabase
+      .from("appointments")
+      .update({ series_open_ended: false })
+      .eq("series_id", before.series_id);
+  }
+
   // Un-cancelling is the one case that may legitimately create an event for a
   // session already in the past: the user asked for it back explicitly.
   const isRestore = status === "booked" && before.status === "canceled";
@@ -220,6 +229,16 @@ export async function DELETE(
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  // Deleting the rest of a repeat ends it. Any earlier occurrences survive as
+  // the record of sessions that happened, but the series stops growing —
+  // otherwise the nightly top-up would book the deleted weeks straight back.
+  if (scope === "following" && existing.series_id) {
+    await supabase
+      .from("appointments")
+      .update({ series_open_ended: false })
+      .eq("series_id", existing.series_id);
   }
 
   // Service client, and durable: the local rows are already gone, so a failed

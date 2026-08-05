@@ -27,6 +27,9 @@ export interface Appointment {
   // Shared by the occurrences booked together via "Repeat weekly"; null for a
   // one-off. Not a recurrence rule — see migration 0009.
   series_id: string | null;
+  // The series was booked with no end date, so the daily cron keeps topping it
+  // up to the horizon. Cleared when the recurrence is ended — see 0011.
+  series_open_ended: boolean;
   created_at: string;
   updated_at: string;
   google_event_id: string | null;

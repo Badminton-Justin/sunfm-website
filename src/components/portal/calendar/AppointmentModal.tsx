@@ -9,6 +9,11 @@ import {
 } from "@/lib/portal/client-display";
 import { parseDatetimeLocal, toDatetimeLocal } from "@/lib/portal/date-utils";
 import {
+  MAX_FIXED_WEEKS,
+  OPEN_ENDED_HORIZON_DAYS,
+  type RepeatSpec,
+} from "@/lib/portal/recurrence";
+import {
   endTimeOptions,
   minuteOfDay,
   startTimeOptions,
@@ -24,7 +29,9 @@ export interface AppointmentFormValues {
   start_time: string; // datetime-local value
   end_time: string;
   notes: string;
-  repeatWeeks?: number; // total occurrences (including the first) — new appointments only
+  // New appointments only. weeks counts occurrences including the first;
+  // indefinite ignores it and books to the rolling horizon instead.
+  repeat?: RepeatSpec;
 }
 
 interface AppointmentModalProps {
@@ -113,6 +120,7 @@ export function AppointmentModal({
   const [nameOnly, setNameOnly] = useState(parsed.name);
   const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [repeatWeeks, setRepeatWeeks] = useState(4);
+  const [repeatForever, setRepeatForever] = useState(false);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [confirming, setConfirming] = useState<"cancel" | "delete" | null>(null);
@@ -170,7 +178,12 @@ export function AppointmentModal({
           client_name: buildAppointmentName(apptType, nameOnly),
           start_time: toDatetimeLocal(schedule.start),
           end_time: toDatetimeLocal(endAt),
-          repeatWeeks: isNew && repeatWeekly ? repeatWeeks : undefined,
+          repeat:
+            isNew && repeatWeekly
+              ? repeatForever
+                ? { indefinite: true }
+                : { weeks: repeatWeeks }
+              : undefined,
         },
         scope
       );
@@ -327,21 +340,55 @@ export function AppointmentModal({
                 </span>
               </label>
               {repeatWeekly && (
-                <div className="flex items-center gap-2 mt-3 pl-[26px]">
-                  <span className="text-sm text-black/60">for</span>
-                  <input
-                    type="number"
-                    min={2}
-                    max={52}
-                    value={repeatWeeks}
-                    onChange={(e) =>
-                      setRepeatWeeks(
-                        Math.min(52, Math.max(2, Number(e.target.value) || 2))
-                      )
-                    }
-                    className="w-16 px-2 py-1.5 rounded-lg border border-black/10 bg-white text-sm text-center focus:outline-none focus:border-[#CB4538] transition-colors"
-                  />
-                  <span className="text-sm text-black/60">weeks</span>
+                <div className="mt-3 pl-[26px] space-y-2.5">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="repeat-mode"
+                      checked={!repeatForever}
+                      onChange={() => setRepeatForever(false)}
+                      className="w-3.5 h-3.5 accent-[#CB4538]"
+                    />
+                    <span className="text-sm text-black/60">for</span>
+                    <input
+                      type="number"
+                      min={2}
+                      max={MAX_FIXED_WEEKS}
+                      value={repeatWeeks}
+                      onFocus={() => setRepeatForever(false)}
+                      onChange={(e) =>
+                        setRepeatWeeks(
+                          Math.min(
+                            MAX_FIXED_WEEKS,
+                            Math.max(2, Number(e.target.value) || 2)
+                          )
+                        )
+                      }
+                      className="w-16 px-2 py-1.5 rounded-lg border border-black/10 bg-white text-sm text-center focus:outline-none focus:border-[#CB4538] transition-colors"
+                    />
+                    <span className="text-sm text-black/60">weeks</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="repeat-mode"
+                      checked={repeatForever}
+                      onChange={() => setRepeatForever(true)}
+                      className="w-3.5 h-3.5 accent-[#CB4538]"
+                    />
+                    <span className="text-sm text-black/60">
+                      indefinitely
+                    </span>
+                  </label>
+
+                  {repeatForever && (
+                    <p className="text-xs text-black/40 leading-relaxed">
+                      Books {OPEN_ENDED_HORIZON_DAYS / 7} weeks ahead and keeps
+                      extending nightly. Ends when you cancel or delete this and
+                      all later ones.
+                    </p>
+                  )}
                 </div>
               )}
             </div>

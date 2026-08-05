@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { runFullSync } from "@/lib/google/sync";
+import { extendOpenEndedSeries } from "@/lib/portal/extend-series";
 
 // Iterates every connected trainer's calendar sequentially — give it real
 // headroom rather than the default 10s timeout.
@@ -21,6 +22,17 @@ export async function GET(request: Request) {
   }
 
   const supabase = createServiceClient();
+
+  // Before the sync, not after: the occurrences this adds are created flagged
+  // google_push_pending, and pushPendingAppointments inside runFullSync is
+  // what mirrors them onto Google in this same run.
+  let extended = { series: 0, created: 0 };
+  try {
+    extended = await extendOpenEndedSeries(supabase);
+  } catch (err) {
+    console.error("Extending open-ended series failed", err);
+  }
+
   const { data: connections } = await supabase
     .from("google_calendar_connections")
     .select("*");
@@ -36,5 +48,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json({ synced: results.length, results });
+  return NextResponse.json({ synced: results.length, results, extended });
 }
