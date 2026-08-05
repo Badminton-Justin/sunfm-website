@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   CALENDAR_VIEWS,
   type Appointment,
+  type AvailabilityOverride,
   type CalendarView,
   type Trainer,
   type TrainerAvailability,
@@ -30,6 +31,7 @@ interface CalendarClientProps {
   trainers: Trainer[];
   initialAppointments: Appointment[];
   availability: TrainerAvailability[];
+  overrides: AvailabilityOverride[];
   initialView: CalendarView;
 }
 
@@ -38,6 +40,7 @@ export function CalendarClient({
   trainers,
   initialAppointments,
   availability,
+  overrides,
   initialView,
 }: CalendarClientProps) {
   const router = useRouter();
@@ -404,6 +407,7 @@ export function CalendarClient({
               currentTrainer={currentTrainer}
               appointments={appointments}
               availability={availability}
+              overrides={overrides}
               trainerColorMap={trainerColorMap}
               onSlotSelect={openCreateAt}
               onEventClick={openEdit}
@@ -425,6 +429,8 @@ export function CalendarClient({
               onSlotSelect={openCreateAt}
               canEdit={canEditAppointment}
               currentTrainerId={currentTrainer.id}
+              availability={availability}
+              overrides={overrides}
             />
           )}
           {view === "month" && (
@@ -454,6 +460,8 @@ export function CalendarClient({
           }
           isCanceled={editingAppt?.status === "canceled"}
           isSeries={!!editingAppt?.series_id}
+          availability={availability}
+          overrides={overrides}
           onSave={handleSave}
           onCancelAppointment={
             modalValues.id ? handleCancelAppointment : undefined

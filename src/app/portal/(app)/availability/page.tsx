@@ -6,14 +6,16 @@ export default async function AvailabilityPage() {
   const trainer = await requireTrainer();
   const supabase = await createClient();
 
-  const [{ data: trainers }, { data: availability }] = await Promise.all([
-    supabase.from("trainers").select("*").order("name"),
-    supabase
-      .from("trainer_availability")
-      .select("*")
-      .order("day_of_week")
-      .order("start_time"),
-  ]);
+  const [{ data: trainers }, { data: availability }, { data: overrides }] =
+    await Promise.all([
+      supabase.from("trainers").select("*").order("name"),
+      supabase
+        .from("trainer_availability")
+        .select("*")
+        .order("day_of_week")
+        .order("start_time"),
+      supabase.from("availability_overrides").select("*").order("date"),
+    ]);
 
   return (
     <div>
@@ -23,6 +25,7 @@ export default async function AvailabilityPage() {
         currentTrainer={trainer}
         trainers={trainers ?? []}
         initialAvailability={availability ?? []}
+        initialOverrides={overrides ?? []}
       />
     </div>
   );

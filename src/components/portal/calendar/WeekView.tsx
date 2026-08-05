@@ -1,7 +1,16 @@
 "use client";
 
-import type { Appointment, Trainer } from "@/lib/supabase/types";
+import type {
+  Appointment,
+  AvailabilityOverride,
+  Trainer,
+  TrainerAvailability,
+} from "@/lib/supabase/types";
 import { addDays, isSameDay, startOfWeek } from "@/lib/portal/date-utils";
+import {
+  effectiveAvailability,
+  timeToMinutes,
+} from "@/lib/portal/availability";
 import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
 import { getChipStyle } from "./colors";
@@ -30,6 +39,8 @@ interface WeekViewProps {
   onMoveAppointment: (appt: Appointment, newStart: Date) => void;
   onSlotSelect: (trainerId: string, start: Date, end: Date) => void;
   canEdit: (appt: Appointment) => boolean;
+  availability: TrainerAvailability[];
+  overrides: AvailabilityOverride[];
   // Week columns are days, not trainers, so a new appointment here belongs to
   // whoever is signed in.
   currentTrainerId: string;
@@ -46,6 +57,8 @@ export function WeekView({
   onSlotSelect,
   canEdit,
   currentTrainerId,
+  availability,
+  overrides,
 }: WeekViewProps) {
   const weekStart = startOfWeek(anchorDate);
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -171,6 +184,37 @@ export function WeekView({
                   backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent calc(100% / ${TOTAL_HOURS} - 1px), rgba(26,26,26,0.07) calc(100% / ${TOTAL_HOURS} - 1px), rgba(26,26,26,0.07) calc(100% / ${TOTAL_HOURS}))`,
                 }}
               >
+                {/* Availability for whoever's schedule this is. Week columns
+                    are days, so a multi-trainer week shows the signed-in
+                    trainer's hours rather than an unreadable overlay. */}
+                {(() => {
+                  const effective = effectiveAvailability(
+                    day,
+                    currentTrainerId,
+                    availability,
+                    overrides
+                  );
+                  if (effective.isUnavailable) {
+                    return (
+                      <div className="absolute inset-0 pointer-events-none bg-[repeating-linear-gradient(135deg,rgba(26,26,26,0.05)_0px,rgba(26,26,26,0.05)_6px,transparent_6px,transparent_12px)]" />
+                    );
+                  }
+                  return effective.windows.map((w, i) => {
+                    const from = timeToMinutes(w.start_time);
+                    const to = timeToMinutes(w.end_time);
+                    return (
+                      <div
+                        key={i}
+                        className="absolute left-0 right-0 pointer-events-none bg-[#3F6E52]/[0.07]"
+                        style={{
+                          top: `${minutesToOffsetPercent(from)}%`,
+                          height: `${minutesToHeightPercent(to - from)}%`,
+                        }}
+                      />
+                    );
+                  });
+                })()}
+
                 {selection?.key === String(dayIndex) && (
                   <SlotPreview
                     compact

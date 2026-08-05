@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { Trainer } from "@/lib/supabase/types";
+import type {
+  AvailabilityOverride,
+  Trainer,
+  TrainerAvailability,
+} from "@/lib/supabase/types";
+import { coverageFor } from "@/lib/portal/availability";
 import {
   buildAppointmentName,
   parseAppointmentName,
@@ -41,6 +46,10 @@ interface AppointmentModalProps {
   canManage: boolean; // owner, or this trainer's own appointment — gates cancel
   isCanceled?: boolean;
   isSeries?: boolean; // booked as part of a "Repeat weekly" batch
+  // Warns when the chosen time falls outside the trainer's hours. Never
+  // blocks — the 6am on your day off is exactly the booking you'd want.
+  availability: TrainerAvailability[];
+  overrides: AvailabilityOverride[];
   onSave: (
     values: AppointmentFormValues,
     scope: SeriesScope
@@ -105,6 +114,8 @@ export function AppointmentModal({
   canManage,
   isCanceled,
   isSeries,
+  availability,
+  overrides,
   onSave,
   onCancelAppointment,
   onRestore,
@@ -134,6 +145,16 @@ export function AppointmentModal({
 
   const startMinutes = minuteOfDay(schedule.start);
   const endAt = new Date(schedule.start.getTime() + schedule.duration * 60000);
+
+  const coverage = coverageFor(
+    schedule.start,
+    endAt,
+    form.trainer_id,
+    availability,
+    overrides
+  );
+  const trainerName =
+    trainers.find((t) => t.id === form.trainer_id)?.name ?? "this trainer";
 
   const setStartDate = (date: Date) => {
     setSchedule((s) => {
@@ -325,6 +346,25 @@ export function AppointmentModal({
               </div>
             </div>
           </div>
+
+          {!coverage.covered && (
+            <div className="rounded-xl bg-[#B8860B]/10 px-3.5 py-2.5">
+              <p className="text-sm font-medium text-[#8A6508]">
+                {coverage.availability.isUnavailable
+                  ? `${trainerName} is marked unavailable that day${
+                      coverage.availability.note
+                        ? ` — ${coverage.availability.note}`
+                        : ""
+                    }.`
+                  : coverage.availability.windows.length === 0
+                  ? `${trainerName} has no hours set for that day.`
+                  : `That's outside ${trainerName}'s hours for that day.`}
+              </p>
+              <p className="text-xs text-[#8A6508]/70 mt-0.5">
+                You can still book it.
+              </p>
+            </div>
+          )}
 
           {isNew && (
             <div className="rounded-xl border border-black/10 px-3.5 py-3">

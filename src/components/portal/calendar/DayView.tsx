@@ -1,8 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Appointment, Trainer, TrainerAvailability } from "@/lib/supabase/types";
+import type {
+  Appointment,
+  AvailabilityOverride,
+  Trainer,
+  TrainerAvailability,
+} from "@/lib/supabase/types";
 import { isSameDay } from "@/lib/portal/date-utils";
+import {
+  effectiveAvailability,
+  timeToMinutes,
+} from "@/lib/portal/availability";
 import { compactClientName } from "@/lib/portal/client-display";
 import { layoutTimedItems } from "@/lib/portal/event-layout";
 import { getChipStyle } from "./colors";
@@ -28,6 +37,7 @@ interface DayViewProps {
   currentTrainer: Trainer;
   appointments: Appointment[];
   availability: TrainerAvailability[];
+  overrides: AvailabilityOverride[];
   trainerColorMap: Map<string, string>;
   onSlotSelect: (trainerId: string, start: Date, end: Date) => void;
   onEventClick: (appt: Appointment) => void;
@@ -40,6 +50,7 @@ export function DayView({
   currentTrainer,
   appointments,
   availability,
+  overrides,
   trainerColorMap,
   onSlotSelect,
   onEventClick,
@@ -51,7 +62,6 @@ export function DayView({
     return () => clearInterval(id);
   }, []);
 
-  const dayOfWeek = date.getDay();
   const hours = Array.from(
     { length: HOUR_END - HOUR_START + 1 },
     (_, i) => HOUR_START + i
@@ -133,8 +143,11 @@ export function DayView({
                 appt: a,
               }))
             );
-            const windows = availability.filter(
-              (a) => a.trainer_id === t.id && a.day_of_week === dayOfWeek
+            const effective = effectiveAvailability(
+              date,
+              t.id,
+              availability,
+              overrides
             );
             const editable = canEdit(t.id);
 
@@ -175,19 +188,23 @@ export function DayView({
                   onPointerUp={endSelect}
                   onPointerCancel={cancelSelect}
                 >
-                  {windows.map((w) => {
-                    const [sh, sm] = w.start_time.split(":").map(Number);
-                    const [eh, em] = w.end_time.split(":").map(Number);
-                    const top = (sh + sm / 60 - HOUR_START) * PX_PER_HOUR;
-                    const height = (eh + em / 60 - (sh + sm / 60)) * PX_PER_HOUR;
-                    return (
-                      <div
-                        key={w.id}
-                        className="absolute left-0 right-0 pointer-events-none"
-                        style={{ top, height, background: `${color}12` }}
-                      />
-                    );
-                  })}
+                  {effective.isUnavailable ? (
+                    <div className="absolute inset-0 pointer-events-none bg-[repeating-linear-gradient(135deg,rgba(26,26,26,0.05)_0px,rgba(26,26,26,0.05)_6px,transparent_6px,transparent_12px)]" />
+                  ) : (
+                    effective.windows.map((w, i) => {
+                      const top = minutesToOffsetPx(timeToMinutes(w.start_time));
+                      const height = minutesToHeightPx(
+                        timeToMinutes(w.end_time) - timeToMinutes(w.start_time)
+                      );
+                      return (
+                        <div
+                          key={i}
+                          className="absolute left-0 right-0 pointer-events-none"
+                          style={{ top, height, background: `${color}12` }}
+                        />
+                      );
+                    })
+                  )}
 
                   {selection?.key === t.id && (
                     <SlotPreview

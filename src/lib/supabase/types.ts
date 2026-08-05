@@ -46,6 +46,18 @@ export interface TrainerAvailability {
   created_at: string;
 }
 
+// A date's availability, replacing the weekly pattern for that date entirely.
+// Null times mean unavailable all day — see migration 0012.
+export interface AvailabilityOverride {
+  id: string;
+  trainer_id: string;
+  date: string; // "YYYY-MM-DD"
+  start_time: string | null; // "HH:MM:SS"
+  end_time: string | null;
+  note: string | null;
+  created_at: string;
+}
+
 export interface GoogleCalendarConnection {
   trainer_id: string;
   google_calendar_id: string;
