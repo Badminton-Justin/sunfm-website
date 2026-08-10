@@ -17,7 +17,7 @@ This is not a substitute for the SERP/gap research in `/new-blog` Step 1 — it'
 
 ---
 
-## Blog clusters (41 posts as of 2026-08-07)
+## Blog clusters (42 posts as of 2026-08-10)
 
 ### 1. Desk-worker self-check cluster (17 posts) — the biggest cluster, split into 3 sub-groups + 1 cross-cutting addition
 
@@ -84,14 +84,15 @@ Small enough that all three can reasonably reference each other; no sub-grouping
 - `sleep-and-muscle-recovery-for-strength-training-over-30`
 - `when-work-stress-should-change-how-you-train`
 - `personal-training-for-stress-relief-bay-area`
+- `recovery-tools-cold-plunge-sauna-massage-gun-after-40` (2026-08-10) — evidence-graded read on cold water immersion, sauna, and percussive devices. The sorting principle is whether a tool acts on how you feel, on what you adapt, or both, which puts cold plunge in a different category from the other two. Anchors: Roberts et al. 2015 (J Physiol, 21 men, 12 weeks, strength and mass both higher in the active-recovery arm), Fyfe et al. 2019 (J Appl Physiol, 16 men, 7 weeks, fiber hypertrophy blunted but maximal strength intact), a Bayesian meta-analysis on post-resistance heat, and a 39-study review on percussive devices. The SERP differentiator is that nearly every ranking page is published by someone selling the equipment. Links out to `sleep-and-muscle-recovery-for-strength-training-over-30` and `when-to-take-a-deload-week`; inbound link added from the sleep post's supplements-hierarchy passage, which already framed purchases as downstream of sleep.
 
-Overlaps meaningfully with cluster 2's "coming back from a setback" thread (deload, rest days) — these are legitimate cross-category link targets, not just same-category ones.
+Overlaps meaningfully with cluster 2's "coming back from a setback" thread (deload, rest days) — these are legitimate cross-category link targets, not just same-category ones. Note that the recovery-tools post deliberately routes readers *toward* the deload post rather than competing with it: its position is that most perceived recovery problems are programming problems.
 
 ### 5. Conditioning / aerobic fitness (1 post — new cluster as of 2026-08-07)
 
 - `cardio-fitness-test-at-home-after-40` (2026-08-07) — the seed post for a pillar the site had zero coverage of across its first 40 posts. Uses cluster 1's self-test format (test, score, decompose, fix) but measures conditioning rather than mobility or pain, which is why it sits here instead of in cluster 1. Three tests: a timed four-flight stair climb (ESC/EACVI 2020, Peteiro, 165 patients), one-minute heart rate recovery taken off that same climb (Cole et al., NEJM 1999, 2,468 adults, ≤12 bpm cutoff), and the YMCA three-minute step test scored against age/sex norms. The differentiator against the SERP is decomposition plus honesty about the research cohorts, since the ranking pages are split between VO2-max calculators that stop at a number and listicles with no scoring. Links out to `sitting-rising-test-at-home` (the other composite-score-needs-decomposing post), `sleep-and-muscle-recovery-for-strength-training-over-30` (heart rate recovery is sleep-sensitive), and `how-often-should-you-strength-train-after-30` (the fit-it-around-lifting section). Inbound link added from `what-to-do-on-rest-days-strength-training` at its 60-minute rest-day section, framed to preserve that post's distinction between easy recovery walks and actual aerobic training.
 
-Where this cluster should grow next: zone 2 programming for lifters, and cardio-versus-lifting scheduling, both of which came back with weak SERPs (small blogs and Substacks) during the 2026-08 research. Both are programming posts rather than self-tests, so they'd deepen this cluster rather than duplicate the seed post. Watch the overlap with cluster 2's `how-often-should-you-strength-train-after-30` and `what-to-do-on-rest-days-strength-training` if the scheduling angle gets picked up.
+Where this cluster should grow next: **retired the earlier "zone 2 programming for lifters" suggestion on 2026-08-10.** The SERP is genuinely weak there, but the seed post already covers talk-test pacing, two 30-40 minute easy sessions, the 4x4 protocol, a week-by-week build, and a full section on lifting order and same-day vs separate-day scheduling. A dedicated zone-2 post would clear 30% overlap, and a weak SERP doesn't rescue a rewrite. Cardio-versus-lifting scheduling has the same problem for the same reason. This cluster needs either a genuinely new measurement (cardio drift, resting heart rate trends) or a distinct population (returning runners, people cleared after a cardiac event) before it earns a second post.
 
 ---
 
