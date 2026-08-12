@@ -58,33 +58,50 @@ export async function POST(request: Request) {
       data.landingPage
     );
 
+    // The lead is only truly lost if every channel below fails. Track that, so a
+    // downstream outage (expired SMTP password, Apps Script hiccup) never tells a
+    // prospect their submission failed when we actually have their details.
+    let leadCaptured = false;
+
     if (process.env.CONSULTATION_SHEETS_WEBHOOK_URL) {
-      await fetch(process.env.CONSULTATION_SHEETS_WEBHOOK_URL, {
-        method: "POST",
-        redirect: "follow",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          age: data.age || "",
-          goal: data.goal + (data.goalDetails ? ` — ${data.goalDetails}` : ""),
-          experience: data.experience,
-          currentRoutine: data.currentRoutine || "",
-          motivation: data.motivation || "",
-          injuries: data.injuries || "",
-          howTheyHeard: data.referral + (data.referralDetails ? ` — ${data.referralDetails}` : ""),
-          attribution: attributionSummary,
-          landingPage: data.landingPage || "",
-          gclid: data.attribution?.gclid || "",
-          utmSource: data.attribution?.utm_source || "",
-          utmMedium: data.attribution?.utm_medium || "",
-          utmCampaign: data.attribution?.utm_campaign || "",
-          utmTerm: data.attribution?.utm_term || "",
-          utmContent: data.attribution?.utm_content || "",
-          submittedAt: new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }),
-        }),
-      });
+      try {
+        const sheetsResponse = await fetch(process.env.CONSULTATION_SHEETS_WEBHOOK_URL, {
+          method: "POST",
+          redirect: "follow",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            age: data.age || "",
+            goal: data.goal + (data.goalDetails ? ` — ${data.goalDetails}` : ""),
+            experience: data.experience,
+            currentRoutine: data.currentRoutine || "",
+            motivation: data.motivation || "",
+            injuries: data.injuries || "",
+            howTheyHeard: data.referral + (data.referralDetails ? ` — ${data.referralDetails}` : ""),
+            attribution: attributionSummary,
+            landingPage: data.landingPage || "",
+            gclid: data.attribution?.gclid || "",
+            utmSource: data.attribution?.utm_source || "",
+            utmMedium: data.attribution?.utm_medium || "",
+            utmCampaign: data.attribution?.utm_campaign || "",
+            utmTerm: data.attribution?.utm_term || "",
+            utmContent: data.attribution?.utm_content || "",
+            submittedAt: new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }),
+          }),
+        });
+        // fetch only rejects on network failure, so check the status too.
+        if (sheetsResponse.ok) {
+          leadCaptured = true;
+        } else {
+          console.error(
+            `Sheets webhook returned ${sheetsResponse.status} for ${data.email}`
+          );
+        }
+      } catch (sheetsError) {
+        console.error("Sheets webhook error:", sheetsError);
+      }
     }
 
     // Subscribe to Kit with consultation_warm tag
@@ -109,11 +126,12 @@ export async function POST(request: Request) {
 
     const recipients = process.env.NOTIFICATION_EMAILS || "";
 
-    await transporter.sendMail({
-      from: `"SunFM Notifications" <${process.env.GMAIL_USER}>`,
-      to: recipients,
-      subject: `New Consultation Request: ${data.name}`,
-      text: `
+    try {
+      await transporter.sendMail({
+        from: `"SunFM Notifications" <${process.env.GMAIL_USER}>`,
+        to: recipients,
+        subject: `New Consultation Request: ${data.name}`,
+        text: `
 New consultation request from ${data.name}
 
 Name: ${data.name}
@@ -131,7 +149,26 @@ How they heard about SunFM: ${data.referral}${data.referralDetails ? ` — ${dat
 
 Attribution: ${attributionSummary}
       `.trim(),
-    });
+      });
+      leadCaptured = true;
+    } catch (mailError) {
+      // Most likely an expired Gmail app password. Loud, because a silent failure
+      // here means nobody finds out about the lead until someone reads the sheet.
+      console.error(
+        `NOTIFICATION EMAIL FAILED for ${data.email} (${data.name}) — check GMAIL_APP_PASSWORD:`,
+        mailError
+      );
+    }
+
+    if (!leadCaptured) {
+      console.error(
+        `LEAD LOST — every channel failed for ${data.email} (${data.name})`
+      );
+      return NextResponse.json(
+        { error: "Failed to submit form" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       { message: "Form submitted successfully" },
