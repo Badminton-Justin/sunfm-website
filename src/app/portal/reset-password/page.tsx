@@ -9,8 +9,27 @@ const MIN_LENGTH = 8;
 
 type Status = "checking" | "ready" | "invalid";
 
+// Supabase reports a refused link by bouncing here with the reason in the URL
+// — in the fragment for the verify flow, in the query for PKCE. Reading it
+// beats guessing: "expired" and "already used" are different problems, and so
+// is a redirect_to that isn't on the allow list.
+function reasonFromUrl(): string | null {
+  if (typeof window === "undefined") return null;
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const query = new URLSearchParams(window.location.search);
+  const code = hash.get("error_code") ?? query.get("error_code");
+  const description =
+    hash.get("error_description") ?? query.get("error_description");
+  if (!code && !description) return null;
+  if (code === "otp_expired") {
+    return "That link has already been used, or it has expired. Reset links are good for one hour and a single use — even a link preview opening it first counts as that use.";
+  }
+  return description?.replace(/\+/g, " ") ?? "That link was refused.";
+}
+
 export default function ResetPasswordPage() {
   const [status, setStatus] = useState<Status>("checking");
+  const [reason, setReason] = useState<string | null>(null);
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -23,6 +42,15 @@ export default function ResetPasswordPage() {
   // session exists — via onAuthStateChange, or getSession if the exchange
   // already finished before this effect ran.
   useEffect(() => {
+    // A reason in the URL is final — no session is coming, so don't sit on
+    // "Checking your link…" for the timeout before saying so.
+    const urlReason = reasonFromUrl();
+    if (urlReason) {
+      setReason(urlReason);
+      setStatus("invalid");
+      return;
+    }
+
     const supabase = createClient();
     let settled = false;
 
@@ -104,8 +132,8 @@ export default function ResetPasswordPage() {
           {status === "invalid" && (
             <>
               <p className="text-center text-sm text-black/45 mb-8 mt-2">
-                That link has expired or has already been used. Reset links are
-                good for one hour and one use.
+                {reason ??
+                  "That link has expired or has already been used. Reset links are good for one hour and one use."}
               </p>
               <Link
                 href="/portal/forgot-password"
