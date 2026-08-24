@@ -37,7 +37,7 @@ const adminContentSecurityPolicy = [
   "frame-ancestors 'self'",
 ].join("; ");
 
-const securityHeaders = (csp) => [
+const securityHeaders = (csp, extra = []) => [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "X-XSS-Protection", value: "1; mode=block" },
@@ -47,18 +47,27 @@ const securityHeaders = (csp) => [
     value: "max-age=63072000; includeSubDomains; preload",
   },
   { key: "Content-Security-Policy", value: csp },
+  ...extra,
 ];
+
+// The CMS shell is a static file that rarely changes, so browsers hang onto
+// it -- and a 304 revalidation carries no CSP header, meaning Chrome keeps
+// applying whatever policy it cached alongside the HTML. Anyone who loaded
+// /admin while the policy was still blocking Sveltia would go on applying
+// that dead policy indefinitely, since the unchanged file keeps matching its
+// own ETag. Skipping the cache entirely keeps the header authoritative.
+const noStore = [{ key: "Cache-Control", value: "no-store, must-revalidate" }];
 
 const nextConfig = {
   async headers() {
     return [
       {
         source: "/admin",
-        headers: securityHeaders(adminContentSecurityPolicy),
+        headers: securityHeaders(adminContentSecurityPolicy, noStore),
       },
       {
         source: "/admin/:path*",
-        headers: securityHeaders(adminContentSecurityPolicy),
+        headers: securityHeaders(adminContentSecurityPolicy, noStore),
       },
       {
         source: "/((?!admin$|admin/).*)",
