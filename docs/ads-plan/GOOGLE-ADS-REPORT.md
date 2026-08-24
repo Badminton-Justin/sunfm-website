@@ -142,6 +142,58 @@ Investigated a real case: Chirag's consultation request on 2026-07-23 had a `gcl
 
 **Implication:** if this gap has been happening regularly (not just Chirag), true CAC could be meaningfully better than the $455/conversion figure calculated in the main audit above — worth re-checking after a few weeks of Enhanced Conversions data.
 
+### Update, 2026-08-23 — account restarted; the headline CAC in this report is wrong
+
+**Correction to the main audit above: `form_submit_success` is 11, not 4.** Pulled live from the API on 2026-08-23 for 2026-06-01 → today. Against $2,331.86 all-time spend across 271 clicks, that is a **$212 CAC, not $455.** The $455 figure was accurate the day it was written and has been quoted since as if it were current. It isn't. Anyone reading this report should pull fresh numbers before repeating any figure in it.
+
+**Conversions by date tell a story the totals hide:**
+
+```
+Jun 12, Jun 19, Jun 26, Jul 5, Jul 12    ~1 per week
+Jul 27, Jul 29, Jul 30, Jul 31 (x2), Aug 1    6 in 6 days
+Aug 2 - Aug 5    zero, then the account went dark
+```
+
+The rate jumped roughly 6x starting 2026-07-27 — the same day landing-page personalization shipped. It then stops dead on 08-01, which is the exact day the Gmail failure described in commit `ce8f912` began returning 500s and suppressing `form_submit_success`. The account spent $208.59 across 08-02 → 08-05 recording zero conversions, and was paused on 08-05.
+
+**Those four days cannot be read as a demand signal.** 17 clicks is too small a sample to conclude anything either way, and the one thing we do know is that the event was broken for the entire window. If the pause was prompted by that zero-conversion run, it was prompted by an artifact.
+
+**Quality Score has not moved: 1.49 impression-weighted (was 1.5).** Measured 07-28 → 08-23. This is not evidence the landing-page fix failed — only 9 days of traffic ran after it shipped, and QS recomputes on a trailing window. The conversion-rate jump above is the more credible early read. Re-measure after 2-3 weeks of clean traffic.
+
+**Restart configuration, applied via API this session:**
+
+- `Non-Brand Location` daily budget **$45 → $25**, matching BUDGET-PLAN.md. The $45 had drifted 80% above plan; restarting there would have breached the $1,500/mo Phase 1 cap while CAC ($212) was still above the documented $150 gate.
+- `Brand Defense` ($5/day) and `Non-Brand Location` ($25/day) set to ENABLED, verified by read-back. $30/day total.
+- `Non-Brand Intent` stays PAUSED per the 07-27 decision.
+- Maximize Conversions re-enters learning after 18 days dark. Expect a poor first 1-2 weeks regardless of setup; do not judge on it.
+
+**Prerequisites confirmed before restart:** `GMAIL_APP_PASSWORD` verified working in production (the `ce8f912` guard stopped the 500s but never repaired the credential). GA4 user-provided data collection enabled for Enhanced Conversions — this is **not** on the Google Ads Links screen, it is Admin → Data collection and modification → Data collection. The Admin API does not expose that toggle, so the only real confirmation is the **Diagnostics** tab on the `form_submit_success` conversion action 24-48h after traffic resumes. Check it.
+
+**Declined:** marking `movement_screen_completed` as a secondary conversion. Owner's call; it remains `includeInConversionsMetric: False` and Smart Bidding gets no mid-funnel signal. Do not re-flag.
+
+**Noted, not acted on:** `adsPersonalizationEnabled: false` on the GA4↔Ads link. Unrelated to Enhanced Conversions, but it blocks GA4 audience export to Ads, which matters whenever remarketing starts.
+
+### Update, 2026-08-24 — found the actual gate: GA4's Ads export scope
+
+Restarted campaigns produced a lead at 06:00 (`gclid` and `gbraid` both present in the submission, confirmed from the notification email). Google Ads recorded **zero** conversions. Chased the full chain and found a real misconfiguration.
+
+**Everything else was correct.** Verified live via API: Ads customer has `acceptedCustomerDataTerms: true` and `enhancedConversionsForLeadsEnabled: true`; `form_submit_success` is ENABLED, primary, `SUBMIT_LEAD_FORM`, `ONE_PER_CLICK`, 90-day click lookback, data-driven attribution `AVAILABLE`; `form_submit_success` is a registered GA4 key event; neither live campaign has a `selective_optimization` override. None of these were the problem.
+
+**The gate was `adsWebConversionDataExportScope: GOOGLE_PAID_CHANNELS`** in GA4's attribution settings. That value means GA4 exports to Ads *only* conversions it has already attributed to a Google paid channel itself. Kavitha's 06:00 session was filed as `Unassigned / (not set)` — despite a valid `gclid` in the URL — so it did not qualify for export and was never sent. Waiting would not have fixed it; the conversion was not delayed, it was excluded.
+
+**Changed to `PAID_AND_ORGANIC_CHANNELS`** (2026-08-24, via Admin API, read back to confirm). Google Ads now receives the conversion and applies *its own* attribution against the `gclid` it already has on file, instead of depending on GA4's cookie-based session stitching — which is the part that breaks under iOS/ITP. The `gbraid` on this click points at iOS, which is exactly where the July 29 Chirag case failed too. Two confirmed instances now, same root cause.
+
+**What this does and does not do:**
+- Forward-looking only. Does **not** retroactively export Kavitha (08-24) or Chirag (07-23); both are permanently missing from Ads unless uploaded offline.
+- Expect reported conversions to rise, because Ads now counts what GA4 was withholding. This is a correction, not a performance improvement — **there is a discontinuity in the CAC series at 2026-08-24.** Do not read it as the restart working.
+- `ONE_PER_CLICK` means the two submissions Kavitha made on one `gclid` (short `/start` form at 06:0x, then the full homepage form at 06:21) would count once. No dedupe logic needed.
+
+**Offline conversion import — deferred, not dismissed.** Uploading `gclid` + timestamp straight to the Ads API bypasses GA4 entirely and would also have caught both misses. The data is already there: `route.ts` writes a dedicated `gclid` column and a `submittedAt` timestamp to the consultation sheet. Revisit if conversions still fail to appear now that the export scope is fixed. It remains the only route that could recover the two historical misses.
+
+**Verification pending:** confirm Ads records a conversion for the next paid lead. Also check Goals -> Conversions -> `form_submit_success` -> Diagnostics for the Enhanced Conversions match rate once traffic accumulates.
+
+**Tooling note:** `scripts/gcloud-reauth.sh` now requests `analytics.edit` alongside `analytics.readonly` — GA4 Admin writes need it, and ADC is a single credential file so every scope must be requested in one login. ADC has also been expiring in well under 24h; if that persists, a dedicated stored refresh token would beat re-running the login before every session.
+
 ### Still open
 
 1. ~~Mark `movement_screen_completed` as a secondary conversion~~ — blocked on the API, needs the manual UI step above.
