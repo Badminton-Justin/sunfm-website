@@ -164,6 +164,13 @@ export function listEventsInitial(
 ) {
   return listEventsPaged(accessToken, calendarId, {
     singleEvents: "true",
+    // Without this Google returns only events that still exist, so a full sync
+    // can add and update but never learns that anything was deleted. Every
+    // deletion made in Google between one incremental pull and the next full
+    // one would stay booked in the portal forever — nothing revisits a row
+    // once it has an event id. Cancelled entries are already handled
+    // downstream in applyGoogleEvents.
+    showDeleted: "true",
     timeMin,
     timeMax,
     maxResults: "250",
