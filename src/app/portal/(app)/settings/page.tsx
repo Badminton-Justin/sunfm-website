@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireTrainer } from "@/lib/supabase/trainer";
 import { GoogleCalendarConnect } from "@/components/portal/GoogleCalendarConnect";
 import { DefaultViewSetting } from "@/components/portal/DefaultViewSetting";
+import { ChangePassword } from "@/components/portal/ChangePassword";
 
 interface SettingsPageProps {
   searchParams: Promise<{
@@ -34,6 +35,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
           connectWarning={params.google_warning}
         />
         <DefaultViewSetting current={trainer.default_calendar_view} />
+        <ChangePassword email={trainer.email} />
       </div>
     </div>
   );
