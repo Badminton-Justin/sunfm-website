@@ -23,7 +23,25 @@ export default function ForgotPasswordPage() {
     setIsLoading(false);
 
     if (resetError) {
-      setError("Could not send that. Try again in a moment.");
+      // Rate limiting is the failure this hits in practice, and it deserves
+      // its own wording: the project's mail allowance is measured in hours,
+      // so "try again in a moment" sends people into a retry loop that cannot
+      // succeed. Supabase reports the short per-request cooldown and the
+      // hourly project cap through the same 429.
+      const message = resetError.message?.toLowerCase() ?? "";
+      const isRateLimited =
+        resetError.status === 429 || message.includes("rate limit");
+      const seconds = /after (\d+) seconds?/.exec(message)?.[1];
+
+      if (isRateLimited && seconds) {
+        setError(`Too many requests. Try again in ${seconds} seconds.`);
+      } else if (isRateLimited) {
+        setError(
+          "The mail allowance for this project is used up — it resets hourly. Ask an owner to set your password directly if you need in sooner."
+        );
+      } else {
+        setError("Could not send that. Try again in a moment.");
+      }
       return;
     }
     // Deliberately not "we found your account" — that would confirm which
