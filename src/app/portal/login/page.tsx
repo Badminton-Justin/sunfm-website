@@ -123,6 +123,15 @@ export default function PortalLoginPage() {
               </p>
             )}
 
+            <p className="-mt-2 text-right">
+              <a
+                href="/portal/forgot-password"
+                className="text-xs font-semibold text-black/40 hover:text-black transition-colors"
+              >
+                Forgot password?
+              </a>
+            </p>
+
             <button
               type="submit"
               disabled={isLoading}
