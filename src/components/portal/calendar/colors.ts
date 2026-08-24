@@ -25,10 +25,20 @@ export function buildTrainerColorMap(trainers: Trainer[]) {
 // distinct hue rather than a shade of the trainer's. Sessions are deliberately
 // absent: they keep the trainer color, so a multi-trainer week still reads as
 // whose day is whose.
-const TYPE_COLORS: Partial<Record<ChipType, string>> = {
-  consultation: "#6B4E9E", // purple
-  interview: "#B8500F", // deep burnt orange — kept well clear of the cherry
-  // red sessions use, since that red is also a trainer color
+//
+// The bar these have to clear is a grid that is overwhelmingly cherry red, so
+// what matters is distance from that red rather than from white. A darker
+// orange keeps white text but lands only ~21 ΔE from it and reads as a shade
+// of red; this one is ~47 ΔE away and unmistakable. It's too bright to carry
+// white text, hence `ink`.
+interface TypeStyle {
+  background: string;
+  ink?: boolean;
+}
+
+const TYPE_STYLES: Partial<Record<ChipType, TypeStyle>> = {
+  consultation: { background: "#6B4E9E" }, // purple
+  interview: { background: "#FF8C00", ink: true }, // orange
 };
 
 export interface ChipStyle {
@@ -38,13 +48,20 @@ export interface ChipStyle {
 }
 
 // Sessions use the trainer's normal color (same as any untyped appointment);
-// anything in TYPE_COLORS overrides it.
+// anything in TYPE_STYLES overrides it.
 export function getChipStyle(clientName: string, baseColor: string): ChipStyle {
   const type = appointmentTypeFromName(clientName);
-  const background = (type && TYPE_COLORS[type]) ?? baseColor;
-  return {
-    background,
-    textClass: "text-white",
-    subtleTextClass: "text-white/80",
-  };
+  const style = type ? TYPE_STYLES[type] : undefined;
+  const background = style?.background ?? baseColor;
+  return style?.ink
+    ? {
+        background,
+        textClass: "text-[#1a1a1a]",
+        subtleTextClass: "text-[#1a1a1a]/75",
+      }
+    : {
+        background,
+        textClass: "text-white",
+        subtleTextClass: "text-white/80",
+      };
 }
