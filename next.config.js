@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+
+// Site-wide policy. Anything the marketing pages load has to be listed here.
 const contentSecurityPolicy = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.posthog.com https://googleads.g.doubleclick.net https://www.google.com",
@@ -14,22 +16,53 @@ const contentSecurityPolicy = [
   "frame-ancestors 'self'",
 ].join("; ");
 
+// The /admin CMS is a different animal: it pulls Sveltia off unpkg and talks
+// straight to the GitHub API. Those hosts have no business being allowed on
+// the public pages, so /admin gets its own policy instead of widening the one
+// above. The global rule below skips /admin so only one CSP header applies —
+// two CSP headers intersect, and the stricter one would still block the CMS.
+const adminContentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com",
+  "style-src 'self' 'unsafe-inline' https://unpkg.com",
+  "font-src 'self' data: https://unpkg.com",
+  "img-src 'self' data: blob: https:",
+  "media-src 'self' data: blob:",
+  "worker-src 'self' blob:",
+  "connect-src 'self' https://unpkg.com https://api.github.com https://*.githubusercontent.com",
+  "frame-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self' https://github.com",
+  "frame-ancestors 'self'",
+].join("; ");
+
+const securityHeaders = (csp) => [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  { key: "X-XSS-Protection", value: "1; mode=block" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
+  { key: "Content-Security-Policy", value: csp },
+];
+
 const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
-          },
-          { key: "Content-Security-Policy", value: contentSecurityPolicy },
-        ],
+        source: "/admin",
+        headers: securityHeaders(adminContentSecurityPolicy),
+      },
+      {
+        source: "/admin/:path*",
+        headers: securityHeaders(adminContentSecurityPolicy),
+      },
+      {
+        source: "/((?!admin$|admin/).*)",
+        headers: securityHeaders(contentSecurityPolicy),
       },
     ];
   },
