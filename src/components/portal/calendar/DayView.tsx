@@ -8,6 +8,7 @@ import type {
   TrainerAvailability,
 } from "@/lib/supabase/types";
 import { isSameDay } from "@/lib/portal/date-utils";
+import { gymNow, wallClockFromIso } from "@/lib/portal/timezone";
 import {
   effectiveAvailability,
   timeToMinutes,
@@ -56,9 +57,9 @@ export function DayView({
   onEventClick,
   onMoveAppointment,
 }: DayViewProps) {
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState(() => gymNow());
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 60_000);
+    const id = setInterval(() => setNow(gymNow()), 60_000);
     return () => clearInterval(id);
   }, []);
 
@@ -78,7 +79,7 @@ export function DayView({
     onMove: (appt, deltaMinutes) =>
       onMoveAppointment(
         appt,
-        new Date(new Date(appt.start_time).getTime() + deltaMinutes * 60000)
+        new Date(wallClockFromIso(appt.start_time).getTime() + deltaMinutes * 60000)
       ),
   });
 
@@ -134,12 +135,14 @@ export function DayView({
           {trainers.map((t) => {
             const color = trainerColorMap.get(t.id) ?? "#1a1a1a";
             const dayAppointments = appointments.filter(
-              (a) => a.trainer_id === t.id && isSameDay(new Date(a.start_time), date)
+              (a) =>
+                a.trainer_id === t.id &&
+                isSameDay(wallClockFromIso(a.start_time), date)
             );
             const laidOut = layoutTimedItems(
               dayAppointments.map((a) => ({
-                start: new Date(a.start_time),
-                end: new Date(a.end_time),
+                start: wallClockFromIso(a.start_time),
+                end: wallClockFromIso(a.end_time),
                 appt: a,
               }))
             );

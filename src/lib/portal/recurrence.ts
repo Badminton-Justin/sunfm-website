@@ -1,3 +1,8 @@
+import {
+  instantFromWallClock,
+  wallClockFromInstant,
+} from "@/lib/portal/timezone";
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // How far ahead an open-ended weekly booking is materialised. Matches
@@ -22,13 +27,15 @@ export function horizonFrom(now = new Date()) {
   return new Date(now.getTime() + OPEN_ENDED_HORIZON_DAYS * DAY_MS);
 }
 
-// Weekly by calendar date, not by adding 7×24h: setDate keeps the appointment
-// at the same wall-clock time across a daylight-saving change, which is what
-// "same time every Tuesday" means to the person who booked it.
+// Weekly by calendar date, not by adding 7×24h, so a session keeps its
+// wall-clock time across a daylight-saving change — what "same time every
+// Tuesday" means to whoever booked it. The shift is taken on the gym's clock
+// rather than the runtime's: this also runs server-side, where local time is
+// UTC and has no DST of its own to preserve.
 export function shiftWeeks(date: Date, weeks: number) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + weeks * 7);
-  return d;
+  const wall = wallClockFromInstant(date);
+  wall.setDate(wall.getDate() + weeks * 7);
+  return instantFromWallClock(wall);
 }
 
 // Every occurrence a booking creates up front, the first included. A one-off

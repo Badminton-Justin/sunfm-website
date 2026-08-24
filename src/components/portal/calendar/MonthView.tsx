@@ -2,6 +2,7 @@
 
 import type { Appointment, Trainer } from "@/lib/supabase/types";
 import { isSameDay, monthGridDays } from "@/lib/portal/date-utils";
+import { gymNow, wallClockFromIso } from "@/lib/portal/timezone";
 import { compactClientName } from "@/lib/portal/client-display";
 import { getChipStyle } from "./colors";
 
@@ -23,7 +24,7 @@ export function MonthView({
   onDayClick,
 }: MonthViewProps) {
   const days = monthGridDays(anchorDate);
-  const today = new Date();
+  const today = gymNow();
   const currentMonth = anchorDate.getMonth();
   const visibleTrainerIds = new Set(trainers.map((t) => t.id));
 
@@ -48,11 +49,12 @@ export function MonthView({
               (a) =>
                 a.status !== "canceled" &&
                 visibleTrainerIds.has(a.trainer_id) &&
-                isSameDay(new Date(a.start_time), day)
+                isSameDay(wallClockFromIso(a.start_time), day)
             )
             .sort(
               (a, b) =>
-                new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+                new Date(a.start_time).getTime() -
+                new Date(b.start_time).getTime()
             );
           const shown = dayAppointments.slice(0, MAX_CHIPS_PER_DAY);
           const overflow = dayAppointments.length - shown.length;
@@ -88,7 +90,7 @@ export function MonthView({
                       className={`text-[10px] leading-tight px-1 py-0.5 rounded truncate ${chipStyle.textClass}`}
                       style={{ background: chipStyle.background }}
                     >
-                      {new Date(appt.start_time).toLocaleTimeString("en-US", {
+                      {wallClockFromIso(appt.start_time).toLocaleTimeString("en-US", {
                         hour: "numeric",
                         minute: "2-digit",
                       })}{" "}

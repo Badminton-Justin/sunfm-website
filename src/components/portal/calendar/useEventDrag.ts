@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import type { Appointment } from "@/lib/supabase/types";
 import { HOUR_END, HOUR_START, TOTAL_HOURS } from "./grid-constants";
+import { wallClockFromIso } from "@/lib/portal/timezone";
 
 const SNAP_MINUTES = 15;
 // Below this, the gesture is still a click — chips open the modal on tap, so a
@@ -57,9 +58,11 @@ export function useEventDrag({
     if (!column) return;
 
     const rect = column.getBoundingClientRect();
-    const start = new Date(appt.start_time);
+    // Both ends read on the gym's clock: mixing a wall-clock start with a raw
+    // instant end would fold the device's UTC offset into the duration.
+    const start = wallClockFromIso(appt.start_time);
     const durationMin =
-      (new Date(appt.end_time).getTime() - start.getTime()) / 60000;
+      (wallClockFromIso(appt.end_time).getTime() - start.getTime()) / 60000;
     const startMin = start.getHours() * 60 + start.getMinutes();
 
     origin.current = {

@@ -17,6 +17,12 @@ import {
   parseDatetimeLocal,
   toDatetimeLocal,
 } from "@/lib/portal/date-utils";
+import {
+  GYM_TIME_ZONE,
+  gymNow,
+  isoFromWallClock,
+  wallClockFromIso,
+} from "@/lib/portal/timezone";
 import { compactClientName } from "@/lib/portal/client-display";
 import { buildTrainerColorMap } from "./colors";
 import { DayView } from "./DayView";
@@ -118,7 +124,7 @@ export function CalendarClient({
   };
 
   const openCreateDefault = () => {
-    const start = new Date();
+    const start = gymNow();
     start.setMinutes(0, 0, 0);
     start.setHours(start.getHours() + 1);
     openCreateAt(currentTrainer.id, start);
@@ -129,8 +135,8 @@ export function CalendarClient({
       id: appt.id,
       trainer_id: appt.trainer_id,
       client_name: appt.client_name,
-      start_time: toDatetimeLocal(new Date(appt.start_time)),
-      end_time: toDatetimeLocal(new Date(appt.end_time)),
+      start_time: toDatetimeLocal(wallClockFromIso(appt.start_time)),
+      end_time: toDatetimeLocal(wallClockFromIso(appt.end_time)),
       notes: appt.notes ?? "",
     });
   };
@@ -152,8 +158,8 @@ export function CalendarClient({
     const payload = {
       trainer_id: values.trainer_id,
       client_name: values.client_name,
-      start_time: start.toISOString(),
-      end_time: end.toISOString(),
+      start_time: isoFromWallClock(start),
+      end_time: isoFromWallClock(end),
       notes: values.notes || null,
       ...(values.id ? { scope } : { repeat: values.repeat }),
     };
@@ -202,8 +208,8 @@ export function CalendarClient({
       new Date(appt.end_time).getTime() - new Date(appt.start_time).getTime();
     const optimistic = {
       ...appt,
-      start_time: newStart.toISOString(),
-      end_time: new Date(newStart.getTime() + durationMs).toISOString(),
+      start_time: isoFromWallClock(newStart),
+      end_time: isoFromWallClock(new Date(newStart.getTime() + durationMs)),
     };
 
     setMoveError("");
@@ -485,6 +491,7 @@ export function CalendarClient({
               day: "numeric",
               hour: "numeric",
               minute: "2-digit",
+              timeZone: GYM_TIME_ZONE,
             }
           )}. Later sessions shift by the same amount.`}
           oneLabel="Move this appointment"
