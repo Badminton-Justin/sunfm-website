@@ -32,8 +32,16 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isLoginRoute = pathname === "/portal/login";
+  // Reachable signed out by definition — these are the routes for someone who
+  // cannot get in. reset-password is deliberately not treated as a login
+  // route: arriving there with a recovery session must not bounce to the
+  // schedule before the new password has actually been set.
+  const isPublicPortalRoute =
+    isLoginRoute ||
+    pathname === "/portal/forgot-password" ||
+    pathname === "/portal/reset-password";
 
-  if (!user && !isLoginRoute) {
+  if (!user && !isPublicPortalRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/portal/login";
     return NextResponse.redirect(url);
