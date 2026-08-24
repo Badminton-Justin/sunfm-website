@@ -11,6 +11,10 @@ export function hourLabel(hour: number) {
   return `${h} ${period}`;
 }
 
+// Every Date reaching these helpers is a *gym wall-clock* Date, built by
+// wallClockFromIso/gymNow. They read local getters, so handing one a raw
+// instant redraws the grid at the viewer's device offset instead of the gym's.
+
 // Vertical offset in px from the top of the grid for a given Date.
 export function timeToOffsetPx(date: Date) {
   const hours = date.getHours() + date.getMinutes() / 60;

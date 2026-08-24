@@ -7,6 +7,7 @@ import type {
   TrainerAvailability,
 } from "@/lib/supabase/types";
 import { addDays, isSameDay, startOfWeek } from "@/lib/portal/date-utils";
+import { gymNow, wallClockFromIso } from "@/lib/portal/timezone";
 import {
   effectiveAvailability,
   timeToMinutes,
@@ -62,7 +63,7 @@ export function WeekView({
 }: WeekViewProps) {
   const weekStart = startOfWeek(anchorDate);
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-  const today = new Date();
+  const today = gymNow();
   const hours = Array.from(
     { length: HOUR_END - HOUR_START + 1 },
     (_, i) => HOUR_START + i
@@ -75,7 +76,7 @@ export function WeekView({
     columnCount: days.length,
     canDrag: (appt) => appt.status !== "canceled" && canEdit(appt),
     onMove: (appt, deltaMinutes, columnIndex) => {
-      const start = new Date(appt.start_time);
+      const start = wallClockFromIso(appt.start_time);
       const fromIndex = days.findIndex((d) => isSameDay(d, start));
       const moved = new Date(start.getTime() + deltaMinutes * 60000);
       moved.setDate(moved.getDate() + (columnIndex - fromIndex));
@@ -157,12 +158,12 @@ export function WeekView({
             const dayAppointments = appointments.filter(
               (a) =>
                 visibleTrainerIds.has(a.trainer_id) &&
-                isSameDay(new Date(a.start_time), day)
+                isSameDay(wallClockFromIso(a.start_time), day)
             );
             const laidOut = layoutTimedItems(
               dayAppointments.map((a) => ({
-                start: new Date(a.start_time),
-                end: new Date(a.end_time),
+                start: wallClockFromIso(a.start_time),
+                end: wallClockFromIso(a.end_time),
                 appt: a,
               }))
             );
