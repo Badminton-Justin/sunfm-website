@@ -1,5 +1,8 @@
 import type { Trainer } from "@/lib/supabase/types";
-import { appointmentTypeFromName } from "@/lib/portal/client-display";
+import {
+  appointmentTypeFromName,
+  type ChipType,
+} from "@/lib/portal/client-display";
 
 export const TRAINER_PALETTE = [
   "#CB4538", // cherry red
@@ -18,7 +21,15 @@ export function buildTrainerColorMap(trainers: Trainer[]) {
   return map;
 }
 
-const CONSULTATION_COLOR = "#6B4E9E"; // fixed purple, regardless of trainer
+// Types that always carry their own color, whichever trainer owns them — a
+// distinct hue rather than a shade of the trainer's. Sessions are deliberately
+// absent: they keep the trainer color, so a multi-trainer week still reads as
+// whose day is whose.
+const TYPE_COLORS: Partial<Record<ChipType, string>> = {
+  consultation: "#6B4E9E", // purple
+  interview: "#B8500F", // deep burnt orange — kept well clear of the cherry
+  // red sessions use, since that red is also a trainer color
+};
 
 export interface ChipStyle {
   background: string;
@@ -26,14 +37,11 @@ export interface ChipStyle {
   subtleTextClass: string;
 }
 
-// Sessions use the trainer's normal color (same as any untyped appointment).
-// Consultations are always this one purple, regardless of which trainer —
-// a distinct color rather than a shade of the trainer's own.
+// Sessions use the trainer's normal color (same as any untyped appointment);
+// anything in TYPE_COLORS overrides it.
 export function getChipStyle(clientName: string, baseColor: string): ChipStyle {
-  const background =
-    appointmentTypeFromName(clientName) === "consultation"
-      ? CONSULTATION_COLOR
-      : baseColor;
+  const type = appointmentTypeFromName(clientName);
+  const background = (type && TYPE_COLORS[type]) ?? baseColor;
   return {
     background,
     textClass: "text-white",

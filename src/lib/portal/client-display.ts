@@ -23,15 +23,21 @@ export function compactClientName(name: string) {
   return `[${code}] ${trimmedRest}`;
 }
 
+// Bracket types the calendar colors on sight. Wider than AppointmentType
+// below: the form only offers Session and Consultation, but Jeff titles other
+// kinds directly in Google and those still need to read as themselves on the
+// grid.
+export type ChipType = "session" | "consultation" | "interview";
+
+const CHIP_TYPES: ChipType[] = ["session", "consultation", "interview"];
+
 // Recognized bracket type, for chip color-shading — null for plain names
 // (appointments created directly in the portal) or unrecognized brackets.
-export function appointmentTypeFromName(
-  name: string
-): "session" | "consultation" | null {
+export function appointmentTypeFromName(name: string): ChipType | null {
   const match = name.match(/^\[([^\]]*)\]/);
   if (!match) return null;
   const type = match[1].trim().toLowerCase();
-  return type === "session" || type === "consultation" ? type : null;
+  return CHIP_TYPES.find((t) => t === type) ?? null;
 }
 
 export type AppointmentType = "session" | "consultation";
