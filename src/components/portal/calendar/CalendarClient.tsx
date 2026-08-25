@@ -469,6 +469,7 @@ export function CalendarClient({
           availability={availability}
           overrides={overrides}
           currentTrainerId={currentTrainer.id}
+          appointments={appointments}
           onSave={handleSave}
           onCancelAppointment={
             modalValues.id ? handleCancelAppointment : undefined
