@@ -50,6 +50,10 @@ interface AppointmentModalProps {
   // blocks — the 6am on your day off is exactly the booking you'd want.
   availability: TrainerAvailability[];
   overrides: AvailabilityOverride[];
+  // Booking yourself, the weekly-hours warning is telling you something you
+  // already know: you set those hours and you're choosing to work outside
+  // them. It stays for everyone else's calendar, where it's news.
+  currentTrainerId: string;
   onSave: (
     values: AppointmentFormValues,
     scope: SeriesScope
@@ -116,6 +120,7 @@ export function AppointmentModal({
   isSeries,
   availability,
   overrides,
+  currentTrainerId,
   onSave,
   onCancelAppointment,
   onRestore,
@@ -155,6 +160,13 @@ export function AppointmentModal({
   );
   const trainerName =
     trainers.find((t) => t.id === form.trainer_id)?.name ?? "this trainer";
+
+  // An explicit override still shows on your own calendar: you named that date
+  // off, and a booking landing in the middle of it is worth a second look.
+  const bookingSelf = form.trainer_id === currentTrainerId;
+  const showCoverageWarning =
+    !coverage.covered &&
+    (!bookingSelf || coverage.availability.isUnavailable);
 
   const setStartDate = (date: Date) => {
     setSchedule((s) => {
@@ -347,7 +359,7 @@ export function AppointmentModal({
             </div>
           </div>
 
-          {!coverage.covered && (
+          {showCoverageWarning && (
             <div className="rounded-xl bg-[#B8860B]/10 px-3.5 py-2.5">
               <p className="text-sm font-medium text-[#8A6508]">
                 {coverage.availability.isUnavailable
