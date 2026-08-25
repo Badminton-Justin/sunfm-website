@@ -162,11 +162,11 @@ function getRollingPromoDeadline(): string {
 
 function LaunchBanner() {
   useEffect(() => {
-    trackEvent("banner_impression", { campaign: "launch_offer_rolling" });
+    trackEvent("banner_impression", { promo_name: "launch_offer_rolling" });
   }, []);
 
   const scrollToForm = () => {
-    trackEvent("banner_click", { campaign: "launch_offer_rolling" });
+    trackEvent("banner_click", { promo_name: "launch_offer_rolling" });
     const form = document.getElementById("start-form");
     if (form) {
       form.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -211,7 +211,7 @@ function Carousel({ children, ariaLabel }: { children: ReactNode; ariaLabel: str
         el.scrollBy({ left: -scrollAmount, behavior: "smooth" });
       }
     }
-    trackEvent("testimonial_carousel_nav", { direction, source: "start_page" });
+    trackEvent("testimonial_carousel_nav", { direction, page_source: "start_page" });
   };
 
   return (
@@ -313,13 +313,13 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
   const handleFieldFocus = (fieldName: string) => {
     if (!hasStarted.current) {
       hasStarted.current = true;
-      trackEvent("form_start", { first_field: fieldName, source: "start_page" });
+      trackEvent("form_start", { first_field: fieldName, page_source: "start_page" });
     }
   };
 
   const handleFieldBlur = (fieldName: string, value: string) => {
     if (value.trim()) {
-      trackEvent("form_field_complete", { field_name: fieldName, source: "start_page" });
+      trackEvent("form_field_complete", { field_name: fieldName, page_source: "start_page" });
     }
   };
 
@@ -335,7 +335,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
     setIsSubmitting(true);
     setSubmitStatus("idle");
 
-    trackEvent("form_submit_attempt", { source: "start_page" });
+    trackEvent("form_submit_attempt", { page_source: "start_page" });
 
     const attribution = attributionRef.current;
 
@@ -365,18 +365,18 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
         setEnhancedConversionUserData(formData.email, formData.phone);
         trackEvent("form_submit_success", {
           ...attribution,
-          source: "start_page",
+          page_source: "start_page",
           landing_page: "/start",
           landing_theme: themeKey || "default",
         });
         setSubmitStatus("success");
         setFormData({ name: "", email: "", phone: "", goal: "" });
       } else {
-        trackEvent("form_submit_error", { source: "start_page", error_type: `http_${response.status}` });
+        trackEvent("form_submit_error", { page_source: "start_page", error_type: `http_${response.status}` });
         setSubmitStatus("error");
       }
     } catch {
-      trackEvent("form_submit_error", { source: "start_page", error_type: "network_error" });
+      trackEvent("form_submit_error", { page_source: "start_page", error_type: "network_error" });
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
@@ -717,7 +717,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                     const next = openFaq === i ? null : i;
                     setOpenFaq(next);
                     if (next !== null) {
-                      trackEvent("faq_open", { question: item.q, source: "start_page" });
+                      trackEvent("faq_open", { question: item.q, page_source: "start_page" });
                     }
                   }}
                   className="w-full px-5 py-4 text-left flex items-center justify-between transition-colors"

@@ -6,6 +6,13 @@ declare global {
   }
 }
 
+// GA4 reserves `source`, `medium`, `campaign`, `term`, `content`, `campaign_id`
+// and `source_platform` as event parameters that feed session traffic-source
+// attribution. Passing any of them here silently overwrites the session's real
+// acquisition source -- a `source: "start_page"` on the /start form events sent
+// every paid conversion into the Unassigned channel with no gclid, so Google Ads
+// imported zero conversions for ~90 days. Prefix descriptive params instead
+// (`page_source`, `promo_name`).
 export function trackEvent(eventName: string, params?: Record<string, string | number>) {
   if (typeof window === "undefined") return;
 
