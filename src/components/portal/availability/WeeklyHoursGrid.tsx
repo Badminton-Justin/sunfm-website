@@ -120,6 +120,9 @@ export function WeeklyHoursGrid({
                   return (
                     <div
                       key={w.id}
+                      // Otherwise pressing an existing window bubbles to the
+                      // column and paints a second one on top of it.
+                      onPointerDown={(e) => e.stopPropagation()}
                       className="group absolute left-0.5 right-0.5 rounded-lg bg-[#3F6E52]/15 border border-[#3F6E52]/25 px-1.5 py-1 overflow-hidden"
                       style={{
                         top: minutesToOffsetPx(start),

@@ -6,6 +6,7 @@ import type {
   Trainer,
   TrainerAvailability,
 } from "@/lib/supabase/types";
+import { minutesToTime, timeToMinutes } from "@/lib/portal/availability";
 import { Select } from "@/components/portal/Select";
 import { WeeklyHoursGrid } from "@/components/portal/availability/WeeklyHoursGrid";
 import { DateOverrides } from "@/components/portal/availability/DateOverrides";
@@ -44,6 +45,36 @@ export function AvailabilityClient({
     endTime: string
   ) => {
     setError("");
+    const startMinutes = timeToMinutes(startTime);
+    const endMinutes = timeToMinutes(endTime);
+
+    // Painting hours that touch a window already on that day widens it,
+    // rather than stacking a second block on top of the first.
+    const overlapping = availability.filter(
+      (a) =>
+        a.trainer_id === selectedTrainerId &&
+        a.day_of_week === dayOfWeek &&
+        timeToMinutes(a.start_time) <= endMinutes &&
+        timeToMinutes(a.end_time) >= startMinutes
+    );
+    const mergedStart = Math.min(
+      startMinutes,
+      ...overlapping.map((a) => timeToMinutes(a.start_time))
+    );
+    const mergedEnd = Math.max(
+      endMinutes,
+      ...overlapping.map((a) => timeToMinutes(a.end_time))
+    );
+
+    // Already covered — a drag inside existing hours changes nothing.
+    if (
+      overlapping.length === 1 &&
+      timeToMinutes(overlapping[0].start_time) === mergedStart &&
+      timeToMinutes(overlapping[0].end_time) === mergedEnd
+    ) {
+      return;
+    }
+
     // Optimism would need a real id to key off, and the round trip is one
     // insert — cheap enough to just wait for the row.
     const res = await fetch("/api/portal/availability", {
@@ -52,8 +83,8 @@ export function AvailabilityClient({
       body: JSON.stringify({
         trainer_id: selectedTrainerId,
         day_of_week: dayOfWeek,
-        start_time: startTime,
-        end_time: endTime,
+        start_time: minutesToTime(mergedStart),
+        end_time: minutesToTime(mergedEnd),
       }),
     });
     const json = await res.json().catch(() => ({}));
@@ -61,7 +92,21 @@ export function AvailabilityClient({
       setError(json.error ?? "Could not add those hours.");
       return;
     }
-    setAvailability((prev) => [...prev, json.availability]);
+
+    // Insert first, so a failed delete leaves a duplicate rather than a gap.
+    const absorbed = new Set<string>();
+    for (const w of overlapping) {
+      const del = await fetch(`/api/portal/availability/${w.id}`, {
+        method: "DELETE",
+      });
+      if (del.ok) absorbed.add(w.id);
+      else setError("Some overlapping hours could not be merged.");
+    }
+
+    setAvailability((prev) => [
+      ...prev.filter((a) => !absorbed.has(a.id)),
+      json.availability,
+    ]);
   };
 
   const handleRemoveWindow = async (id: string) => {
@@ -70,7 +115,8 @@ export function AvailabilityClient({
       method: "DELETE",
     });
     if (!res.ok) {
-      setError("Could not remove those hours.");
+      const json = await res.json().catch(() => ({}));
+      setError(json.error ?? "Could not remove those hours.");
       return;
     }
     setAvailability((prev) => prev.filter((a) => a.id !== id));
@@ -113,7 +159,8 @@ export function AvailabilityClient({
       { method: "DELETE" }
     );
     if (!res.ok) {
-      setError("Could not remove that override.");
+      const json = await res.json().catch(() => ({}));
+      setError(json.error ?? "Could not remove that override.");
       return;
     }
     setOverrides((prev) =>

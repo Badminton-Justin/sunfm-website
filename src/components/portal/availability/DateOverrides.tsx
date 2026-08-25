@@ -160,7 +160,16 @@ export function DateOverrides({
               <label className="block text-[11px] font-medium text-black/40 mb-1">
                 From
               </label>
-              <DatePicker value={from} onChange={setFrom} ariaLabel="From date" />
+              <DatePicker
+                value={from}
+                onChange={(d) => {
+                  setFrom(d);
+                  // Otherwise picking a start past the end silently books a
+                  // single day, since submit clamps to > from back to from.
+                  if (toDateKey(d) > toDateKey(to)) setTo(d);
+                }}
+                ariaLabel="From date"
+              />
             </div>
             <div>
               <label className="block text-[11px] font-medium text-black/40 mb-1">
