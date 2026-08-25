@@ -4,7 +4,9 @@ import { useRef, useState } from "react";
 import { HOUR_END, HOUR_START, TOTAL_HOURS } from "./grid-constants";
 
 const SNAP_MINUTES = 15;
-const DRAG_THRESHOLD_PX = 4;
+// Generous enough that the hand tremor in a press-and-release still reads as
+// a click, rather than painting a stray few-minute block.
+const DRAG_THRESHOLD_PX = 6;
 // What a plain click books, matching what clicking a slot did before drag.
 const CLICK_MINUTES = 60;
 
@@ -32,38 +34,35 @@ export function useSlotSelect({ onSelect, canSelect }: UseSlotSelectOptions) {
   const [selection, setSelection] = useState<SlotSelection | null>(null);
   const origin = useRef<{
     key: string;
-    top: number;
-    height: number;
+    el: HTMLElement;
     anchor: number;
     y: number;
   } | null>(null);
   const latest = useRef<SlotSelection | null>(null);
   const moved = useRef(false);
 
-  const minutesAt = (
-    o: { top: number; height: number },
-    clientY: number
-  ) => clamp(GRID_START + ((clientY - o.top) / o.height) * TOTAL_HOURS * 60);
+  // Measured live rather than from a rect cached at pointer-down: the page
+  // can scroll mid-drag, and a stale top lands the release far from the cursor.
+  const minutesAt = (el: HTMLElement, clientY: number) => {
+    const rect = el.getBoundingClientRect();
+    return clamp(
+      GRID_START + ((clientY - rect.top) / rect.height) * TOTAL_HOURS * 60
+    );
+  };
 
   const startSelect = (e: React.PointerEvent<HTMLElement>, key: string) => {
     if (e.button !== 0) return;
     if (canSelect && !canSelect(key)) return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const raw = minutesAt({ top: rect.top, height: rect.height }, e.clientY);
+    const el = e.currentTarget;
+    const raw = minutesAt(el, e.clientY);
     // Floor, so pressing anywhere inside a quarter hour starts at its top.
     const anchor = Math.min(
       Math.floor(raw / SNAP_MINUTES) * SNAP_MINUTES,
       GRID_END - SNAP_MINUTES
     );
 
-    origin.current = {
-      key,
-      top: rect.top,
-      height: rect.height,
-      anchor,
-      y: e.clientY,
-    };
+    origin.current = { key, el, anchor, y: e.clientY };
     latest.current = null;
     moved.current = false;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -75,7 +74,7 @@ export function useSlotSelect({ onSelect, canSelect }: UseSlotSelectOptions) {
     if (!moved.current && Math.abs(e.clientY - o.y) < DRAG_THRESHOLD_PX) return;
     moved.current = true;
 
-    const raw = minutesAt(o, e.clientY);
+    const raw = minutesAt(o.el, e.clientY);
     const current = clamp(Math.round(raw / SNAP_MINUTES) * SNAP_MINUTES);
     const start = Math.min(o.anchor, current);
     const end = Math.max(o.anchor, current);
@@ -103,7 +102,10 @@ export function useSlotSelect({ onSelect, canSelect }: UseSlotSelectOptions) {
     if (!o) return;
 
     if (!moved.current || !result) {
-      onSelect(o.key, o.anchor, o.anchor + CLICK_MINUTES);
+      // Clamped: clicking the last hour of the grid would otherwise book a
+      // window running past the bottom of the day.
+      const end = clamp(o.anchor + CLICK_MINUTES);
+      onSelect(o.key, Math.min(o.anchor, end - SNAP_MINUTES), end);
       return;
     }
     onSelect(result.key, result.startMinutes, result.endMinutes);

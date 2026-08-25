@@ -127,15 +127,26 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const { error } = await supabase
+  // Selected back for the same reason as the availability delete: RLS refuses
+  // by matching no rows, not by erroring, so without this a trainer clearing
+  // someone else's vacation would be told it worked.
+  const { data, error } = await supabase
     .from("availability_overrides")
     .delete()
     .eq("trainer_id", trainerId)
     .gte("date", from)
-    .lte("date", to);
+    .lte("date", to)
+    .select("id");
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  if (!data?.length) {
+    return NextResponse.json(
+      { error: "Those dates are not yours to change, or are already clear" },
+      { status: 403 }
+    );
   }
 
   return NextResponse.json({ success: true });
