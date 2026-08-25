@@ -264,7 +264,8 @@ export function AppointmentModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 z-50">
-      <div className="bg-[#FDFCF8] rounded-[28px] shadow-2xl p-7 w-full max-w-md border border-black/[0.06] max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#FDFCF8] rounded-[28px] shadow-2xl w-full max-w-md border border-black/[0.06] max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="shrink-0 px-7 pt-7">
         {isCanceled && (
           <div className="mb-4 rounded-xl bg-black/[0.04] border border-black/[0.07] px-3.5 py-2.5">
             <p className="text-sm font-semibold text-black/70">
@@ -279,7 +280,11 @@ export function AppointmentModal({
         <h2 className="font-display text-2xl text-black mb-5">
           {form.id ? "Edit appointment" : "New appointment"}
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
+        </div>
+        {/* Header and actions stay put; only the fields between them scroll,
+            so Cancel and Delete can't slide off the bottom of a tall form. */}
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
+          <div className="flex-1 overflow-y-auto px-7 pb-1 space-y-5">
           {canPickTrainer && (
             <div>
               <label className="portal-kicker block mb-1.5">Trainer</label>
@@ -496,11 +501,14 @@ export function AppointmentModal({
             />
           </div>
 
+          </div>
+
+          <div className="shrink-0 px-7 pt-4 pb-7 border-t border-black/[0.06] space-y-3">
           {error && (
             <p className="text-[#CB4538] text-sm font-medium">{error}</p>
           )}
 
-          <div className="flex gap-3 pt-1">
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}
@@ -588,6 +596,7 @@ export function AppointmentModal({
               )}
             </div>
           )}
+          </div>
         </form>
       </div>
 
