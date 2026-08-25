@@ -1,7 +1,15 @@
 "use client";
 
-import type { Trainer, TrainerAvailability } from "@/lib/supabase/types";
-import { summarizeWeeklyAvailability } from "@/lib/portal/availability-summary";
+import type {
+  AvailabilityOverride,
+  Trainer,
+  TrainerAvailability,
+} from "@/lib/supabase/types";
+import {
+  summarizeUpcomingOverrides,
+  summarizeWeeklyAvailability,
+} from "@/lib/portal/availability-summary";
+import { gymNow } from "@/lib/portal/timezone";
 
 interface TrainerSidebarProps {
   trainers: Trainer[];
@@ -12,6 +20,9 @@ interface TrainerSidebarProps {
   onShowNone: () => void;
   trainerColorMap: Map<string, string>;
   availability: TrainerAvailability[];
+  // Vacation lives on the availability page behind a trainer switcher, which
+  // is nowhere near where you book. Surface it next to the weekly hours.
+  overrides: AvailabilityOverride[];
 }
 
 export function TrainerSidebar({
@@ -23,7 +34,9 @@ export function TrainerSidebar({
   onShowNone,
   trainerColorMap,
   availability,
+  overrides,
 }: TrainerSidebarProps) {
+  const today = gymNow();
   return (
     <aside className="w-full lg:w-64 shrink-0 space-y-6">
       <div>
@@ -107,6 +120,10 @@ export function TrainerSidebar({
               const lines = summarizeWeeklyAvailability(
                 availability.filter((a) => a.trainer_id === t.id)
               );
+              const awayLines = summarizeUpcomingOverrides(
+                overrides.filter((o) => o.trainer_id === t.id),
+                today
+              );
               const color = trainerColorMap.get(t.id) ?? "#1a1a1a";
               return (
                 <div
@@ -125,6 +142,18 @@ export function TrainerSidebar({
                       {line}
                     </p>
                   ))}
+                  {awayLines.length > 0 && (
+                    <div className="mt-1.5 pt-1.5 border-t border-black/[0.07] space-y-0.5">
+                      {awayLines.map((line) => (
+                        <p
+                          key={line}
+                          className="text-xs font-medium text-[#8A6508] leading-relaxed"
+                        >
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}

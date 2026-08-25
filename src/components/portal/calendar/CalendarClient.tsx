@@ -392,6 +392,7 @@ export function CalendarClient({
           onShowNone={() => setVisibleTrainerIds(new Set())}
           trainerColorMap={trainerColorMap}
           availability={availability}
+          overrides={overrides}
         />
 
         <div className="flex-1 min-w-0">

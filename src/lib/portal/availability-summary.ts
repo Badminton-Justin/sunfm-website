@@ -1,4 +1,8 @@
-import type { TrainerAvailability } from "@/lib/supabase/types";
+import type {
+  AvailabilityOverride,
+  TrainerAvailability,
+} from "@/lib/supabase/types";
+import { parseDateKey, toDateKey } from "@/lib/portal/availability";
 
 const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -62,4 +66,88 @@ export function summarizeWeeklyAvailability(
   }
 
   return lines;
+}
+
+
+export interface OverrideRange {
+  from: string;
+  to: string;
+  start_time: string | null;
+  end_time: string | null;
+  note: string | null;
+}
+
+// A week off is seven rows in the table but one decision to the person who
+// booked it, so consecutive days that say the same thing collapse into a range.
+export function groupOverrideRanges(
+  overrides: AvailabilityOverride[]
+): OverrideRange[] {
+  const sorted = [...overrides].sort((a, b) => a.date.localeCompare(b.date));
+  const ranges: OverrideRange[] = [];
+
+  for (const o of sorted) {
+    const last = ranges[ranges.length - 1];
+    const previousDay = parseDateKey(last?.to ?? "");
+    if (previousDay) previousDay.setDate(previousDay.getDate() + 1);
+
+    const continues =
+      last &&
+      previousDay &&
+      toDateKey(previousDay) === o.date &&
+      last.start_time === o.start_time &&
+      last.end_time === o.end_time &&
+      last.note === o.note;
+
+    if (continues) {
+      last.to = o.date;
+    } else {
+      ranges.push({
+        from: o.date,
+        to: o.date,
+        start_time: o.start_time,
+        end_time: o.end_time,
+        note: o.note,
+      });
+    }
+  }
+
+  return ranges;
+}
+
+function compactRange(range: OverrideRange) {
+  const from = parseDateKey(range.from);
+  const to = parseDateKey(range.to);
+  if (!from || !to) return range.from;
+  const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+  if (range.from === range.to) return from.toLocaleDateString("en-US", opts);
+  // Same month reads as "Aug 24–31"; across a boundary it needs both months.
+  const toLabel =
+    from.getMonth() === to.getMonth()
+      ? String(to.getDate())
+      : to.toLocaleDateString("en-US", opts);
+  return `${from.toLocaleDateString("en-US", opts)}–${toLabel}`;
+}
+
+// The override lines for a trainer's At a Glance card: what's coming, so a
+// vacation is visible from the schedule instead of only from the availability
+// page with that trainer selected.
+export function summarizeUpcomingOverrides(
+  overrides: AvailabilityOverride[],
+  today: Date,
+  limit = 3
+): string[] {
+  const todayKey = toDateKey(today);
+  return groupOverrideRanges(overrides)
+    .filter((r) => r.to >= todayKey)
+    .slice(0, limit)
+    .map((r) => {
+      const when = compactRange(r);
+      if (!r.start_time || !r.end_time) {
+        return `Away ${when}${r.note ? ` · ${r.note}` : ""}`;
+      }
+      const hours = `${formatClockTime(r.start_time)}–${formatClockTime(
+        r.end_time
+      )}`;
+      return `${when} ${hours}${r.note ? ` · ${r.note}` : ""}`;
+    });
 }
