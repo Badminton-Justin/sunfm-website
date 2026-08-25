@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type {
   AvailabilityOverride,
   Trainer,
@@ -29,6 +30,18 @@ export function AvailabilityClient({
   const [availability, setAvailability] = useState(initialAvailability);
   const [overrides, setOverrides] = useState(initialOverrides);
   const [error, setError] = useState("");
+  const router = useRouter();
+
+  // Hours and overrides are read by the schedule page too, which got its copy
+  // server-side when it rendered. Without this, editing here leaves that page
+  // warning about a vacation you already deleted until a hard reload.
+  const refreshServerData = () => router.refresh();
+
+  // The refresh above re-runs the server component; take its rows over the
+  // local copy so this page ends up agreeing with the table rather than with
+  // whatever the last optimistic update left behind.
+  useEffect(() => setAvailability(initialAvailability), [initialAvailability]);
+  useEffect(() => setOverrides(initialOverrides), [initialOverrides]);
 
   const windows = useMemo(
     () => availability.filter((a) => a.trainer_id === selectedTrainerId),
@@ -107,6 +120,7 @@ export function AvailabilityClient({
       ...prev.filter((a) => !absorbed.has(a.id)),
       json.availability,
     ]);
+    refreshServerData();
   };
 
   const handleRemoveWindow = async (id: string) => {
@@ -120,6 +134,7 @@ export function AvailabilityClient({
       return;
     }
     setAvailability((prev) => prev.filter((a) => a.id !== id));
+    refreshServerData();
   };
 
   const handleAddOverride = async (range: {
@@ -149,6 +164,7 @@ export function AvailabilityClient({
       ),
       ...created,
     ]);
+    refreshServerData();
     return null;
   };
 
@@ -169,6 +185,7 @@ export function AvailabilityClient({
           o.trainer_id !== selectedTrainerId || o.date < from || o.date > to
       )
     );
+    refreshServerData();
   };
 
   return (
