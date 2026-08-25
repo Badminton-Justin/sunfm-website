@@ -2,11 +2,16 @@
 
 import { useState } from "react";
 import type {
+  Appointment,
   AvailabilityOverride,
   Trainer,
   TrainerAvailability,
 } from "@/lib/supabase/types";
 import { coverageFor } from "@/lib/portal/availability";
+import {
+  trainerFreeBusy,
+  type TrainerFreeBusy,
+} from "@/lib/portal/trainer-freebusy";
 import {
   buildAppointmentName,
   parseAppointmentName,
@@ -54,6 +59,9 @@ interface AppointmentModalProps {
   // already know: you set those hours and you're choosing to work outside
   // them. It stays for everyone else's calendar, where it's news.
   currentTrainerId: string;
+  // Every appointment on the calendar, so the picker can say who is already
+  // booked at the chosen time rather than only who is within their hours.
+  appointments: Appointment[];
   onSave: (
     values: AppointmentFormValues,
     scope: SeriesScope
@@ -121,6 +129,7 @@ export function AppointmentModal({
   availability,
   overrides,
   currentTrainerId,
+  appointments,
   onSave,
   onCancelAppointment,
   onRestore,
@@ -163,6 +172,19 @@ export function AppointmentModal({
 
   // An explicit override still shows on your own calendar: you named that date
   // off, and a booking landing in the middle of it is worth a second look.
+  // Who could take this slot, recomputed as the date and time change. Owners
+  // get it as a picker: the point is to answer "who's free at 10?" without
+  // opening the dropdown and checking each name one at a time.
+  const freeBusy = trainerFreeBusy(
+    schedule.start,
+    endAt,
+    trainers,
+    appointments,
+    availability,
+    overrides,
+    initial.id
+  );
+
   const bookingSelf = form.trainer_id === currentTrainerId;
   const showCoverageWarning =
     !coverage.covered &&
@@ -358,6 +380,24 @@ export function AppointmentModal({
               </div>
             </div>
           </div>
+
+          {canPickTrainer && (
+            <div>
+              <label className="portal-kicker block mb-1.5">Who's free</label>
+              <div className="flex flex-wrap gap-1.5">
+                {freeBusy.map((row) => (
+                  <FreeBusyChip
+                    key={row.trainer.id}
+                    row={row}
+                    selected={row.trainer.id === form.trainer_id}
+                    onSelect={() =>
+                      setForm({ ...form, trainer_id: row.trainer.id })
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {showCoverageWarning && (
             <div className="rounded-xl bg-[#B8860B]/10 px-3.5 py-2.5">
@@ -564,5 +604,59 @@ export function AppointmentModal({
         />
       )}
     </div>
+  );
+}
+
+// One trainer's answer for the chosen slot. Selectable whatever it says —
+// "booked" is information, not a veto, same as the warning below it.
+function FreeBusyChip({
+  row,
+  selected,
+  onSelect,
+}: {
+  row: TrainerFreeBusy;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const detail =
+    row.state === "booked"
+      ? parseAppointmentName(row.conflict!.client_name).name
+      : row.state === "off"
+      ? row.note ?? "day off"
+      : row.state === "outside"
+      ? "outside hours"
+      : null;
+
+  const tone =
+    row.state === "free"
+      ? "border-[#3F6E52]/30 bg-[#3F6E52]/10 text-[#2F5540]"
+      : row.state === "booked"
+      ? "border-[#CB4538]/25 bg-[#CB4538]/[0.07] text-[#8A2F26]"
+      : "border-black/10 bg-black/[0.03] text-black/50";
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${tone} ${
+        selected
+          ? "ring-2 ring-black ring-offset-1 ring-offset-[#FDFCF8]"
+          : "hover:brightness-95"
+      }`}
+    >
+      <span
+        aria-hidden="true"
+        className={`w-1.5 h-1.5 rounded-full ${
+          row.state === "free"
+            ? "bg-[#3F6E52]"
+            : row.state === "booked"
+            ? "bg-[#CB4538]"
+            : "bg-black/25"
+        }`}
+      />
+      <span className="font-medium">{row.trainer.name}</span>
+      {detail && <span className="opacity-70 truncate max-w-[10rem]">{detail}</span>}
+    </button>
   );
 }
