@@ -8,17 +8,13 @@ import {
   parseDateKey,
   toDateKey,
 } from "@/lib/portal/availability";
+import {
+  groupOverrideRanges,
+  type OverrideRange,
+} from "@/lib/portal/availability-summary";
 import { HOUR_END, HOUR_START } from "@/components/portal/calendar/grid-constants";
 import { DatePicker } from "@/components/portal/DatePicker";
 import { Select } from "@/components/portal/Select";
-
-export interface OverrideRange {
-  from: string;
-  to: string;
-  start_time: string | null;
-  end_time: string | null;
-  note: string | null;
-}
 
 interface DateOverridesProps {
   overrides: AvailabilityOverride[];
@@ -36,41 +32,6 @@ const TIME_OPTIONS = Array.from(
   { length: (HOUR_END - HOUR_START) * 4 + 1 },
   (_, i) => minutesToTime(HOUR_START * 60 + i * 15)
 );
-
-// A week off is seven rows in the table but one decision to the person who
-// booked it, so consecutive days that say the same thing collapse into a range.
-function groupIntoRanges(overrides: AvailabilityOverride[]): OverrideRange[] {
-  const sorted = [...overrides].sort((a, b) => a.date.localeCompare(b.date));
-  const ranges: OverrideRange[] = [];
-
-  for (const o of sorted) {
-    const last = ranges[ranges.length - 1];
-    const previousDay = parseDateKey(last?.to ?? "");
-    if (previousDay) previousDay.setDate(previousDay.getDate() + 1);
-
-    const continues =
-      last &&
-      previousDay &&
-      toDateKey(previousDay) === o.date &&
-      last.start_time === o.start_time &&
-      last.end_time === o.end_time &&
-      last.note === o.note;
-
-    if (continues) {
-      last.to = o.date;
-    } else {
-      ranges.push({
-        from: o.date,
-        to: o.date,
-        start_time: o.start_time,
-        end_time: o.end_time,
-        note: o.note,
-      });
-    }
-  }
-
-  return ranges;
-}
 
 function formatRange(range: OverrideRange) {
   const from = parseDateKey(range.from);
@@ -106,7 +67,7 @@ export function DateOverrides({
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const ranges = useMemo(() => groupIntoRanges(overrides), [overrides]);
+  const ranges = useMemo(() => groupOverrideRanges(overrides), [overrides]);
   const today = toDateKey(new Date());
   const upcoming = ranges.filter((r) => r.to >= today);
   const past = ranges.filter((r) => r.to < today);
