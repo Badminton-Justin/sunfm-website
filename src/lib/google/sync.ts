@@ -525,28 +525,38 @@ async function applyGoogleEvents(
   }
 
   // Cancellations, batched.
+  //
+  // The error has to be read off the result, not caught: postgrest-js resolves
+  // with `{ error }` instead of throwing, so a try/catch around this sees
+  // nothing. Counting a failed batch as applied is not a cosmetic miscount —
+  // it lets advanceSyncToken record "caught up" on a cancellation that was
+  // never written, and a cancellation is only ever announced once. Nothing
+  // downstream revisits a row that already has an event id, so the deleted
+  // session stays booked in the portal for good.
   for (const ids of chunk(cancelledIds, DB_BATCH_SIZE)) {
-    try {
-      await supabase
-        .from("appointments")
-        .update({
-          status: "canceled",
-          google_synced_at: nowIso(),
-          google_push_pending: false,
-        })
-        .in("google_event_id", ids)
-        .eq("trainer_id", trainerId)
-        .neq("status", "canceled");
-      // Google has removed them, so any delete we still had queued is moot.
-      await supabase
-        .from("google_pending_deletions")
-        .delete()
-        .eq("trainer_id", trainerId)
-        .in("google_event_id", ids);
-      result.applied += ids.length;
-    } catch (err) {
-      result.errors.push(`cancel batch: ${extractErrorMessage(err)}`);
+    const { error } = await supabase
+      .from("appointments")
+      .update({
+        status: "canceled",
+        google_synced_at: nowIso(),
+        google_push_pending: false,
+      })
+      .in("google_event_id", ids)
+      .eq("trainer_id", trainerId)
+      .neq("status", "canceled");
+
+    if (error) {
+      result.errors.push(`cancel batch: ${extractErrorMessage(error)}`);
+      continue;
     }
+
+    // Google has removed them, so any delete we still had queued is moot.
+    await supabase
+      .from("google_pending_deletions")
+      .delete()
+      .eq("trainer_id", trainerId)
+      .in("google_event_id", ids);
+    result.applied += ids.length;
   }
 
   if (candidates.length === 0) return result;
@@ -622,6 +632,114 @@ async function applyGoogleEvents(
   }
 
   return result;
+}
+
+// ── reconcile: appointments Google no longer has ───────────────────────────
+// A deletion made in Google is announced exactly once, as a `cancelled` entry
+// in one incremental pull. Miss that pull — a failed write, a dropped webhook
+// while the token was being re-anchored, a run that died mid-batch — and
+// nothing ever mentions the event again: a full resync returns only events
+// that still exist, and no code path revisits a row that already carries an
+// event id. The session stays booked in the portal forever while the calendar
+// shows nothing, which is exactly the state two clients were found in.
+//
+// showDeleted=true does not close this. A deleted event comes back stripped of
+// its start and end, so it cannot satisfy the timeMin/timeMax bounds a full
+// sync must send, and Google leaves it out. The announcement really is
+// one-shot; the only durable check is absence.
+//
+// So on a full-window fetch, treat what Google returned as the truth for that
+// window and cancel local appointments it doesn't mention.
+const MAX_RECONCILE_CANCELLATIONS = 25;
+
+async function reconcileDeletedEvents(
+  supabase: SupabaseClient,
+  trainerId: string,
+  presentEventIds: Set<string>,
+  windowStartIso: string,
+  windowEndIso: string,
+  fetchStartedAt: string
+): Promise<{ canceled: number; errors: string[] }> {
+  const errors: string[] = [];
+
+  // Every filter here exists to keep a legitimately-booked session out of the
+  // candidate set, since the write is destructive:
+  //
+  //  - start_time inside the fetched window, because absence outside it says
+  //    nothing. Google's window is `end > timeMin && start < timeMax`, so any
+  //    row whose *start* falls inside would have been returned if it existed.
+  //  - google_push_pending false, and google_synced_at strictly older than the
+  //    moment the fetch began. An appointment created or pushed while the list
+  //    request was in flight is legitimately absent from the response. (The
+  //    comparison also drops rows with a null google_synced_at, which have
+  //    never been confirmed mirrored.)
+  const { data: local, error } = await supabase
+    .from("appointments")
+    .select("id, google_event_id")
+    .eq("trainer_id", trainerId)
+    .neq("status", "canceled")
+    .eq("google_push_pending", false)
+    .not("google_event_id", "is", null)
+    .gte("start_time", windowStartIso)
+    .lt("start_time", windowEndIso)
+    .lt("google_synced_at", fetchStartedAt);
+
+  if (error) {
+    return { canceled: 0, errors: [`reconcile query: ${extractErrorMessage(error)}`] };
+  }
+
+  const missing = (local ?? []).filter(
+    (row) =>
+      !isPendingClaim(row.google_event_id) &&
+      !presentEventIds.has(row.google_event_id as string)
+  );
+  if (missing.length === 0) return { canceled: 0, errors };
+
+  // A trainer deleting a couple of sessions in Google is routine; the whole
+  // week vanishing at once is not, and the likelier explanation is a fetch
+  // that came back short — Google silently truncates an over-broad recurring
+  // expansion rather than erroring, which this file has been bitten by before.
+  // Refuse the sweep and say so rather than mass-cancelling a live schedule.
+  if (missing.length > MAX_RECONCILE_CANCELLATIONS) {
+    const message =
+      `refusing to cancel ${missing.length} appointments absent from Google ` +
+      `(limit ${MAX_RECONCILE_CANCELLATIONS}) — treating the fetch as incomplete`;
+    console.error(`Google reconcile for trainer ${trainerId}: ${message}`);
+    return { canceled: 0, errors: [message] };
+  }
+
+  let canceled = 0;
+  for (const rows of chunk(missing, DB_BATCH_SIZE)) {
+    const { error: updateError } = await supabase
+      .from("appointments")
+      .update({
+        status: "canceled",
+        google_synced_at: nowIso(),
+        google_push_pending: false,
+      })
+      .in(
+        "id",
+        rows.map((r) => r.id)
+      );
+
+    if (updateError) {
+      errors.push(`reconcile batch: ${extractErrorMessage(updateError)}`);
+      continue;
+    }
+
+    // Gone from Google already — any delete still queued for them is moot.
+    await supabase
+      .from("google_pending_deletions")
+      .delete()
+      .eq("trainer_id", trainerId)
+      .in(
+        "google_event_id",
+        rows.map((r) => r.google_event_id as string)
+      );
+    canceled += rows.length;
+  }
+
+  return { canceled, errors };
 }
 
 // Only advance the checkpoint if the batch was empty or we actually made
@@ -701,7 +819,17 @@ export interface PullSummary {
   applied: number;
   skipped: number;
   failed: number;
+  // Appointments canceled because Google no longer has their event.
+  reconciled: number;
   errors: string[];
+}
+
+export interface PullOptions {
+  // Skip the incremental path and re-fetch the whole window, which is what
+  // makes the absence reconciliation possible. Used by the paths that are
+  // meant to be authoritative — the daily cron and a manual "Sync now" — but
+  // not by the webhook, which fires per change and should stay cheap.
+  fullResync?: boolean;
 }
 
 // Pulls changes from Google (incremental via stored sync_token, or a fresh
@@ -709,7 +837,8 @@ export interface PullSummary {
 // re-anchoring) and applies them to our appointments table.
 export async function pullChangesFromGoogle(
   supabase: SupabaseClient,
-  connection: GoogleCalendarConnection
+  connection: GoogleCalendarConnection,
+  options: PullOptions = {}
 ): Promise<PullSummary> {
   const empty = {
     calendarId: connection.google_calendar_id,
@@ -717,6 +846,7 @@ export async function pullChangesFromGoogle(
     applied: 0,
     skipped: 0,
     failed: 0,
+    reconciled: 0,
     errors: [] as string[],
   };
 
@@ -733,8 +863,12 @@ export async function pullChangesFromGoogle(
     const needsReanchor =
       windowEndsAt - Date.now() < SYNC_WINDOW_REANCHOR_MARGIN_DAYS * DAY_MS;
 
+    // Captured before the fetch, so anything written locally while the request
+    // was in flight is excluded from the reconciliation below.
+    const fetchStartedAt = nowIso();
+
     let page =
-      connection.sync_token && !needsReanchor
+      connection.sync_token && !needsReanchor && !options.fullResync
         ? await listEventsIncremental(
             accessToken,
             connection.google_calendar_id,
@@ -744,17 +878,20 @@ export async function pullChangesFromGoogle(
     let mode: PullSummary["mode"] = "incremental";
 
     const connectionUpdate: Record<string, unknown> = {};
+    let fullWindow: { startIso: string; endIso: string } | null = null;
 
     if (!page || page.syncTokenInvalid) {
       mode = "initial";
+      const timeMin = daysAgoIso(INITIAL_SYNC_PAST_WINDOW_DAYS);
       const timeMax = daysFromNowIso(INITIAL_SYNC_FUTURE_WINDOW_DAYS);
       page = await listEventsInitial(
         accessToken,
         connection.google_calendar_id,
-        daysAgoIso(INITIAL_SYNC_PAST_WINDOW_DAYS),
+        timeMin,
         timeMax
       );
       connectionUpdate.sync_window_end = timeMax;
+      fullWindow = { startIso: timeMin, endIso: timeMax };
     }
 
     const pendingDeletionIds = await getPendingDeletionIds(
@@ -768,6 +905,27 @@ export async function pullChangesFromGoogle(
       page.items,
       pendingDeletionIds
     );
+
+    // Only meaningful after a full-window fetch: an incremental page carries
+    // just what changed, so absence from it means nothing at all.
+    let reconciled = 0;
+    if (fullWindow) {
+      const present = new Set(
+        page.items
+          .filter((event) => event.status !== "cancelled")
+          .map((event) => event.id)
+      );
+      const outcome = await reconcileDeletedEvents(
+        supabase,
+        connection.trainer_id,
+        present,
+        fullWindow.startIso,
+        fullWindow.endIso,
+        fetchStartedAt
+      );
+      reconciled = outcome.canceled;
+      errors.push(...outcome.errors);
+    }
 
     await advanceSyncToken(
       supabase,
@@ -784,6 +942,7 @@ export async function pullChangesFromGoogle(
       applied,
       skipped,
       failed: page.items.length - applied - skipped,
+      reconciled,
       errors,
     };
   } finally {
@@ -859,7 +1018,13 @@ export async function runFullSync(
   supabase: SupabaseClient,
   connection: GoogleCalendarConnection
 ) {
-  const pull = await pullChangesFromGoogle(supabase, connection);
+  // fullResync, not the stored token: these two callers are the backstop for
+  // everything the webhook stream can drop, and a deletion is the one change
+  // that is announced once and never repeated. Only a full-window fetch can
+  // notice one that went missing — see reconcileDeletedEvents.
+  const pull = await pullChangesFromGoogle(supabase, connection, {
+    fullResync: true,
+  });
   const push = await pushPendingAppointments(supabase, connection.trainer_id);
   const deletions = await flushPendingDeletions(supabase, connection);
   await renewWatchChannelIfNeeded(supabase, connection);
