@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { sendLeadToClose } from "@/lib/close";
 
 interface FormData {
   name: string;
@@ -101,6 +102,18 @@ export async function POST(request: Request) {
         }
       } catch (sheetsError) {
         console.error("Sheets webhook error:", sheetsError);
+      }
+    }
+
+    // Close is the system of record for follow-up, so a lead that reaches it is
+    // captured even if the sheet and the notification email both fail.
+    if (process.env.CLOSE_API_KEY) {
+      try {
+        if (await sendLeadToClose(data)) {
+          leadCaptured = true;
+        }
+      } catch (closeError) {
+        console.error("Close CRM error:", closeError);
       }
     }
 
