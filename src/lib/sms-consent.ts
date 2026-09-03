@@ -11,7 +11,8 @@ export const SMS_CONSENT_VERSION = "2026-09-03";
 // The checkbox label stays one line so it doesn't dominate the form. The full
 // disclosure sits under the submit button — A2P asks for it on the same page as
 // the phone field, not inside the label itself.
-export const SMS_CONSENT_LABEL = "Text me about my consultation. Optional.";
+export const SMS_CONSENT_LABEL =
+  "Text me about scheduling and appointment reminders. Optional.";
 
 // Kept close to Close's sample wording — every element carrier review checks for
 // (message type, varying frequency, rates, STOP, HELP) is here.
