@@ -318,7 +318,7 @@ export default function ApplicationForm() {
                       <a href="/privacy" className="underline hover:text-white/70">
                         Privacy Policy
                       </a>
-                      . Optional — you can still book without it.
+                      .
                     </div>
                   </div>
                 </div>
@@ -529,19 +529,9 @@ export default function ApplicationForm() {
               </div>
 
               <p className="text-white/40 text-xs leading-relaxed pt-4">
-                By submitting this form you agree to be contacted by Sun
-                Functional Movement about training services by phone or email.
-                Text messages are sent only if you check the box above, and
-                agreeing to them is never a condition of booking or purchase.
-                See our{" "}
-                <a href="/privacy" className="underline hover:text-white/70">
-                  Privacy Policy
-                </a>{" "}
-                and{" "}
-                <a href="/terms" className="underline hover:text-white/70">
-                  Terms of Service
-                </a>
-                .
+                By submitting, you agree to be contacted about training services
+                by phone or email. Texts are optional and only sent if you check
+                the box.
               </p>
             </form>
           )}

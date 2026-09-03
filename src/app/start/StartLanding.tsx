@@ -600,7 +600,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                           >
                             Privacy Policy
                           </Link>
-                          . Optional — you can still book without it.
+                          .
                         </div>
                       </div>
                     </div>
@@ -643,19 +643,9 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                     )}
 
                     <p className="text-xs text-gray-500 leading-relaxed">
-                      By submitting this form you agree to be contacted by Sun
-                      Functional Movement about your consultation by phone or
-                      email. Text messages are sent only if you check the box
-                      above, and agreeing to them is never a condition of booking
-                      or purchase. See our{" "}
-                      <Link href="/privacy" className="underline hover:text-[#CB4538]">
-                        Privacy Policy
-                      </Link>{" "}
-                      and{" "}
-                      <Link href="/terms" className="underline hover:text-[#CB4538]">
-                        Terms of Service
-                      </Link>
-                      .
+                      By submitting, you agree to be contacted about your
+                      consultation by phone or email. Texts are optional and only
+                      sent if you check the box.
                     </p>
 
                   </form>

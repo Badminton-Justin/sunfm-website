@@ -8,10 +8,12 @@
 
 export const SMS_CONSENT_VERSION = "2026-09-03";
 
+// Kept close to Close's sample wording — every element carrier review looks
+// for (message type, varying frequency, rates, STOP, HELP) is still here.
 export const SMS_CONSENT_TEXT =
-  "You agree to receive automated transactional/customer care SMS messages " +
-  "with varying frequency from Sun Functional Movement. Msg & data rates may " +
-  "apply. Reply STOP to end. Text HELP for help.";
+  "Text me automated transactional/customer care messages from Sun Functional " +
+  "Movement, frequency varies. Msg & data rates may apply. Reply STOP to end, " +
+  "HELP for help.";
 
 /** How a submission's consent is recorded in the CRM, the sheet, and email. */
 export function formatSmsConsent(consented: boolean | undefined): string {
