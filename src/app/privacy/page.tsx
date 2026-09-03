@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="text-sm text-gray-500 mb-12">
-          Last updated: June 7, 2026
+          Last updated: September 3, 2026
         </p>
 
         <div className="space-y-10 text-gray-700 leading-relaxed">
@@ -118,8 +118,12 @@ export default function PrivacyPage() {
                 stores your email and name if you opt into communications
               </li>
               <li>
-                <strong>Google Sheets / Google Workspace</strong> — internal CRM
-                for consultation requests
+                <strong>Close</strong> — CRM and messaging platform for
+                consultation requests, follow-up, and text messages
+              </li>
+              <li>
+                <strong>Google Sheets / Google Workspace</strong> — internal
+                record of consultation requests
               </li>
               <li>
                 <strong>Google Analytics 4 and Google Ads</strong> — measures
@@ -139,6 +143,30 @@ export default function PrivacyPage() {
             </ul>
             <p className="mt-4">
               Each provider operates under its own privacy policy.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-[#1a1a1a] mb-4">
+              Text messaging (SMS)
+            </h2>
+            <p className="mb-3">
+              If you give us your phone number and agree to be texted, we use it
+              to reach you about your consultation, scheduling, and your
+              training — nothing else. Message frequency varies. Message and
+              data rates may apply. Reply STOP to any message to opt out, or
+              HELP for help.
+            </p>
+            <p className="mb-3 font-semibold text-[#1a1a1a]">
+              Text messaging originator opt-in data and consent will not be
+              shared with any third parties or affiliates for marketing or
+              promotional purposes.
+            </p>
+            <p>
+              We use Close (Close.com) as our CRM and messaging provider, and it
+              processes your phone number and message history solely to deliver
+              these messages on our behalf. No mobile information is sold, and
+              opt-in consent is never passed to anyone for their own marketing.
             </p>
           </section>
 

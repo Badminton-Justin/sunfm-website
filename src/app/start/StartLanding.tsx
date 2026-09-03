@@ -593,6 +593,23 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                       </p>
                     )}
 
+                    <p className="text-xs text-gray-500 leading-relaxed">
+                      By submitting this form you agree to be contacted by Sun
+                      Functional Movement about your consultation, including by
+                      text message at the number you provided. Consent isn&apos;t a
+                      condition of purchase. Message frequency varies, and message
+                      and data rates may apply. Reply STOP to opt out or HELP for
+                      help. See our{" "}
+                      <Link href="/privacy" className="underline hover:text-[#CB4538]">
+                        Privacy Policy
+                      </Link>{" "}
+                      and{" "}
+                      <Link href="/terms" className="underline hover:text-[#CB4538]">
+                        Terms of Service
+                      </Link>
+                      .
+                    </p>
+
                   </form>
                 </>
               )}

@@ -490,9 +490,20 @@ export default function ApplicationForm() {
                 </button>
               </div>
 
-              <p className="text-white/20 text-xs text-center pt-4">
-                By submitting, you agree to be contacted about training services.
-                Your information will never be shared.
+              <p className="text-white/40 text-xs leading-relaxed pt-4">
+                By submitting this form you agree to be contacted by Sun
+                Functional Movement about training services, including by text
+                message at the number you provided. Consent isn&apos;t a condition
+                of purchase. Message frequency varies, and message and data rates
+                may apply. Reply STOP to opt out or HELP for help. See our{" "}
+                <a href="/privacy" className="underline hover:text-white/70">
+                  Privacy Policy
+                </a>{" "}
+                and{" "}
+                <a href="/terms" className="underline hover:text-white/70">
+                  Terms of Service
+                </a>
+                .
               </p>
             </form>
           )}
