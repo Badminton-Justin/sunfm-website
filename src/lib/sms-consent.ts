@@ -8,11 +8,17 @@
 
 export const SMS_CONSENT_VERSION = "2026-09-03";
 
-// Kept close to Close's sample wording — every element carrier review looks
-// for (message type, varying frequency, rates, STOP, HELP) is still here.
+// The checkbox label stays one line so it doesn't dominate the form. The full
+// disclosure sits under the submit button — A2P asks for it on the same page as
+// the phone field, not inside the label itself.
+export const SMS_CONSENT_LABEL = "Text me about my consultation. Optional.";
+
+// Kept close to Close's sample wording — every element carrier review checks for
+// (message type, varying frequency, rates, STOP, HELP) is here.
 export const SMS_CONSENT_TEXT =
-  "Text me automated transactional/customer care messages from Sun Functional " +
-  "Movement, frequency varies. Msg & data rates may apply. Reply STOP to end, " +
+  "If you check the text box, you agree to receive automated " +
+  "transactional/customer care SMS messages with varying frequency from Sun " +
+  "Functional Movement. Msg & data rates may apply. Reply STOP to end. Text " +
   "HELP for help.";
 
 /** How a submission's consent is recorded in the CRM, the sheet, and email. */

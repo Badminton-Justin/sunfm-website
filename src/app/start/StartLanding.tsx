@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
-import { SMS_CONSENT_TEXT } from "@/lib/sms-consent";
+import { SMS_CONSENT_LABEL, SMS_CONSENT_TEXT } from "@/lib/sms-consent";
 
 const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
 
@@ -559,9 +559,10 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                         placeholder="(408) 555-0123"
                       />
 
-                      {/* A2P 10DLC: SMS consent is optional and unchecked by
-                          default — it can't be a condition of submitting. */}
-                      <div className="flex gap-3 mt-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                      {/* A2P 10DLC: optional and unchecked — texting consent
+                          can't be a condition of submitting. The full disclosure
+                          runs under the submit button. */}
+                      <div className="flex items-center gap-2.5 mt-3">
                         <input
                           type="checkbox"
                           id="smsConsent"
@@ -574,34 +575,14 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                               page_source: "start_page",
                             });
                           }}
-                          aria-describedby="smsConsentText"
-                          className="mt-0.5 h-4 w-4 shrink-0 accent-[#CB4538] cursor-pointer"
+                          className="h-4 w-4 shrink-0 accent-[#CB4538] cursor-pointer"
                         />
-                        {/* The <label> covers the consent sentence only. Wrapping
-                            the links in it too would toggle the box on the way out
-                            of a click on Terms or Privacy. */}
-                        <div
-                          id="smsConsentText"
-                          className="text-xs text-gray-600 leading-relaxed"
+                        <label
+                          htmlFor="smsConsent"
+                          className="text-sm text-gray-600 cursor-pointer"
                         >
-                          <label htmlFor="smsConsent" className="cursor-pointer">
-                            {SMS_CONSENT_TEXT}
-                          </label>{" "}
-                          <Link
-                            href="/terms"
-                            className="underline hover:text-[#CB4538]"
-                          >
-                            Terms of Service
-                          </Link>{" "}
-                          |{" "}
-                          <Link
-                            href="/privacy"
-                            className="underline hover:text-[#CB4538]"
-                          >
-                            Privacy Policy
-                          </Link>
-                          .
-                        </div>
+                          {SMS_CONSENT_LABEL}
+                        </label>
                       </div>
                     </div>
 
@@ -644,8 +625,15 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
 
                     <p className="text-xs text-gray-500 leading-relaxed">
                       By submitting, you agree to be contacted about your
-                      consultation by phone or email. Texts are optional and only
-                      sent if you check the box.
+                      consultation by phone or email. {SMS_CONSENT_TEXT}{" "}
+                      <Link href="/terms" className="underline hover:text-[#CB4538]">
+                        Terms of Service
+                      </Link>{" "}
+                      |{" "}
+                      <Link href="/privacy" className="underline hover:text-[#CB4538]">
+                        Privacy Policy
+                      </Link>
+                      .
                     </p>
 
                   </form>

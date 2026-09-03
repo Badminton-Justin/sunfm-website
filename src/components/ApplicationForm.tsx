@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
 import { useReveal } from "@/hooks/useReveal";
-import { SMS_CONSENT_TEXT } from "@/lib/sms-consent";
+import { SMS_CONSENT_LABEL, SMS_CONSENT_TEXT } from "@/lib/sms-consent";
 
 interface FormData {
   name: string;
@@ -289,8 +289,9 @@ export default function ApplicationForm() {
                   />
 
                   {/* A2P 10DLC: optional and unchecked — texting consent can't
-                      be a condition of submitting the form. */}
-                  <div className="flex gap-3 mt-3 p-3 bg-white/[0.04] border border-white/10 rounded-lg">
+                      be a condition of submitting. The full disclosure runs under
+                      the submit button. */}
+                  <div className="flex items-center gap-2.5 mt-3">
                     <input
                       type="checkbox"
                       id="smsConsent"
@@ -302,24 +303,11 @@ export default function ApplicationForm() {
                           consented: e.target.checked ? "yes" : "no",
                         });
                       }}
-                      aria-describedby="smsConsentText"
-                      className="mt-0.5 h-4 w-4 shrink-0 accent-[#FFD140] cursor-pointer"
+                      className="h-4 w-4 shrink-0 accent-[#FFD140] cursor-pointer"
                     />
-                    {/* The <label> covers the consent sentence only — wrapping the
-                        links in it would toggle the box on the way out of a click. */}
-                    <div id="smsConsentText" className="text-xs text-white/50 leading-relaxed">
-                      <label htmlFor="smsConsent" className="cursor-pointer">
-                        {SMS_CONSENT_TEXT}
-                      </label>{" "}
-                      <a href="/terms" className="underline hover:text-white/70">
-                        Terms of Service
-                      </a>{" "}
-                      |{" "}
-                      <a href="/privacy" className="underline hover:text-white/70">
-                        Privacy Policy
-                      </a>
-                      .
-                    </div>
+                    <label htmlFor="smsConsent" className="text-sm text-white/60 cursor-pointer">
+                      {SMS_CONSENT_LABEL}
+                    </label>
                   </div>
                 </div>
               </div>
@@ -530,8 +518,15 @@ export default function ApplicationForm() {
 
               <p className="text-white/40 text-xs leading-relaxed pt-4">
                 By submitting, you agree to be contacted about training services
-                by phone or email. Texts are optional and only sent if you check
-                the box.
+                by phone or email. {SMS_CONSENT_TEXT}{" "}
+                <a href="/terms" className="underline hover:text-white/70">
+                  Terms of Service
+                </a>{" "}
+                |{" "}
+                <a href="/privacy" className="underline hover:text-white/70">
+                  Privacy Policy
+                </a>
+                .
               </p>
             </form>
           )}
