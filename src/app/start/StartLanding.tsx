@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
+import { SMS_CONSENT_TEXT } from "@/lib/sms-consent";
 
 const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
 
@@ -260,6 +261,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
     phone: "",
     goal: "",
   });
+  const [smsConsent, setSmsConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -347,6 +349,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
+          smsConsent,
           age: "",
           goal: formData.goal,
           goalDetails: "",
@@ -371,6 +374,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
         });
         setSubmitStatus("success");
         setFormData({ name: "", email: "", phone: "", goal: "" });
+        setSmsConsent(false);
       } else {
         trackEvent("form_submit_error", { page_source: "start_page", error_type: `http_${response.status}` });
         setSubmitStatus("error");
@@ -554,6 +558,51 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                         className={inputClasses}
                         placeholder="(408) 555-0123"
                       />
+
+                      {/* A2P 10DLC: SMS consent is optional and unchecked by
+                          default — it can't be a condition of submitting. */}
+                      <div className="flex gap-3 mt-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                        <input
+                          type="checkbox"
+                          id="smsConsent"
+                          name="smsConsent"
+                          checked={smsConsent}
+                          onChange={(e) => {
+                            setSmsConsent(e.target.checked);
+                            trackEvent("sms_consent_toggle", {
+                              consented: e.target.checked ? "yes" : "no",
+                              page_source: "start_page",
+                            });
+                          }}
+                          aria-describedby="smsConsentText"
+                          className="mt-0.5 h-4 w-4 shrink-0 accent-[#CB4538] cursor-pointer"
+                        />
+                        {/* The <label> covers the consent sentence only. Wrapping
+                            the links in it too would toggle the box on the way out
+                            of a click on Terms or Privacy. */}
+                        <div
+                          id="smsConsentText"
+                          className="text-xs text-gray-600 leading-relaxed"
+                        >
+                          <label htmlFor="smsConsent" className="cursor-pointer">
+                            {SMS_CONSENT_TEXT}
+                          </label>{" "}
+                          <Link
+                            href="/terms"
+                            className="underline hover:text-[#CB4538]"
+                          >
+                            Terms of Service
+                          </Link>{" "}
+                          |{" "}
+                          <Link
+                            href="/privacy"
+                            className="underline hover:text-[#CB4538]"
+                          >
+                            Privacy Policy
+                          </Link>
+                          . Optional — you can still book without it.
+                        </div>
+                      </div>
                     </div>
 
                     <div>
@@ -595,11 +644,10 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
 
                     <p className="text-xs text-gray-500 leading-relaxed">
                       By submitting this form you agree to be contacted by Sun
-                      Functional Movement about your consultation, including by
-                      text message at the number you provided. Consent isn&apos;t a
-                      condition of purchase. Message frequency varies, and message
-                      and data rates may apply. Reply STOP to opt out or HELP for
-                      help. See our{" "}
+                      Functional Movement about your consultation by phone or
+                      email. Text messages are sent only if you check the box
+                      above, and agreeing to them is never a condition of booking
+                      or purchase. See our{" "}
                       <Link href="/privacy" className="underline hover:text-[#CB4538]">
                         Privacy Policy
                       </Link>{" "}

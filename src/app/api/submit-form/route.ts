@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { sendLeadToClose } from "@/lib/close";
+import { formatSmsConsent } from "@/lib/sms-consent";
 
 interface FormData {
   name: string;
   email: string;
   phone: string;
+  smsConsent?: boolean;
   age: string;
   goal: string;
   goalDetails: string;
@@ -59,6 +61,10 @@ export async function POST(request: Request) {
       data.landingPage
     );
 
+    // Carrier review can ask us to produce proof of opt-in for any number we
+    // text, so the answer is written to every destination alongside the lead.
+    const smsConsentSummary = formatSmsConsent(data.smsConsent);
+
     // The lead is only truly lost if every channel below fails. Track that, so a
     // downstream outage (expired SMTP password, Apps Script hiccup) never tells a
     // prospect their submission failed when we actually have their details.
@@ -74,6 +80,7 @@ export async function POST(request: Request) {
             name: data.name,
             email: data.email,
             phone: data.phone,
+            smsConsent: smsConsentSummary,
             age: data.age || "",
             goal: data.goal + (data.goalDetails ? ` — ${data.goalDetails}` : ""),
             experience: data.experience,
@@ -150,6 +157,7 @@ New consultation request from ${data.name}
 Name: ${data.name}
 Email: ${data.email}
 Phone: ${data.phone}
+SMS consent: ${smsConsentSummary}
 Age: ${data.age || "Not provided"}
 
 Goal: ${data.goal}${data.goalDetails ? ` — ${data.goalDetails}` : ""}

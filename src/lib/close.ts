@@ -3,6 +3,8 @@
 // Leads land in the Sales pipeline as an opportunity at "New Lead" so they show
 // up on the board immediately — a lead without an opportunity is invisible there.
 
+import { formatSmsConsent } from "./sms-consent";
+
 const CLOSE_API = "https://api.close.com/api/v1";
 
 const NEW_LEAD_STATUS = "stat_lDhnmvQjHtILVuEMl2N6dFRmWvuQ9jR9eWcnxdHxRsf";
@@ -32,6 +34,7 @@ export interface CloseLeadInput {
   name: string;
   email: string;
   phone: string;
+  smsConsent?: boolean;
   age?: string;
   goal: string;
   goalDetails?: string;
@@ -110,6 +113,8 @@ function buildCustomFields(data: CloseLeadInput): Record<string, string> {
 function buildNoteBody(data: CloseLeadInput): string {
   const lines = [
     `Consultation request — ${data.landingPage || "website"}`,
+    "",
+    `SMS consent: ${formatSmsConsent(data.smsConsent)}`,
     "",
     `Goal: ${data.goal}${data.goalDetails ? ` — ${data.goalDetails}` : ""}`,
     `Experience: ${data.experience || "Not provided"}`,

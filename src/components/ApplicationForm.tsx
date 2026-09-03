@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
 import { useReveal } from "@/hooks/useReveal";
+import { SMS_CONSENT_TEXT } from "@/lib/sms-consent";
 
 interface FormData {
   name: string;
@@ -35,6 +36,7 @@ export default function ApplicationForm() {
     referral: "",
     referralDetails: "",
   });
+  const [smsConsent, setSmsConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const successRef = useRef<HTMLDivElement>(null);
@@ -96,6 +98,7 @@ export default function ApplicationForm() {
         },
         body: JSON.stringify({
           ...formData,
+          smsConsent,
           attribution: attributionRef.current,
           landingPage: "/",
         }),
@@ -108,6 +111,7 @@ export default function ApplicationForm() {
           landing_page: "/",
         });
         setSubmitStatus("success");
+        setSmsConsent(false);
         setFormData({
           name: "",
           email: "",
@@ -283,6 +287,40 @@ export default function ApplicationForm() {
                     className={inputClasses}
                     placeholder="(555) 123-4567"
                   />
+
+                  {/* A2P 10DLC: optional and unchecked — texting consent can't
+                      be a condition of submitting the form. */}
+                  <div className="flex gap-3 mt-3 p-3 bg-white/[0.04] border border-white/10 rounded-lg">
+                    <input
+                      type="checkbox"
+                      id="smsConsent"
+                      name="smsConsent"
+                      checked={smsConsent}
+                      onChange={(e) => {
+                        setSmsConsent(e.target.checked);
+                        trackEvent("sms_consent_toggle", {
+                          consented: e.target.checked ? "yes" : "no",
+                        });
+                      }}
+                      aria-describedby="smsConsentText"
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-[#FFD140] cursor-pointer"
+                    />
+                    {/* The <label> covers the consent sentence only — wrapping the
+                        links in it would toggle the box on the way out of a click. */}
+                    <div id="smsConsentText" className="text-xs text-white/50 leading-relaxed">
+                      <label htmlFor="smsConsent" className="cursor-pointer">
+                        {SMS_CONSENT_TEXT}
+                      </label>{" "}
+                      <a href="/terms" className="underline hover:text-white/70">
+                        Terms of Service
+                      </a>{" "}
+                      |{" "}
+                      <a href="/privacy" className="underline hover:text-white/70">
+                        Privacy Policy
+                      </a>
+                      . Optional — you can still book without it.
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -492,10 +530,10 @@ export default function ApplicationForm() {
 
               <p className="text-white/40 text-xs leading-relaxed pt-4">
                 By submitting this form you agree to be contacted by Sun
-                Functional Movement about training services, including by text
-                message at the number you provided. Consent isn&apos;t a condition
-                of purchase. Message frequency varies, and message and data rates
-                may apply. Reply STOP to opt out or HELP for help. See our{" "}
+                Functional Movement about training services by phone or email.
+                Text messages are sent only if you check the box above, and
+                agreeing to them is never a condition of booking or purchase.
+                See our{" "}
                 <a href="/privacy" className="underline hover:text-white/70">
                   Privacy Policy
                 </a>{" "}
