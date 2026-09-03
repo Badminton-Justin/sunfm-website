@@ -193,14 +193,24 @@ export default function Footer() {
           <p className="text-white/20 text-xs">
             &copy; {currentYear} Sun Functional Movement. All rights reserved.
           </p>
-          <TrackedNavLink
-            href="/privacy"
-            section="footer"
-            linkText="Privacy Policy"
-            className="text-white/40 hover:text-white/70 transition-colors text-xs"
-          >
-            Privacy Policy
-          </TrackedNavLink>
+          <div className="flex items-center gap-6">
+            <TrackedNavLink
+              href="/privacy"
+              section="footer"
+              linkText="Privacy Policy"
+              className="text-white/40 hover:text-white/70 transition-colors text-xs"
+            >
+              Privacy Policy
+            </TrackedNavLink>
+            <TrackedNavLink
+              href="/terms"
+              section="footer"
+              linkText="Terms of Service"
+              className="text-white/40 hover:text-white/70 transition-colors text-xs"
+            >
+              Terms of Service
+            </TrackedNavLink>
+          </div>
         </div>
       </div>
     </footer>

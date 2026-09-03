@@ -779,6 +779,9 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
             <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy
             </Link>
+            <Link href="/terms" className="hover:text-white transition-colors">
+              Terms
+            </Link>
             <Link href="/" className="hover:text-white transition-colors">
               Full site
             </Link>
