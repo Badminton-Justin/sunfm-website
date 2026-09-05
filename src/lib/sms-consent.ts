@@ -6,18 +6,19 @@
 //
 // See docs: https://help.close.com/docs/a2p-10dlc#acceptable-optin-processes
 
-export const SMS_CONSENT_VERSION = "2026-09-03";
+export const SMS_CONSENT_VERSION = "2026-09-04";
 
-// The checkbox label stays one line so it doesn't dominate the form. The full
-// disclosure sits under the submit button — A2P asks for it on the same page as
-// the phone field, not inside the label itself.
+// The checkbox label stays one line so it doesn't dominate the form.
 export const SMS_CONSENT_LABEL =
   "Text me about scheduling and appointment reminders. Optional.";
 
-// Kept close to Close's sample wording — every element carrier review checks for
-// (message type, varying frequency, rates, STOP, HELP) is here.
+// Renders directly beneath the SMS checkbox, never in the same paragraph as the
+// phone/email line. Carrier review rejected the earlier version for bundling the
+// channels: a person has to be able to consent to SMS separately from agreeing
+// to be contacted at all. Every element review checks for (message type, varying
+// frequency, rates, STOP, HELP) is here.
 export const SMS_CONSENT_TEXT =
-  "If you check the text box, you agree to receive automated " +
+  "By checking this box, you agree to receive automated " +
   "transactional/customer care SMS messages with varying frequency from Sun " +
   "Functional Movement. Msg & data rates may apply. Reply STOP to end. Text " +
   "HELP for help.";
