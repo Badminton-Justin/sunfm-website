@@ -560,8 +560,10 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                       />
 
                       {/* A2P 10DLC: optional and unchecked — texting consent
-                          can't be a condition of submitting. The full disclosure
-                          runs under the submit button. */}
+                          can't be a condition of submitting. The disclosure sits
+                          with this checkbox rather than in the line under the
+                          button, so SMS consent is separable from agreeing to be
+                          contacted by phone or email. */}
                       <div className="flex items-center gap-2.5 mt-3">
                         <input
                           type="checkbox"
@@ -584,6 +586,9 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                           {SMS_CONSENT_LABEL}
                         </label>
                       </div>
+                      <p className="text-xs text-gray-500 leading-relaxed mt-2 pl-[26px]">
+                        {SMS_CONSENT_TEXT}
+                      </p>
                     </div>
 
                     <div>
@@ -625,7 +630,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
 
                     <p className="text-xs text-gray-500 leading-relaxed">
                       By submitting, you agree to be contacted about your
-                      consultation by phone or email. {SMS_CONSENT_TEXT}{" "}
+                      consultation by phone or email.{" "}
                       <Link href="/terms" className="underline hover:text-[#CB4538]">
                         Terms of Service
                       </Link>{" "}
