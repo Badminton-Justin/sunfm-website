@@ -292,8 +292,8 @@ export default function ApplicationForm() {
                 {/* A2P 10DLC: optional and unchecked — texting consent can't be
                     a condition of submitting. The disclosure sits with this
                     checkbox rather than in the line under the button, so SMS
-                    consent is separable from agreeing to be contacted by phone
-                    or email. Spans both columns so the disclosure reads as a
+                    consent is separable from agreeing to be contacted by
+                    email. Spans both columns so the disclosure reads as a
                     paragraph instead of stacking down the narrow phone column. */}
                 <div className="md:col-span-2">
                   <div className="flex items-center gap-2.5">
@@ -526,7 +526,7 @@ export default function ApplicationForm() {
 
               <p className="text-white/40 text-xs leading-relaxed pt-4">
                 By submitting, you agree to be contacted about training services
-                by phone or email.{" "}
+                by email.{" "}
                 <a href="/terms" className="underline hover:text-white/70">
                   Terms of Service
                 </a>{" "}
