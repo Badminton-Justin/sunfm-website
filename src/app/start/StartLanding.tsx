@@ -563,7 +563,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                           can't be a condition of submitting. The disclosure sits
                           with this checkbox rather than in the line under the
                           button, so SMS consent is separable from agreeing to be
-                          contacted by phone or email. */}
+                          contacted by email. */}
                       <div className="flex items-center gap-2.5 mt-3">
                         <input
                           type="checkbox"
@@ -630,7 +630,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
 
                     <p className="text-xs text-gray-500 leading-relaxed">
                       By submitting, you agree to be contacted about your
-                      consultation by phone or email.{" "}
+                      consultation by email.{" "}
                       <Link href="/terms" className="underline hover:text-[#CB4538]">
                         Terms of Service
                       </Link>{" "}
