@@ -36,16 +36,22 @@ export default function Hero() {
           </p>
 
           {/* Headline - massive display type */}
+          {/* No hero-enter here on purpose. .hero-enter uses animation-fill-mode
+              both, so the element sits at opacity 0 until its delay elapses, and
+              the headline and subheadline are the largest above-fold text. That
+              made the subheadline the LCP element at 4.1s, all of it render
+              delay rather than load time. The eyebrow above and the CTA row
+              below still stagger, so the entrance still reads. */}
           <h1 className="text-display-lg text-white lg:text-[#1a1a1a] mb-6 md:mb-8">
-            <span className="hero-enter hero-enter-2 inline-block highlight">Move Better.</span>
+            <span className="inline-block highlight">Move Better.</span>
             <br />
-            <span className="hero-enter hero-enter-3 inline-block">Feel Stronger.</span>
+            <span className="inline-block">Feel Stronger.</span>
             <br />
-            <span className="hero-enter hero-enter-4 inline-block">Live Longer.</span>
+            <span className="inline-block">Live Longer.</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="hero-enter hero-enter-4 text-lg md:text-xl text-white/80 lg:text-gray-500 mb-8 md:mb-10 max-w-lg leading-relaxed">
+          <p className="text-lg md:text-xl text-white/80 lg:text-gray-500 mb-8 md:mb-10 max-w-lg leading-relaxed">
             Hi, I&apos;m Jeffrey Sun, a personal trainer in San Jose serving
             the South Bay Area. I help busy professionals eliminate pain,
             build functional strength, and train for health longevity - not
