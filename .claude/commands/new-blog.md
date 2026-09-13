@@ -105,6 +105,22 @@ tags: ["primary keyword", "secondary keyword", "desk workers", "San Jose", "mobi
 - Bold inline labels (**Pass**:, **Fail**:) are fine when they carry information. Avoid decorative bolding.
 - Close with a section that nudges toward the Movement Screen tool AND the consultation, without it reading like an ad.
 
+### Citation links (required when the post cites research)
+
+Posts on this site name studies precisely — journal, year, sample size, effect. **Link them.** Every named study gets a markdown link to its PubMed or DOI page on first mention.
+
+Verify the URL returns 200 before inserting it. PubMed IDs are findable via the E-utilities API without a key:
+
+```bash
+curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=<author+keywords>&retmax=3" | grep -o "<Id>[0-9]*</Id>"
+```
+
+Then link as `https://pubmed.ncbi.nlm.nih.gov/<pmid>/`.
+
+Why this is a hard rule: the September 2026 audit found the practice had silently lapsed. The 32 posts before 2026-07-11 carried 21 external citation links; the 18 after carried 5, all in the first four. Fourteen consecutive posts named real studies and linked none of them. The prose got more rigorous while the verifiability got worse, which is precisely backwards for E-E-A-T and for AI answer engines deciding whether a passage is citable.
+
+These links do not count against the internal-linking budget in Step 4. That budget is about links to other SunFM pages.
+
 ### Image embedding
 
 Check `public/images/blog/` for the current stock inventory (run `ls public/images/blog/`). Filenames give you a hint, but they can lie or be too generic — `stretching-mobility.jpg` is a yoga lunge backbend at sunset, not a generic fitness shot. Before reusing any on-disk image as a hero or inline, **always Read the file with the Read tool and visually confirm the actual subject** matches the section you'd embed it in. Trusting prior alt text or filename alone is how off-topic images sneak in.
@@ -273,9 +289,25 @@ Report to the user:
 
 Do NOT commit or push unless the user asks. The user will usually want to review first.
 
-### IndexNow ping (after the user confirms push)
+### Search engine notification (after the user confirms push)
 
-Once the post is pushed to production, run `python3 scripts/indexnow-ping.py https://www.sunfm.fitness/<category>/<slug>` to push the new URL to Bing/Yandex/other IndexNow-participating engines immediately instead of waiting for the next scheduled crawl. Skip this if the post hasn't actually been deployed yet — pinging a URL that 404s wastes the submission.
+Both of these, in order. Skip both if the post hasn't actually deployed yet — notifying a URL that 404s wastes the submission.
+
+**1. IndexNow — reaches Bing, Yandex, and other participating engines:**
+```
+python3 scripts/indexnow-ping.py https://www.sunfm.fitness/<category>/<slug>
+```
+
+**2. Search Console sitemap resubmit — reaches Google:**
+```
+python3 scripts/submit-sitemap.py
+```
+
+**Do not skip step 2, and do not assume step 1 covers it. Google does not participate in IndexNow.** Google also retired its anonymous `google.com/ping?sitemap=` endpoint in 2023, so resubmitting through the Search Console API is the only supported way to tell Google something new exists.
+
+This is not hypothetical. Google last read the sitemap on 2026-05-30 and did not read it again until 2026-09-13. Every one of the 31 URLs published in that window went uncrawled — 15 of the 18 posts from that period were still "unknown to Google" when the September audit checked. IndexNow was firing correctly the whole time; it just doesn't talk to Google.
+
+If step 2 returns 403, the ADC token has expired or lacks the read-write `webmasters` scope. Fix with `bash scripts/auth-google-apis.sh` and re-run. Google expires these tokens roughly weekly.
 
 ---
 

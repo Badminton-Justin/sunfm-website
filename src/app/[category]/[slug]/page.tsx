@@ -182,6 +182,7 @@ export default async function ArticlePage({ params }: Props) {
         "https://www.instagram.com/jeffsunfitness/",
         "https://www.yelp.com/biz/sun-functional-movement-san-jose",
         "https://maps.app.goo.gl/XyrnsHXu9K1xYqXw5",
+        "https://www.linkedin.com/company/sun-functional-movement",
       ],
     },
     publisher: {
@@ -197,6 +198,7 @@ export default async function ArticlePage({ params }: Props) {
         "https://www.instagram.com/jeffsunfitness/",
         "https://www.yelp.com/biz/sun-functional-movement-san-jose",
         "https://maps.app.goo.gl/XyrnsHXu9K1xYqXw5",
+        "https://www.linkedin.com/company/sun-functional-movement",
       ],
     },
   };

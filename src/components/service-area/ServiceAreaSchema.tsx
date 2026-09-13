@@ -57,6 +57,7 @@ export default function ServiceAreaSchema({ area }: { area: ServiceArea }) {
       "https://www.instagram.com/jeffsunfitness/",
       "https://www.yelp.com/biz/sun-functional-movement-san-jose",
       "https://maps.app.goo.gl/XyrnsHXu9K1xYqXw5",
+      "https://www.linkedin.com/company/sun-functional-movement",
     ],
   };
 

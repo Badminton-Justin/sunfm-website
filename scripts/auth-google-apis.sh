@@ -7,7 +7,7 @@
 set -euo pipefail
 
 SCOPES="https://www.googleapis.com/auth/cloud-platform"
-SCOPES="$SCOPES,https://www.googleapis.com/auth/webmasters.readonly"
+SCOPES="$SCOPES,https://www.googleapis.com/auth/webmasters"
 SCOPES="$SCOPES,https://www.googleapis.com/auth/analytics.readonly"
 SCOPES="$SCOPES,https://www.googleapis.com/auth/spreadsheets"
 

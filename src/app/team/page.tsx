@@ -57,7 +57,10 @@ const personSchema = [
       "Hypertrophy",
       "Athletic Performance",
     ],
-    sameAs: ["https://www.instagram.com/jeffsunfitness/"],
+    sameAs: [
+      "https://www.instagram.com/jeffsunfitness/",
+      "https://www.linkedin.com/company/sun-functional-movement",
+    ],
   },
   {
     "@context": "https://schema.org",
