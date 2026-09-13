@@ -31,16 +31,32 @@ export interface ServiceArea {
   relatedPostSlugs: { category: string; slug: string; label: string }[];
 }
 
+// These render on all 10 city pages. The titles deliberately use the phrasing
+// people actually search ("strength and conditioning", not "strength,
+// conditioning, and mobility") — GSC showed the pages ranking 8-14 for service
+// terms they never spelled out, against 1-9 for the ones they did. Nothing here
+// claims a service that isn't offered; it's the same work, named the way it
+// gets looked for.
 const commonServices: ServiceCard[] = [
   {
-    title: "1:1, semi-private, or small group",
+    title: "1:1, semi-private, and small group training",
     description:
       "Private one-on-one, two-person semi-private, or small group. Every client still gets a program built around their own body, whatever the format.",
   },
   {
-    title: "Strength, conditioning, and mobility",
+    title: "Strength and conditioning",
     description:
-      "Sessions mix compound strength with conditioning and targeted mobility. The studio has dumbbells, kettlebells, racks, a bench, bands, cardio equipment, and mobility tools.",
+      "Sessions mix compound strength work with conditioning and targeted mobility. The personal training studio has dumbbells, kettlebells, racks, a bench, bands, cardio equipment, and mobility tools.",
+  },
+  {
+    title: "Functional fitness that carries over",
+    description:
+      "Functional fitness means the work shows up outside the gym. Carrying luggage up a flight of stairs, getting off the floor without using your hands, a weekend hike you don't pay for on Monday. Patterns first, then load.",
+  },
+  {
+    title: "Mobility and movement screening",
+    description:
+      "Every new client starts with a movement screen that scores six areas, and the program gets built around whatever it flags. Stiff ankles and hips change what your knees and back have to absorb.",
   },
   {
     title: "Programming for the days between sessions",
