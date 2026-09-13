@@ -181,7 +181,7 @@ export default async function ArticlePage({ params }: Props) {
       sameAs: [
         "https://www.instagram.com/jeffsunfitness/",
         "https://www.yelp.com/biz/sun-functional-movement-san-jose",
-        "https://maps.app.goo.gl/XyrnsHXu9K1xYqXw5",
+        "https://maps.app.goo.gl/LjyryqUBDdHvsxom6",
         "https://www.linkedin.com/company/sun-functional-movement",
       ],
     },
@@ -197,7 +197,7 @@ export default async function ArticlePage({ params }: Props) {
       sameAs: [
         "https://www.instagram.com/jeffsunfitness/",
         "https://www.yelp.com/biz/sun-functional-movement-san-jose",
-        "https://maps.app.goo.gl/XyrnsHXu9K1xYqXw5",
+        "https://maps.app.goo.gl/LjyryqUBDdHvsxom6",
         "https://www.linkedin.com/company/sun-functional-movement",
       ],
     },

@@ -87,7 +87,7 @@ export default function Hero() {
               <span>
                 on{" "}
                 <a
-                  href="https://maps.app.goo.gl/XyrnsHXu9K1xYqXw5"
+                  href="https://maps.app.goo.gl/LjyryqUBDdHvsxom6"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline underline-offset-2 hover:text-[#CB4538] transition-colors"

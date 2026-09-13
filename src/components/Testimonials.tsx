@@ -241,7 +241,7 @@ export default function Testimonials() {
                 Yelp
               </TrackedLink>
               <TrackedLink
-                href="https://maps.app.goo.gl/XyrnsHXu9K1xYqXw5"
+                href="https://maps.app.goo.gl/LjyryqUBDdHvsxom6"
                 platform="google_maps"
                 section="testimonials"
                 target="_blank"
