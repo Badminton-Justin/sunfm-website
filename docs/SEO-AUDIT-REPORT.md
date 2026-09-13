@@ -231,15 +231,11 @@ Non-www is a single URL carrying more impressions than all 40 www URLs combined,
 
 ## What Still Couldn't Be Measured
 
-**GA4 / CrUX field data.** GSC is now working (see above). GA4 organic and CrUX field CWV were not pulled this round. The ADC token on this machine exists but returns `401 CREDENTIALS_MISSING` for Search Console; it lacks the webmasters scope. Re-auth requires an interactive browser login:
+**GA4 / CrUX field data.** GSC is now working (see above); GA4 organic and CrUX field CWV were not pulled this round.
 
-```
-gcloud auth application-default login \
-  --client-id-file=$HOME/sunfm-oauth-client.json \
-  --scopes=https://www.googleapis.com/auth/webmasters.readonly,https://www.googleapis.com/auth/analytics.readonly,https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/cloud-platform
-```
+Re-auth is scripted at `scripts/auth-google-apis.sh` — it builds the scope string internally, then test-queries GSC and reports pass or fail. Google expires refresh tokens on unverified OAuth clients roughly weekly, which is why this died before all three prior audits. A service account would not expire: create one in project `focal-elf-497403-c0`, add its email as a Full user in Search Console and a Viewer in GA4, then point the scripts at the key file.
 
-This is now the single biggest gap in the report. Everything above measures *what was built*. Impressions, clicks, average position, and indexation coverage measure *what it earned* — and with 18 new posts shipped, the July-to-September delta is exactly the question worth answering. The token appears to expire between sessions, so it's worth checking whether a service account would be more durable than user ADC.
+The current token is `webmasters.readonly`. It can read everything but cannot submit a sitemap, so Critical #0 needs either the read-write `webmasters` scope or a manual submit in the GSC UI.
 
 **Core Web Vitals are lab, not field.** PageSpeed/CrUX need a `GOOGLE_API_KEY` that isn't configured. Lab numbers are directionally reliable for the homepage LCP finding (a 4MB payload is slow for everyone) but real-user INP in particular remains unconfirmed.
 
@@ -251,9 +247,11 @@ This is now the single biggest gap in the report. Everything above measures *wha
 
 ## Recommended Order of Work
 
-1. Homepage testimonial posters (Critical #1) — biggest single user-facing win, contained to two components
-2. Revert the fabricated `uploadDate` (Critical #2) — five-minute fix, integrity issue
-3. Re-auth GSC and pull the nine-week performance delta — answers the question this audit couldn't
-4. LinkedIn `sameAs` (High #3) — one line, five files
-5. Add source links to the `/new-blog` workflow, then backfill the 14 recent posts (High #4)
-6. FAQ frontmatter for the 29 posts missing it (Medium #5) — steady background work
+1. **Resubmit the sitemap in GSC (Critical #0)** — nothing else here matters while 31 URLs are unknown to Google. Then Request Indexing on the strongest recent posts.
+2. ~~Homepage testimonial posters (Critical #1)~~ — **done 2026-09-13**, commit `15e3b0d`. Posters 3,280KB → 254KB, homepage 4,053 → 1,030 KiB, perf 73 → 82, LCP 5.0s → 4.1s. The remaining LCP is render delay from the `.hero-enter` staggered fade, a design decision left untouched.
+3. ~~Revert the fabricated `uploadDate` (Critical #2)~~ — **done 2026-09-13**, same commit.
+4. Fix the www/non-www redirect chain — reclassified upward from Medium; the GSC split is real and costly.
+5. Add a sitemap ping to the publish workflow so Critical #0 can't recur silently.
+6. LinkedIn `sameAs` (High #3) — one line, five files.
+7. Add source links to `/new-blog`, then backfill the 14 recent posts (High #4).
+8. FAQ frontmatter for the 29 posts missing it (Medium #5) — steady background work.
