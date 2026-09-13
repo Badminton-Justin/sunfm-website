@@ -59,6 +59,18 @@ const securityHeaders = (csp, extra = []) => [
 const noStore = [{ key: "Cache-Control", value: "no-store, must-revalidate" }];
 
 const nextConfig = {
+  // Testimonial video posters live in R2. Allowing the host here lets them go
+  // through the Next.js image optimizer instead of shipping the raw JPGs —
+  // they were ~2.8MB of the homepage before this.
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev",
+        pathname: "/**",
+      },
+    ],
+  },
   async headers() {
     return [
       {

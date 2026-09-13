@@ -10,6 +10,13 @@ import { trackEvent } from "@/lib/analytics";
 
 const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
 
+// The poster JPGs in R2 are full-size originals (the largest is 836KB). A
+// <video poster> can't take a next/image component, so point it at the
+// optimizer route directly — same resizing and WebP/AVIF negotiation, just
+// addressed by URL. Cards render at most 320px wide, so 640 covers 2x DPR.
+const poster = (url: string) =>
+  `/_next/image?url=${encodeURIComponent(url)}&w=640&q=70`;
+
 const videoTestimonials = [
   {
     videoUrl: `${R2_BASE}/Sneha_Edited.mp4`,
@@ -181,7 +188,7 @@ export default function Testimonials() {
                 <TrackedVideo
                   videoName={t.name}
                   src={t.videoUrl}
-                  poster={t.posterUrl}
+                  poster={poster(t.posterUrl)}
                   controls
                   playsInline
                   preload="none"

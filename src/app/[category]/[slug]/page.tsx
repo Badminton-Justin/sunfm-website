@@ -110,7 +110,12 @@ export default async function ArticlePage({ params }: Props) {
             name: title,
             description: `${title} — exercise demonstration referenced in "${post.title}" on Sun Functional Movement.`,
             thumbnailUrl: `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
-            uploadDate: post.date,
+            // No uploadDate on purpose. These are third-party YouTube embeds
+            // and we don't have their real upload dates without the YouTube
+            // Data API. Using post.date here made the same video report a
+            // different upload date on every post that embeds it. Google
+            // wants this field for video rich results; an absent field beats
+            // a false one. Add it back only with real per-video dates.
             embedUrl: `https://www.youtube-nocookie.com/embed/${id}`,
             publisher: {
               "@type": "Organization",
