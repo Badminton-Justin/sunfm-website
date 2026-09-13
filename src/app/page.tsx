@@ -89,7 +89,7 @@ const faqSchema = {
       name: "Where are training sessions held?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "In-person sessions are held in Sunnyvale, with clients coming from San Jose, Cupertino, Santa Clara, Mountain View, Campbell, and throughout the South Bay Area. Online sessions are conducted via video call.",
+        text: "In-person sessions are held at the studio in San Jose, with clients coming from Sunnyvale, Cupertino, Santa Clara, Mountain View, Campbell, and throughout the South Bay Area. Online sessions are conducted via video call.",
       },
     },
     {
