@@ -14,20 +14,17 @@ Auto-fills columns:
   D: Clicks                 (GSC)
   E: CTR                    (formula =D/C)
   F: Avg Position           (GSC)
-  I: Movement Screens       (GA4 event: movement_screen_completed)
-  J: Forms                  (GA4 event: form_submit_success — raw count)
+  G: Forms                  (GA4 event: form_submit_success — raw count)
 
 Leaves manual (does not touch):
-  G: GBP Views
-  H: GBP Clicks
-  K: Consultations (filtered qualified count)
-  L: Consult Rate
-  M: Show
-  N: Show Rate
-  O: Closed
-  P: Close Rate
-  Q: Paid
-  R: Leads
+  H: Consultations (filtered qualified count)
+  I: Consult Rate
+  J: Show
+  K: Show Rate
+  L: Closed
+  M: Close Rate
+  N: Paid
+  O: Leads
 
 Required setup:
   - ADC auth via gcloud (cloud-platform scope covers everything)
@@ -126,7 +123,7 @@ def fetch_ga4_metric(start_date, end_date, token, body):
 
 
 def fetch_ga4(start_date, end_date, token):
-    """Pull organic sessions, movement_screen_completed, form_submit_success for the week."""
+    """Pull organic sessions and form_submit_success for the week."""
     date_range = [{"startDate": start_date, "endDate": end_date}]
 
     organic_sessions = fetch_ga4_metric(
@@ -141,23 +138,6 @@ def fetch_ga4(start_date, end_date, token):
                 "filter": {
                     "fieldName": "sessionDefaultChannelGroup",
                     "stringFilter": {"matchType": "EXACT", "value": "Organic Search"},
-                }
-            },
-        },
-    )
-
-    movement_screens = fetch_ga4_metric(
-        start_date,
-        end_date,
-        token,
-        {
-            "dateRanges": date_range,
-            "dimensions": [{"name": "eventName"}],
-            "metrics": [{"name": "eventCount"}],
-            "dimensionFilter": {
-                "filter": {
-                    "fieldName": "eventName",
-                    "stringFilter": {"matchType": "EXACT", "value": "movement_screen_completed"},
                 }
             },
         },
@@ -182,7 +162,6 @@ def fetch_ga4(start_date, end_date, token):
 
     return {
         "organic_sessions": organic_sessions,
-        "movement_screens": movement_screens,
         "consultations": consultations,
     }
 
@@ -200,9 +179,9 @@ def find_or_pick_row(token, tab_name, week_of_str):
 
 
 def write_row(token, tab_name, row_number, week_of_str, gsc, ga4):
-    """Write data to columns A:F and I:J on the given row."""
+    """Write data to columns A:G on the given row."""
     r = row_number
-    body_af = {
+    body = {
         "values": [[
             week_of_str,
             ga4["organic_sessions"],
@@ -210,23 +189,15 @@ def write_row(token, tab_name, row_number, week_of_str, gsc, ga4):
             gsc["clicks"],
             f"=IFERROR(D{r}/C{r}, 0)",
             round(gsc["position"], 2),
-        ]]
-    }
-    body_ij = {
-        "values": [[
-            ga4["movement_screens"],
             ga4["consultations"],
         ]]
     }
-
-    for rng, body in [(f"{tab_name}!A{r}:F{r}", body_af),
-                      (f"{tab_name}!I{r}:J{r}", body_ij)]:
-        encoded = urllib.parse.quote(rng, safe="!")
-        url = (
-            f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values/{encoded}"
-            f"?valueInputOption=USER_ENTERED"
-        )
-        api_request(url, token, method="PUT", body=body)
+    encoded = urllib.parse.quote(f"{tab_name}!A{r}:G{r}", safe="!")
+    url = (
+        f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values/{encoded}"
+        f"?valueInputOption=USER_ENTERED"
+    )
+    api_request(url, token, method="PUT", body=body)
 
 
 def main():
@@ -264,7 +235,6 @@ def main():
     print(f"Pulling GA4 data for {monday_str} to {sunday_str}...")
     ga4 = fetch_ga4(monday_str, sunday_str, token)
     print(f"  → organic sessions: {ga4['organic_sessions']}")
-    print(f"  → movement_screen_completed: {ga4['movement_screens']}")
     print(f"  → form_submit_success: {ga4['consultations']}")
 
     print(f"Finding row for week {monday_str}...")
@@ -284,20 +254,17 @@ def main():
     print(f"  D  Clicks:                 {gsc['clicks']}")
     print(f"  E  CTR:                    (formula =D/C)")
     print(f"  F  Avg Position:           {gsc['position']:.2f}")
-    print(f"  I  Movement Screens:       {ga4['movement_screens']}")
-    print(f"  J  Forms (GA4 raw):        {ga4['consultations']}")
+    print(f"  G  Forms (GA4 raw):        {ga4['consultations']}")
     print()
     print("Manual fill required (untouched by script):")
-    print("  G  GBP Views           (from GBP Insights → Performance tab)")
-    print("  H  GBP Clicks          (from GBP Insights → Performance tab)")
-    print("  K  Consultations       (qualified count — filter spam/test from Forms)")
-    print("  L  Consult Rate        (K/J or your own logic)")
-    print("  M  Show                (consults that showed up to the session)")
-    print("  N  Show Rate           (M/K or your own logic)")
-    print("  O  Closed              (consults that became paying clients)")
-    print("  P  Close Rate          (O/M or your own logic)")
-    print("  Q  Paid                (revenue collected from new clients this week)")
-    print("  R  Leads               (named leads — Iris, Dongkai, etc.)")
+    print("  H  Consultations       (qualified count — filter spam/test from Forms)")
+    print("  I  Consult Rate        (H/G or your own logic)")
+    print("  J  Show                (consults that showed up to the session)")
+    print("  K  Show Rate           (J/H or your own logic)")
+    print("  L  Closed              (consults that became paying clients)")
+    print("  M  Close Rate          (L/J or your own logic)")
+    print("  N  Paid                (revenue collected from new clients this week)")
+    print("  O  Leads               (named leads — Iris, Dongkai, etc.)")
 
 
 if __name__ == "__main__":
