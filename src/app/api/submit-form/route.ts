@@ -124,26 +124,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Subscribe to Kit with consultation_warm tag
-    if (process.env.KIT_API_SECRET && process.env.KIT_TAG_CONSULTATION_WARM) {
-      try {
-        await fetch(
-          `https://api.convertkit.com/v3/tags/${process.env.KIT_TAG_CONSULTATION_WARM}/subscribe`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              api_secret: process.env.KIT_API_SECRET,
-              email: data.email,
-              first_name: data.name.split(" ")[0],
-            }),
-          }
-        );
-      } catch (kitError) {
-        console.error("Kit subscription error:", kitError);
-      }
-    }
-
     const recipients = process.env.NOTIFICATION_EMAILS || "";
 
     try {

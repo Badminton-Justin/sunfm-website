@@ -1,6 +1,6 @@
 // Captures paid-traffic and campaign attribution params from URL into
 // sessionStorage so that they survive same-tab navigation and land in the
-// form submission payload — gives downstream tools (Sheets log, Kit, email
+// form submission payload — gives downstream tools (Sheets log, Close, email
 // notifications) per-keyword / per-campaign visibility that Google Ads has
 // natively but our internal CRM does not.
 
