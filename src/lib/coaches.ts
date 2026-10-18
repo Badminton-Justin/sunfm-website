@@ -53,7 +53,7 @@ export const coaches: Coach[] = [
       "Strength & conditioning under Division I coaches",
       "Background in competitive gymnastics",
     ],
-    image: "/images/Crystal_Hero.jpg",
+    image: "/images/crystal-sun.jpg",
     alumniOf: "UC Davis",
     degree: "B.S. Neurobiology, Physiology & Behavior",
     certification: "CrossFit Level 1 Trainer (CF-L1)",
