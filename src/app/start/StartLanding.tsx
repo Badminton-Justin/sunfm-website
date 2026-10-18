@@ -521,7 +521,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
               ) : (
                 <>
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
-                  <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Your first session is free.</strong> You get a movement screen and a plan for your week. Sign up by {getRollingPromoDeadline()} and you also get a free home workout set.</p>
+                  <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Your first session is free.</strong> You get a movement screen and a plan. Sign up by {getRollingPromoDeadline()} for a free home workout set.</p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
