@@ -9,6 +9,10 @@ const CLOSE_API = "https://api.close.com/api/v1";
 
 const NEW_LEAD_STATUS = "stat_lDhnmvQjHtILVuEMl2N6dFRmWvuQ9jR9eWcnxdHxRsf";
 const POTENTIAL_LEAD_STATUS = "stat_K0qrxlwXhsJiwIrDtMQgkHf1czvpWT8R0nXgTbyg9dA";
+// Workflow triggers can filter on lead status but not on custom fields, so SMS
+// consent is carried in the status: the texting sequence only enrolls
+// "Potential", and "Potential – No SMS" gets the email-only sequence instead.
+const POTENTIAL_NO_SMS_LEAD_STATUS = "stat_WwmQaOA3XuK6asE5F33l1fDQQfq0HYsjqwCRIxy3Kez";
 
 // Custom field IDs from the SunFM Close account. Close addresses these as
 // "custom.<id>" in lead payloads; a typo here fails silently as a blank field.
@@ -147,7 +151,7 @@ export async function sendLeadToClose(data: CloseLeadInput): Promise<boolean> {
 
   const payload = {
     name: data.name,
-    status_id: POTENTIAL_LEAD_STATUS,
+    status_id: data.smsConsent ? POTENTIAL_LEAD_STATUS : POTENTIAL_NO_SMS_LEAD_STATUS,
     contacts: [
       {
         name: data.name,
