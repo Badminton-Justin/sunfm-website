@@ -1,13 +1,14 @@
 import { MetadataRoute } from "next";
 import { getAllPosts, getAllCategories } from "@/lib/blog";
 import { getAllServiceAreas } from "@/lib/service-areas";
+import { coaches } from "@/lib/coaches";
 
 // Hard-coded dates for pages whose content doesn't change frequently.
 // Bump these when the page actually changes — Google uses lastmod as a
 // crawl-priority signal, so "modified today" on every fetch gets a page
 // deprioritized as low-signal churn.
 const HOMEPAGE_LAST_MODIFIED = new Date("2026-07-11");
-const TEAM_LAST_MODIFIED = new Date("2026-06-13");
+const TEAM_LAST_MODIFIED = new Date("2026-10-18");
 const MOVEMENT_SCREEN_LAST_MODIFIED = new Date("2026-04-30");
 const SERVICE_AREAS_LAST_MODIFIED = new Date("2026-07-11");
 
@@ -65,5 +66,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  return [...staticPages, ...serviceAreaPages, ...categoryPages, ...postPages];
+  const coachPages: MetadataRoute.Sitemap = coaches.map((coach) => ({
+    url: `${baseUrl}/team/${coach.slug}`,
+    lastModified: TEAM_LAST_MODIFIED,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+
+  return [...staticPages, ...coachPages, ...serviceAreaPages, ...categoryPages, ...postPages];
 }
