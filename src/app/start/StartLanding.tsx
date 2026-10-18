@@ -604,7 +604,17 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                         value={formData.goal}
                         onChange={handleChange}
                         onFocus={() => handleFieldFocus("goal")}
-                        className={inputClasses}
+                        // The native arrow sits flush against the border, so
+                        // swap it for one with the same inset as the text.
+                        className={`${inputClasses} appearance-none`}
+                        style={{
+                          backgroundImage:
+                            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236b7280' stroke-width='1.5'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E\")",
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "right 0.875rem center",
+                          backgroundSize: "1.25rem",
+                          paddingRight: "2.75rem",
+                        }}
                       >
                         <option value="">Pick one</option>
                         <option value="Build strength and muscle">Build strength and muscle</option>
