@@ -185,7 +185,7 @@ function LaunchBanner() {
         onClick={scrollToForm}
         className="block w-full max-w-6xl mx-auto px-4 sm:px-6 py-2.5 text-center text-sm sm:text-base font-medium hover:underline focus:underline focus:outline-none"
       >
-        <strong>Your first session is free.</strong> Sign up by {deadline} and you also get the home workout set.
+        <strong>Your first session is free.</strong> Sign up by {deadline} and you also get a free home workout set.
       </button>
     </div>
   );
@@ -498,7 +498,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
               ) : (
                 <>
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
-                  <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Your first session is free.</strong> You get a movement screen and a plan for your week. Sign up by {getRollingPromoDeadline()} and the home workout set is included.</p>
+                  <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Your first session is free.</strong> You get a movement screen and a plan for your week. Sign up by {getRollingPromoDeadline()} and you also get a free home workout set.</p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
