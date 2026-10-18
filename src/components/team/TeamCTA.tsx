@@ -1,10 +1,16 @@
 import TrackedCTALink from "@/components/TrackedCTALink";
 
-export default function TeamCTA({ section }: { section: string }) {
+export default function TeamCTA({
+  section,
+  heading = "Ready to Start Your Journey?",
+}: {
+  section: string;
+  heading?: string;
+}) {
   return (
     <div className="mt-16 md:mt-24 text-center bg-[#1a1a1a] rounded-2xl p-8 md:p-12">
       <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-        Ready to Start Your Journey?
+        {heading}
       </h2>
       <p className="text-lg text-white/70 mb-8 max-w-xl mx-auto">
         Book a free consultation with our team and take the first step

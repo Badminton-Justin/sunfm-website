@@ -116,7 +116,10 @@ export default async function CoachPage({ params }: Props) {
             <MemberDetails member={coach} headingLevel="h1" />
           </div>
 
-          <TeamCTA section={`coach_page_${coach.slug}`} />
+          <TeamCTA
+            section={`coach_page_${coach.slug}`}
+            heading={`Want to work with ${coach.name.split(" ")[0]} or the team?`}
+          />
         </div>
       </main>
       <Footer />
