@@ -622,7 +622,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                         <option value="Fix pain and improve mobility">Fix pain and improve mobility</option>
                         <option value="Get in shape for the long run">Get in shape for the long run</option>
                         <option value="Return to training after a break">Return to training after a break</option>
-                        <option value="Not sure yet — want to talk it through">Not sure yet — want to talk it through</option>
+                        <option value="Figure out where to start">Figure out where to start</option>
                       </select>
                     </div>
 
