@@ -397,15 +397,15 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       <LaunchBanner />
 
       {/* Minimal header — logo + studio address + call/text */}
-      <header className="bg-white border-b border-black/5">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+      <header className="bg-[#F5F2ED]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="SunFM home">
             <Image
-              src="/images/full-logo-transparent.png"
-              alt="Sun FM"
-              width={140}
-              height={32}
-              className="h-8 w-auto"
+              src="/images/logo.png"
+              alt="SunFM"
+              width={240}
+              height={90}
+              className="h-20 w-auto"
               priority
             />
           </Link>
