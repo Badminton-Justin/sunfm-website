@@ -3,12 +3,12 @@
 // Site-wide policy. Anything the marketing pages load has to be listed here.
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.posthog.com https://googleads.g.doubleclick.net https://www.google.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.posthog.com https://googleads.g.doubleclick.net https://www.google.com https://connect.facebook.net",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob: https:",
   "media-src 'self' https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev",
-  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.google.com https://*.posthog.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://script.google.com https://*.supabase.co",
+  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.google.com https://*.posthog.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://script.google.com https://*.supabase.co https://www.facebook.com https://connect.facebook.net",
   "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.google.com https://td.doubleclick.net",
   "object-src 'none'",
   "base-uri 'self'",
