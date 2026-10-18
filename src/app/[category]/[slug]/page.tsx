@@ -176,7 +176,7 @@ export default async function ArticlePage({ params }: Props) {
     author: {
       "@type": "Person",
       name: post.author,
-      url: "https://www.sunfm.fitness/team",
+      url: "https://www.sunfm.fitness/team/jeffrey-sun",
       jobTitle: "ACE-Certified Personal Trainer",
       sameAs: [
         "https://www.instagram.com/jeffsunfitness/",
@@ -253,7 +253,7 @@ export default async function ArticlePage({ params }: Props) {
             {/* Author bio */}
             <div className="flex items-start gap-4 pt-6 border-t border-gray-100">
               <Image
-                src="/images/jeffrey-hero.jpg"
+                src="/images/jeffrey-sun-avatar.jpg"
                 alt={post.author}
                 width={48}
                 height={48}

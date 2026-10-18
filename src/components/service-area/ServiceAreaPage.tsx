@@ -46,7 +46,7 @@ export default function ServiceAreaPage({ area }: { area: ServiceArea }) {
                 <div className="bg-white rounded-3xl shadow-sm overflow-hidden border border-black/5">
                   <div className="relative aspect-square">
                     <Image
-                      src="/images/jeffrey-headshot-final.jpg"
+                      src="/images/jeffrey-sun-studio.jpg"
                       alt="Jeffrey Sun, ACE-certified personal trainer"
                       fill
                       className="object-cover"

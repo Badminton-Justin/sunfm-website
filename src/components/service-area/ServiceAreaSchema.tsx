@@ -12,7 +12,7 @@ export default function ServiceAreaSchema({ area }: { area: ServiceArea }) {
     alternateName: "SunFM",
     description: area.metaDescription,
     url: pageUrl,
-    image: `${baseUrl}/images/jeffrey-headshot-final.jpg`,
+    image: `${baseUrl}/images/jeffrey-sun-studio.jpg`,
     priceRange: "$$",
     address: {
       "@type": "PostalAddress",

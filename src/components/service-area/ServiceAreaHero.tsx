@@ -29,7 +29,7 @@ export default function ServiceAreaHero({ area }: { area: ServiceArea }) {
         className="absolute inset-y-0 right-0 w-[58%] z-0 hidden lg:block bg-[#1a1a1a]"
       >
         <Image
-          src="/images/jeffrey-headshot-final.jpg"
+          src="/images/jeffrey-sun-studio.jpg"
           alt=""
           fill
           className="object-cover hero-image-settle"

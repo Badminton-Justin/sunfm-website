@@ -17,7 +17,7 @@ export default function Hero() {
       {/* Background image */}
       <div className="absolute inset-y-0 right-0 w-full lg:w-[45%] z-0">
         <Image
-          src="/images/jeffrey-headshot-final.jpg"
+          src="/images/jeffrey-sun-studio.jpg"
           alt="Jeffrey Sun - Personal Trainer"
           fill
           className="object-cover hero-image-settle"

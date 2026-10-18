@@ -76,6 +76,7 @@ export default async function CoachPage({ params }: Props) {
       },
     ].filter(Boolean),
     knowsAbout: coach.specialties,
+    ...(coach.sameAs ? { sameAs: coach.sameAs } : {}),
   };
 
   const breadcrumbs = {

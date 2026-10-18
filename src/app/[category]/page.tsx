@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: `Expert ${label.toLowerCase()} articles for busy professionals in San Jose.`,
       type: "website",
       url: `https://www.sunfm.fitness/${category}`,
-      images: [{ url: "https://www.sunfm.fitness/images/jeffrey-og.jpg", width: 1200, height: 630 }],
+      images: [{ url: "https://www.sunfm.fitness/images/jeffrey-sun-og.jpg", width: 1200, height: 630 }],
     },
   };
 }

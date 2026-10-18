@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     images: [
       {
-        url: `${siteUrl}/images/jeffrey-og.jpg`,
+        url: `${siteUrl}/images/jeffrey-sun-og.jpg`,
         width: 1200,
         height: 630,
         alt: "Jeffrey Sun - Personal Trainer in San Jose",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     title: "Personal Trainer San Jose | Sun Functional Movement",
     description:
       "Personal trainer in San Jose & South Bay Area. 12,000+ sessions delivered. Free consultation available.",
-    images: [`${siteUrl}/images/jeffrey-og.jpg`],
+    images: [`${siteUrl}/images/jeffrey-sun-og.jpg`],
   },
 };
 

@@ -472,12 +472,11 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
               {/* Founder line */}
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 <Image
-                  src="/images/jeffrey-headshot-final.jpg"
+                  src="/images/jeffrey-sun-avatar.jpg"
                   alt="Jeffrey Sun"
                   width={40}
                   height={40}
                   className="w-10 h-10 rounded-full object-cover"
-                  style={{ objectPosition: "65% 15%" }}
                 />
                 <span>
                   Founded by <strong className="text-[#1a1a1a]">Jeffrey Sun</strong>, ACE-certified personal trainer

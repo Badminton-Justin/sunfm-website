@@ -18,7 +18,7 @@ const localBusinessSchema = {
   alternateName: "SunFM",
   url: "https://www.sunfm.fitness",
   logo: "https://www.sunfm.fitness/images/full-logo-transparent.png",
-  image: "https://www.sunfm.fitness/images/jeffrey-headshot-final.jpg",
+  image: "https://www.sunfm.fitness/images/jeffrey-sun-studio.jpg",
   description:
     "Personal trainer in San Jose helping busy professionals eliminate pain, build functional strength, and train for health longevity.",
   founder: {

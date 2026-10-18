@@ -1,5 +1,5 @@
-// Coaches other than Jeffrey. Each one gets a card on /team and a full
-// profile at /team/<slug>, so their name searches can land on their own page.
+// Everyone on the team. Each one gets a card on /team and a full profile at
+// /team/<slug>, so their name searches can land on their own page.
 // Order here is the order the cards appear on /team.
 
 export type TeamMember = {
@@ -22,9 +22,48 @@ export type Coach = TeamMember & {
   alumniOf?: string;
   degree?: string;
   certification?: string;
+  sameAs?: string[];
 };
 
 export const coaches: Coach[] = [
+  {
+    slug: "jeffrey-sun",
+    name: "Jeffrey Sun",
+    title: "Founder / Head Coach",
+    highlight: "12,000+ sessions · ACE-certified · B.S. Human Biology",
+    description:
+      "Jeffrey Sun is the founder and head coach of Sun Functional Movement in San Jose. ACE-certified personal trainer with a B.S. in Human Biology, 12,000+ sessions coached, and a background as an EMT and athletic trainer.",
+    credentials: "ACE Certified Personal Trainer | B.S. Human Biology",
+    bio: "As a certified personal trainer with a degree in Human Biology, Jeffrey specializes in helping busy professionals build bodies that last. His approach is rooted in physiology and focused on health longevity - not crash diets or unsustainable programs. With his background as an EMT and athletic trainer, he understands the body at a deeper level.",
+    specialties: [
+      "Mobility & Flexibility",
+      "Movement Pattern Correction",
+      "Transition from Therapy to Training",
+      "Hypertrophy",
+      "Athletic Performance",
+      "Functional Strength",
+    ],
+    education: [
+      "B.S. Human Biology - UC Santa Cruz",
+      "ACE Certified Personal Trainer",
+      "Division III Athletic Training Internship",
+      "CPR/AED Certified",
+    ],
+    experience: [
+      "12,000+ training sessions delivered",
+      "7+ years of professional training",
+      "Former Youth Gymnastics and Soccer Coach",
+      "Former Emergency Medical Technician",
+    ],
+    image: "/images/jeffrey-sun-studio.jpg",
+    alumniOf: "UC Santa Cruz",
+    degree: "B.S. Human Biology",
+    certification: "ACE Certified Personal Trainer",
+    sameAs: [
+      "https://www.instagram.com/jeffsunfitness/",
+      "https://www.linkedin.com/company/sun-functional-movement",
+    ],
+  },
   {
     slug: "crystal-sun",
     name: "Crystal Sun",
@@ -53,7 +92,7 @@ export const coaches: Coach[] = [
       "Strength & conditioning under Division I coaches",
       "Background in competitive gymnastics",
     ],
-    image: "/images/crystal-sun.jpg",
+    image: "/images/crystal-sun-studio.jpg",
     alumniOf: "UC Davis",
     degree: "B.S. Neurobiology, Physiology & Behavior",
     certification: "CrossFit Level 1 Trainer (CF-L1)",

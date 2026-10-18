@@ -49,7 +49,7 @@ export default function About() {
           <div className="relative reveal reveal-delay-1">
             <div className="rounded-2xl overflow-hidden aspect-[4/5] relative">
               <Image
-                src="/images/jeffrey-hero.jpg"
+                src="/images/jeffrey-sun-studio.jpg"
                 alt="Jeffrey Sun - Personal Trainer"
                 fill
                 className="object-cover"
