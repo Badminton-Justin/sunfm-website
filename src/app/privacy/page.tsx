@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="text-sm text-gray-500 mb-12">
-          Last updated: September 3, 2026
+          Last updated: October 18, 2026
         </p>
 
         <div className="space-y-10 text-gray-700 leading-relaxed">
@@ -130,6 +130,11 @@ export default function PrivacyPage() {
                 site traffic and ad performance using hashed identifiers
               </li>
               <li>
+                <strong>Meta Pixel</strong> — measures which Facebook and
+                Instagram ads lead to consultation requests, using hashed
+                contact details
+              </li>
+              <li>
                 <strong>PostHog</strong> — product analytics for understanding
                 how visitors use the site; form input values are masked in
                 session recordings
@@ -177,8 +182,9 @@ export default function PrivacyPage() {
             <p>
               The site uses cookies and similar technologies for analytics,
               advertising attribution, and improving your experience. This
-              includes Google Ads conversion tracking (which uses click
-              identifiers such as gclid) and PostHog session analytics. You can
+              includes Google Ads and Meta Pixel conversion tracking (which use
+              click identifiers such as gclid and fbclid) and PostHog session
+              analytics. You can
               disable cookies in your browser settings, but some site features
               may not work properly.
             </p>

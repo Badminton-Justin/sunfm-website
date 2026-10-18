@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
+import { trackMetaLead } from "@/lib/meta-pixel";
 import { SMS_CONSENT_LABEL, SMS_CONSENT_TEXT } from "@/lib/sms-consent";
 
 const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
@@ -366,6 +367,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
 
       if (response.ok) {
         setEnhancedConversionUserData(formData.email, formData.phone);
+        trackMetaLead(formData.email, formData.phone, formData.name);
         trackEvent("form_submit_success", {
           ...attribution,
           page_source: "start_page",
