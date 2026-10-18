@@ -12,7 +12,7 @@ const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
 const FAQ_ITEMS = [
   {
     q: "What happens during the free consultation?",
-    a: "A free 1-hour session, in-person or online. I'll run a real movement assessment, walk you through a short workout focused on breathwork, core, and mobility, and we'll talk through what you're trying to fix.",
+    a: "I'll run a real movement assessment, walk you through a short workout focused on breathwork, core, and mobility. Then we'll map out a plan for you.",
   },
   {
     q: "What makes your training different?",
