@@ -17,7 +17,7 @@ const localBusinessSchema = {
   name: "Sun Functional Movement",
   alternateName: "SunFM",
   url: "https://www.sunfm.fitness/start",
-  telephone: "+1-408-761-4963",
+  telephone: "+1-620-407-2893",
   address: {
     "@type": "PostalAddress",
     streetAddress: "1401 Parkmoor Ave, Suite 100",

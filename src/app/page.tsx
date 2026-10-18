@@ -44,7 +44,7 @@ const localBusinessSchema = {
     longitude: -121.9192,
   },
   email: "jeff@sunfm.fitness",
-  telephone: "+1-408-761-4963",
+  telephone: "+1-620-407-2893",
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",

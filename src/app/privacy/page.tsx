@@ -260,10 +260,10 @@ export default function PrivacyPage() {
               </a>{" "}
               or call{" "}
               <a
-                href="tel:+14087614963"
+                href="tel:+16204072893"
                 className="text-[#CB4538] underline hover:no-underline"
               >
-                (408) 761-4963
+                (620) 407-2893
               </a>
               .
             </p>

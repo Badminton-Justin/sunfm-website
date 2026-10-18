@@ -27,7 +27,7 @@ export default function ServiceAreaSchema({ area }: { area: ServiceArea }) {
       latitude: 37.31150,
       longitude: -121.91920,
     },
-    telephone: "+1-408-761-4963",
+    telephone: "+1-620-407-2893",
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",

@@ -413,15 +413,15 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
             </p>
             <div className="flex items-center gap-2 justify-end text-sm leading-tight">
               <a
-                href="tel:+14087614963"
+                href="tel:+16204072893"
                 onClick={() => trackEvent("cta_click", { button_text: "Call", section: "start_header" })}
                 className="font-medium text-[#1a1a1a] hover:text-[#CB4538] transition-colors"
               >
-                (408) 761-4963
+                (620) 407-2893
               </a>
               <span className="text-gray-300" aria-hidden="true">·</span>
               <a
-                href="sms:+14087614963?body=Hi%20Jeff%2C%20I%27d%20like%20to%20learn%20more%20about%20training%20at%20Sun%20FM."
+                href="sms:+16204072893?body=Hi%20Jeff%2C%20I%27d%20like%20to%20learn%20more%20about%20training%20at%20Sun%20FM."
                 onClick={() => trackEvent("cta_click", { button_text: "Text", section: "start_header" })}
                 className="text-gray-500 hover:text-[#CB4538] transition-colors"
               >
@@ -624,7 +624,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
 
                     {submitStatus === "error" && (
                       <p className="text-sm text-red-600 text-center">
-                        Something went wrong. Try again, or text us at (408) 761-4963.
+                        Something went wrong. Try again, or text us at (620) 407-2893.
                       </p>
                     )}
 
@@ -821,8 +821,8 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row gap-4 sm:gap-6 items-center justify-between">
           <p>&copy; {new Date().getFullYear()} Sun Functional Movement. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <a href="tel:+14087614963" className="hover:text-white transition-colors">
-              (408) 761-4963
+            <a href="tel:+16204072893" className="hover:text-white transition-colors">
+              (620) 407-2893
             </a>
             <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy
