@@ -413,11 +413,13 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
             <p className="text-xs text-gray-500 leading-tight mb-0.5">
               1401 Parkmoor Ave, San Jose
             </p>
-            <div className="flex items-center gap-2 justify-end text-sm leading-tight">
+            {/* Call and text are conversions for a local studio, so each link
+                gets a full 44px tap height even though the text stays small. */}
+            <div className="flex items-center justify-end text-sm leading-tight -my-3">
               <a
                 href="tel:+16204072893"
                 onClick={() => trackEvent("cta_click", { button_text: "Call", section: "start_header" })}
-                className="font-medium text-[#1a1a1a] hover:text-[#CB4538] transition-colors"
+                className="inline-flex items-center min-h-11 px-1.5 font-medium text-[#1a1a1a] hover:text-[#CB4538] transition-colors"
               >
                 (620) 407-2893
               </a>
@@ -425,7 +427,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
               <a
                 href="sms:+16204072893?body=Hi%20Jeff%2C%20I%27d%20like%20to%20learn%20more%20about%20training%20at%20Sun%20FM."
                 onClick={() => trackEvent("cta_click", { button_text: "Text", section: "start_header" })}
-                className="text-gray-500 hover:text-[#CB4538] transition-colors"
+                className="inline-flex items-center min-h-11 pl-1.5 font-medium text-gray-600 hover:text-[#CB4538] transition-colors"
               >
                 Text
               </a>
@@ -436,22 +438,22 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
 
       {/* Hero + Form side-by-side */}
       <section className="relative">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-20">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-start">
             {/* Left: copy */}
             <div>
-              <p className="text-xs sm:text-sm text-gray-500 tracking-[0.15em] uppercase mb-5 font-medium">
+              <p className="text-xs sm:text-sm text-gray-600 tracking-[0.15em] uppercase mb-4 sm:mb-5 font-medium">
                 {theme.eyebrow}
               </p>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl text-[#1a1a1a] font-bold leading-[1.05] mb-6">
                 {theme.headline}
               </h1>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
+              <p className="text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed max-w-lg">
                 {theme.subhead}
               </p>
 
               {/* Trust pills */}
-              <div className="flex flex-wrap items-center gap-3 mb-8 text-sm">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6 sm:mb-8 text-sm">
                 <div className="flex items-center gap-2 bg-white border border-black/5 rounded-full px-4 py-2">
                   <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <span key={i}>{STAR}</span>)}</div>
                   <span className="text-gray-700 font-medium">107 reviews</span>
@@ -493,9 +495,28 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                     </svg>
                   </div>
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-2">You&apos;re in.</h2>
-                  <p className="text-gray-600">
-                    Jeff will reach out within 24 hours to schedule your free consultation.
+                  {/* Matches the promise in step 1 of "How it works", and gives
+                      someone ready right now a way to reach Jeff without waiting. */}
+                  <p className="text-gray-600 mb-6">
+                    Jeff will reach out, usually within a few hours, to schedule your free consultation.
                   </p>
+                  <p className="text-sm text-gray-600 mb-3">Want to talk sooner?</p>
+                  <div className="flex gap-3 justify-center">
+                    <a
+                      href="tel:+16204072893"
+                      onClick={() => trackEvent("cta_click", { button_text: "Call", section: "start_success" })}
+                      className="inline-flex items-center justify-center min-h-11 px-5 rounded-lg border border-black/10 font-semibold text-[#1a1a1a] hover:border-[#CB4538] hover:text-[#CB4538] transition-colors"
+                    >
+                      Call
+                    </a>
+                    <a
+                      href="sms:+16204072893?body=Hi%20Jeff%2C%20I%20just%20requested%20a%20free%20consultation."
+                      onClick={() => trackEvent("cta_click", { button_text: "Text", section: "start_success" })}
+                      className="inline-flex items-center justify-center min-h-11 px-5 rounded-lg border border-black/10 font-semibold text-[#1a1a1a] hover:border-[#CB4538] hover:text-[#CB4538] transition-colors"
+                    >
+                      Text
+                    </a>
+                  </div>
                 </div>
               ) : (
                 <>
@@ -560,37 +581,6 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                         className={inputClasses}
                         placeholder="(408) 555-0123"
                       />
-
-                      {/* A2P 10DLC: optional and unchecked — texting consent
-                          can't be a condition of submitting. The disclosure sits
-                          with this checkbox rather than in the line under the
-                          button, so SMS consent is separable from agreeing to be
-                          contacted by email. */}
-                      <div className="flex items-center gap-2.5 mt-3">
-                        <input
-                          type="checkbox"
-                          id="smsConsent"
-                          name="smsConsent"
-                          checked={smsConsent}
-                          onChange={(e) => {
-                            setSmsConsent(e.target.checked);
-                            trackEvent("sms_consent_toggle", {
-                              consented: e.target.checked ? "yes" : "no",
-                              page_source: "start_page",
-                            });
-                          }}
-                          className="h-4 w-4 shrink-0 accent-[#CB4538] cursor-pointer"
-                        />
-                        <label
-                          htmlFor="smsConsent"
-                          className="text-sm text-gray-600 cursor-pointer"
-                        >
-                          {SMS_CONSENT_LABEL}
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 leading-relaxed mt-2 pl-[26px]">
-                        {SMS_CONSENT_TEXT}
-                      </p>
                     </div>
 
                     <div>
@@ -624,6 +614,39 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                         <option value="Return to training after a break">Return to training after a break</option>
                         <option value="Figure out where to start">Figure out where to start</option>
                       </select>
+                    </div>
+
+                    <div>
+                      {/* A2P 10DLC: optional and unchecked — texting consent
+                          can't be a condition of submitting. The disclosure sits
+                          with this checkbox rather than in the line under the
+                          button, so SMS consent is separable from agreeing to be
+                          contacted by email. */}
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          id="smsConsent"
+                          name="smsConsent"
+                          checked={smsConsent}
+                          onChange={(e) => {
+                            setSmsConsent(e.target.checked);
+                            trackEvent("sms_consent_toggle", {
+                              consented: e.target.checked ? "yes" : "no",
+                              page_source: "start_page",
+                            });
+                          }}
+                          className="mt-0.5 h-5 w-5 shrink-0 accent-[#CB4538] cursor-pointer"
+                        />
+                        <label
+                          htmlFor="smsConsent"
+                          className="text-sm text-gray-700 cursor-pointer -my-2 py-2"
+                        >
+                          {SMS_CONSENT_LABEL}
+                        </label>
+                      </div>
+                      <p className="text-xs text-gray-500 leading-relaxed mt-2 pl-8">
+                        {SMS_CONSENT_TEXT}
+                      </p>
                     </div>
 
                     <button
@@ -665,7 +688,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       <section className="bg-white py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-6">
-            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">What my clients say</p>
+            <p className="text-xs text-gray-600 tracking-[0.15em] uppercase font-medium">What my clients say</p>
           </div>
           <Carousel ariaLabel="written testimonial">
             {TEXT_TESTIMONIALS.map((t) => (
@@ -680,7 +703,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                 </div>
                 <p className="text-gray-800 leading-relaxed mb-5">&ldquo;{t.quote}&rdquo;</p>
                 <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
-                <p className="text-xs text-gray-500">{t.result}</p>
+                <p className="text-xs text-gray-600">{t.result}</p>
               </div>
             ))}
           </Carousel>
@@ -691,7 +714,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium mb-3">How it works</p>
+            <p className="text-xs text-gray-600 tracking-[0.15em] uppercase font-medium mb-3">How it works</p>
             <h2 className="text-3xl sm:text-4xl text-[#1a1a1a] font-bold">Three steps to your first session</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -728,7 +751,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       <section ref={videoSectionRef} className="bg-[#F5F2ED] py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-6">
-            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium">Hear from my clients</p>
+            <p className="text-xs text-gray-600 tracking-[0.15em] uppercase font-medium">Hear from my clients</p>
           </div>
           <Carousel ariaLabel="video testimonial">
             {VIDEO_TESTIMONIALS.map((t) => (
@@ -754,7 +777,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                   )}
                 </div>
                 <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
-                <p className="text-xs text-gray-500">{t.result}</p>
+                <p className="text-xs text-gray-600">{t.result}</p>
               </div>
             ))}
           </Carousel>
@@ -765,7 +788,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       <section className="py-16">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
-            <p className="text-xs text-gray-500 tracking-[0.15em] uppercase font-medium mb-3">Common questions</p>
+            <p className="text-xs text-gray-600 tracking-[0.15em] uppercase font-medium mb-3">Common questions</p>
             <h2 className="text-3xl sm:text-4xl text-[#1a1a1a] font-bold">The basics</h2>
           </div>
           <div className="space-y-3">
@@ -817,6 +840,8 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
               const form = document.getElementById("start-form");
               if (form) {
                 form.scrollIntoView({ behavior: "smooth", block: "center" });
+                const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement | null;
+                setTimeout(() => nameInput?.focus(), 600);
               } else {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }
@@ -865,7 +890,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
             }}
             className="w-full bg-[#CB4538] hover:bg-[#a83829] text-white font-semibold py-3 rounded-lg transition-colors text-base"
           >
-            Request Free Consultation
+            Request my free consultation
           </button>
         </div>
       )}
