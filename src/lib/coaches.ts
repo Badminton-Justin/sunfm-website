@@ -58,6 +58,35 @@ export const coaches: Coach[] = [
     degree: "B.S. Neurobiology, Physiology & Behavior",
     certification: "CrossFit Level 1 Trainer (CF-L1)",
   },
+  {
+    slug: "robert-zaharia",
+    name: "Robert Zaharia",
+    title: "Coach",
+    highlight: "17+ years coaching · FRC Mobility Specialist · Australia-trained",
+    description:
+      "Robert Zaharia is a coach at Sun Functional Movement in San Jose. 17+ years as a personal trainer and strength and conditioning coach in Australia and Ireland, and an FRC Mobility Specialist.",
+    credentials: "FRC Mobility Specialist (FRCms) | Certificate III & IV in Fitness",
+    bio: "Robert brings over 17 years of experience as a personal trainer and strength and conditioning coach. Originally from Australia, he has coached in Australia and Ireland, including running his own personal training business, before bringing his experience to California.\n\nHis approach combines strength training, mobility, calisthenics and movement focused training to help clients become stronger, move better and build confidence.",
+    specialties: [
+      "Strength Training",
+      "Strength & Conditioning",
+      "Mobility",
+      "Calisthenics",
+      "Movement Training",
+    ],
+    education: [
+      "Certificate III & IV in Fitness — Australian Institute of Fitness",
+      "FRC Mobility Specialist (FRCms)",
+      "Nutrition & Health — Wageningen University & Research",
+    ],
+    experience: [
+      "17+ years Personal Training and Strength Coaching",
+      "One to One and Group Fitness Coaching",
+      "Strength and Conditioning, Mobility, Calisthenics and Movement Training",
+    ],
+    image: "/images/robert-zaharia.jpg",
+    certification: "FRC Mobility Specialist (FRCms)",
+  },
 ];
 
 export function getCoach(slug: string): Coach | undefined {
