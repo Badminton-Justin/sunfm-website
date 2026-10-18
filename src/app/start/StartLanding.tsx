@@ -357,7 +357,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
           currentRoutine: "",
           motivation: "",
           injuries: "",
-          referral: "google-ads",
+          referral: "meta-ads",
           referralDetails: "Submitted from /start landing page",
           attribution,
           landingPage: "/start",
