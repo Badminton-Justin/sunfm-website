@@ -13,13 +13,40 @@ declare global {
 // every paid conversion into the Unassigned channel with no gclid, so Google Ads
 // imported zero conversions for ~90 days. Prefix descriptive params instead
 // (`page_source`, `promo_name`).
+// gtag is defined by the GA script, which Next loads after hydration -- later
+// than the mount effects that fire start_page_view, banner_impression and the
+// first section check. Those used to be dropped on nearly every visit, so hold
+// them here and send them once gtag exists.
+const pendingGtag: [string, Record<string, string | number> | undefined][] = [];
+let gtagWaiter: ReturnType<typeof setInterval> | null = null;
+
+function sendToGtag(eventName: string, params?: Record<string, string | number>) {
+  if (window.gtag) {
+    window.gtag("event", eventName, params);
+    return;
+  }
+  pendingGtag.push([eventName, params]);
+  if (gtagWaiter) return;
+  let tries = 0;
+  gtagWaiter = setInterval(() => {
+    tries++;
+    if (window.gtag) {
+      for (const [name, p] of pendingGtag.splice(0)) window.gtag("event", name, p);
+    }
+    // Give up after ~15s (GA blocked, e.g. by an ad blocker).
+    if (window.gtag || tries >= 150) {
+      clearInterval(gtagWaiter!);
+      gtagWaiter = null;
+      pendingGtag.length = 0;
+    }
+  }, 100);
+}
+
 export function trackEvent(eventName: string, params?: Record<string, string | number>) {
   if (typeof window === "undefined") return;
 
   // Fire to GA4
-  if (window.gtag) {
-    window.gtag("event", eventName, params);
-  }
+  sendToGtag(eventName, params);
 
   // Fire to PostHog (if initialized)
   if (posthog.__loaded) {
