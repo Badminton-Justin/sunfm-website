@@ -276,6 +276,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
   const successRef = useRef<HTMLDivElement>(null);
   const videoSectionRef = useRef<HTMLDivElement>(null);
   const attributionRef = useRef<Record<string, string>>({});
+  const formViewed = useRef(false);
 
   useEffect(() => {
     attributionRef.current = captureAttribution();
@@ -305,12 +306,60 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
     return () => observer.disconnect();
   }, []);
 
+  // Drop-off measurement: which sections people actually reach, and how far
+  // down they scroll. Each fires once per page load. A section counts as
+  // reached when its top passes 60% of the way down the screen, so tall
+  // sections on a phone still register.
+  useEffect(() => {
+    const seen = new Set<string>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const name = (entry.target as HTMLElement).dataset.track;
+          if (!entry.isIntersecting || !name || seen.has(name)) continue;
+          seen.add(name);
+          trackEvent("start_section_view", { section_name: name, page_source: "start_page" });
+          observer.unobserve(entry.target);
+        }
+      },
+      { rootMargin: "0px 0px -40% 0px" }
+    );
+    document.querySelectorAll<HTMLElement>("[data-track]").forEach((el) => observer.observe(el));
+
+    const marks = [25, 50, 75, 90];
+    const fired = new Set<number>();
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max <= 0) return;
+      const pct = (window.scrollY / max) * 100;
+      for (const mark of marks) {
+        if (pct >= mark && !fired.has(mark)) {
+          fired.add(mark);
+          trackEvent("start_scroll_depth", { percent: mark, page_source: "start_page" });
+        }
+      }
+      if (fired.size === marks.length) window.removeEventListener("scroll", onScroll);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
   // Hide the mobile sticky CTA when the form itself is visible on screen.
   useEffect(() => {
     const form = document.getElementById("start-form");
     if (!form) return;
     const observer = new IntersectionObserver(
-      ([entry]) => setIsFormVisible(entry.isIntersecting),
+      ([entry]) => {
+        setIsFormVisible(entry.isIntersecting);
+        if (entry.isIntersecting && !formViewed.current) {
+          formViewed.current = true;
+          trackEvent("start_form_view", { page_source: "start_page" });
+        }
+      },
       { threshold: 0.25 }
     );
     observer.observe(form);
@@ -441,7 +490,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       </header>
 
       {/* Hero + Form side-by-side */}
-      <section className="relative">
+      <section data-track="hero" className="relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-20">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-start">
             {/* Left: copy */}
@@ -702,7 +751,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       </section>
 
       {/* Text testimonials — carousel */}
-      <section className="bg-white py-12">
+      <section data-track="text_testimonials" className="bg-white py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-6">
             <p className="text-xs text-gray-600 tracking-[0.15em] uppercase font-medium">What my clients say</p>
@@ -728,7 +777,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       </section>
 
       {/* How it works */}
-      <section className="py-16">
+      <section data-track="how_it_works" className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <p className="text-xs text-gray-600 tracking-[0.15em] uppercase font-medium mb-3">How it works</p>
@@ -765,7 +814,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       </section>
 
       {/* Video testimonials — carousel (lazy-loaded) */}
-      <section ref={videoSectionRef} className="bg-[#F5F2ED] py-12">
+      <section data-track="video_testimonials" ref={videoSectionRef} className="bg-[#F5F2ED] py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-6">
             <p className="text-xs text-gray-600 tracking-[0.15em] uppercase font-medium">Hear from my clients</p>
@@ -802,7 +851,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       </section>
 
       {/* FAQ */}
-      <section className="py-16">
+      <section data-track="faq" className="py-16">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
             <p className="text-xs text-gray-600 tracking-[0.15em] uppercase font-medium mb-3">Common questions</p>
@@ -842,7 +891,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
       </section>
 
       {/* Closing CTA */}
-      <section className="bg-[#1a1a1a] py-16">
+      <section data-track="closing_cta" className="bg-[#1a1a1a] py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-3xl sm:text-4xl text-white font-bold mb-4">
             Ready to train without breaking down?
