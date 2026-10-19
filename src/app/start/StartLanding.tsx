@@ -7,6 +7,10 @@ import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
 import { trackMetaLead } from "@/lib/meta-pixel";
 import { SMS_CONSENT_LABEL, SMS_CONSENT_TEXT } from "@/lib/sms-consent";
+import { studioPhotos } from "@/lib/studio";
+import StudioStrip from "@/components/StudioStrip";
+
+const START_STUDIO_PHOTOS = [studioPhotos.frontDesk, studioPhotos.trainingFloor, studioPhotos.turfLane];
 
 const R2_BASE = "https://pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev";
 
@@ -482,6 +486,14 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                   Founded by <strong className="text-[#1a1a1a]">Jeffrey Sun</strong>, ACE-certified personal trainer
                 </span>
               </div>
+
+              {/* Studio photos beside the form on desktop. On mobile the copy
+                  column sits above the form, so the strip moves below it. */}
+              <StudioStrip
+                photos={START_STUDIO_PHOTOS}
+                caption="Inside the studio at 1401 Parkmoor Ave, San Jose"
+                className="hidden lg:block mt-10"
+              />
             </div>
 
             {/* Right: form */}
@@ -679,6 +691,12 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                 </>
               )}
             </div>
+
+            <StudioStrip
+              photos={START_STUDIO_PHOTOS}
+              caption="Inside the studio at 1401 Parkmoor Ave, San Jose"
+              className="lg:hidden"
+            />
           </div>
         </div>
       </section>

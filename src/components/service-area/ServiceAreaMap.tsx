@@ -1,5 +1,7 @@
 import RevealWrapper from "@/components/RevealWrapper";
+import StudioStrip from "@/components/StudioStrip";
 import type { ServiceArea } from "@/lib/service-areas";
+import { studioPhotos } from "@/lib/studio";
 
 export default function ServiceAreaMap({ area }: { area: ServiceArea }) {
   const originQuery = encodeURIComponent(`${area.city}, CA`);
@@ -73,6 +75,12 @@ export default function ServiceAreaMap({ area }: { area: ServiceArea }) {
             </div>
           </div>
         </div>
+
+        <StudioStrip
+          photos={[studioPhotos.trainingFloor, studioPhotos.turfLane, studioPhotos.frontDesk]}
+          caption="Inside the studio at 1401 Parkmoor Ave, San Jose"
+          className="mt-10 lg:mt-14 reveal"
+        />
       </RevealWrapper>
     </section>
   );

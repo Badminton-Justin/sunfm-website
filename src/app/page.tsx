@@ -10,6 +10,7 @@ import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import StickyCTA from "@/components/StickyCTA";
 import TrackedSection from "@/components/TrackedSection";
+import Studio from "@/components/Studio";
 
 const localBusinessSchema = {
   "@context": "https://schema.org",
@@ -18,7 +19,12 @@ const localBusinessSchema = {
   alternateName: "SunFM",
   url: "https://www.sunfm.fitness",
   logo: "https://www.sunfm.fitness/images/full-logo-transparent.png",
-  image: "https://www.sunfm.fitness/images/jeffrey-sun-studio.jpg",
+  image: [
+    "https://www.sunfm.fitness/images/jeffrey-sun-studio.jpg",
+    "https://www.sunfm.fitness/images/studio/training-floor.jpg",
+    "https://www.sunfm.fitness/images/studio/front-desk.jpg",
+    "https://www.sunfm.fitness/images/studio/turf-lane.jpg",
+  ],
   description:
     "Personal trainer in San Jose helping busy professionals eliminate pain, build functional strength, and train for health longevity.",
   founder: {
@@ -159,6 +165,9 @@ export default function HomePage() {
         </TrackedSection>
         <TrackedSection sectionName="how_it_works">
           <HowItWorks />
+        </TrackedSection>
+        <TrackedSection sectionName="studio">
+          <Studio />
         </TrackedSection>
         <TrackedSection sectionName="application_form">
           <ApplicationForm />
