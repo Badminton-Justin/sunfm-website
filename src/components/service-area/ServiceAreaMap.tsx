@@ -12,7 +12,7 @@ export default function ServiceAreaMap({ area }: { area: ServiceArea }) {
 
   // Coordinate-based embed to guarantee the pin lands on the studio without requiring an API key.
   const studioCoords = "37.3115,-121.9192";
-  const staticEmbedSrc = `https://maps.google.com/maps?q=${studioCoords}&z=14&t=m&output=embed`;
+  const staticEmbedSrc = `https://www.google.com/maps?q=${studioCoords}&z=14&t=m&output=embed`;
 
   return (
     <section className="py-20 md:py-28 bg-white">
