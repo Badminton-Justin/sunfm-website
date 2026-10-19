@@ -277,6 +277,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
   const videoSectionRef = useRef<HTMLDivElement>(null);
   const attributionRef = useRef<Record<string, string>>({});
   const formViewed = useRef(false);
+  const stickyPressed = useRef(false);
 
   useEffect(() => {
     attributionRef.current = captureAttribution();
@@ -947,7 +948,26 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-black/10 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
           <button
             type="button"
-            onClick={() => {
+            onPointerDown={() => {
+              stickyPressed.current = true;
+            }}
+            onClick={(e) => {
+              // Instagram's in-app browser can hand the tail of the ad's
+              // "Learn more" tap to this button, which sits in the same spot,
+              // and the page opens already scrolled to the form. Ignore a
+              // click that didn't start on this page: no pointerdown here, or
+              // within the first second. e.detail is 0 for keyboard presses.
+              const msSinceLoad = Math.round(performance.now());
+              if (e.detail > 0 && (!stickyPressed.current || msSinceLoad < 1000)) {
+                trackEvent("sticky_cta_ghost_click", {
+                  ms_since_load: msSinceLoad,
+                  had_pointerdown: stickyPressed.current ? "yes" : "no",
+                  page_source: "start_page",
+                });
+                stickyPressed.current = false;
+                return;
+              }
+              stickyPressed.current = false;
               trackEvent("cta_click", { button_text: "Sticky Book CTA", section: "start_sticky_mobile" });
               const form = document.getElementById("start-form");
               if (form) {
