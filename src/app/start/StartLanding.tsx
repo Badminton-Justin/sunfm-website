@@ -306,46 +306,48 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
     return () => observer.disconnect();
   }, []);
 
-  // Drop-off measurement: which sections people actually reach, and how far
-  // down they scroll. Each fires once per page load. A section counts as
-  // reached when its top passes 60% of the way down the screen, so tall
-  // sections on a phone still register.
+  // Drop-off measurement: which sections people reach, and how far down they
+  // scroll. Each fires once per page load. A section counts as reached once
+  // its top has passed 60% of the way down the screen. Checked on every
+  // scroll rather than with an IntersectionObserver, because a fast flick on
+  // a phone can carry a whole section past the trigger zone between frames
+  // and the observer never sees it.
   useEffect(() => {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-track]"));
     const seen = new Set<string>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          const name = (entry.target as HTMLElement).dataset.track;
-          if (!entry.isIntersecting || !name || seen.has(name)) continue;
-          seen.add(name);
-          trackEvent("start_section_view", { section_name: name, page_source: "start_page" });
-          observer.unobserve(entry.target);
-        }
-      },
-      { rootMargin: "0px 0px -40% 0px" }
-    );
-    document.querySelectorAll<HTMLElement>("[data-track]").forEach((el) => observer.observe(el));
-
     const marks = [25, 50, 75, 90];
     const fired = new Set<number>();
-    const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      if (max <= 0) return;
-      const pct = (window.scrollY / max) * 100;
-      for (const mark of marks) {
-        if (pct >= mark && !fired.has(mark)) {
-          fired.add(mark);
-          trackEvent("start_scroll_depth", { percent: mark, page_source: "start_page" });
+
+    const check = () => {
+      const line = window.innerHeight * 0.6;
+      for (const el of sections) {
+        const name = el.dataset.track;
+        if (!name || seen.has(name)) continue;
+        if (el.getBoundingClientRect().top < line) {
+          seen.add(name);
+          trackEvent("start_section_view", { section_name: name, page_source: "start_page" });
         }
       }
-      if (fired.size === marks.length) window.removeEventListener("scroll", onScroll);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
 
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", onScroll);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max > 0) {
+        const pct = (window.scrollY / max) * 100;
+        for (const mark of marks) {
+          if (pct >= mark && !fired.has(mark)) {
+            fired.add(mark);
+            trackEvent("start_scroll_depth", { percent: mark, page_source: "start_page" });
+          }
+        }
+      }
+
+      if (seen.size === sections.length && fired.size === marks.length) {
+        window.removeEventListener("scroll", check);
+      }
     };
+
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
   }, []);
 
   // Hide the mobile sticky CTA when the form itself is visible on screen.
