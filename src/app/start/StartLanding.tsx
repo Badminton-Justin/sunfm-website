@@ -514,7 +514,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                   <span className="text-gray-700 font-medium">107 reviews</span>
                 </div>
                 <div className="bg-white border border-black/5 rounded-full px-4 py-2 text-gray-700 font-medium">
-                  12,000+ sessions
+                  13,000+ sessions
                 </div>
                 <div className="bg-white border border-black/5 rounded-full px-4 py-2 text-gray-700 font-medium">
                   ACE-certified

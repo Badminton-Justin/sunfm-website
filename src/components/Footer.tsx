@@ -106,7 +106,7 @@ export default function Footer() {
                 Milpitas
               </TrackedNavLink>
               , and online. Helping busy professionals move better, feel stronger,
-              and train for health longevity. ACE Certified with 12,000+ sessions
+              and train for health longevity. ACE Certified with 13,000+ sessions
               delivered.
             </p>
             <div className="flex gap-3">

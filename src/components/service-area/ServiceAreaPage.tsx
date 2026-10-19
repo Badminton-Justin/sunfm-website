@@ -61,7 +61,7 @@ export default function ServiceAreaPage({ area }: { area: ServiceArea }) {
                       Jeffrey Sun
                     </p>
                     <p className="text-sm text-gray-500 mb-5">
-                      ACE-Certified, 12,000+ sessions
+                      ACE-Certified, 13,000+ sessions
                     </p>
                     <TrackedCTALink
                       href="/#apply"

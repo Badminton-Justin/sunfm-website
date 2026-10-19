@@ -552,7 +552,7 @@ export async function generateProgramPDF(
   doc.setFontSize(8);
   setColor(doc, GRAY);
   doc.setFont("helvetica", "normal");
-  doc.text("12,000+ sessions  ·  ACE-Certified  ·  Bay Area", pageW / 2, y, {
+  doc.text("13,000+ sessions  ·  ACE-Certified  ·  Bay Area", pageW / 2, y, {
     align: "center",
   });
 

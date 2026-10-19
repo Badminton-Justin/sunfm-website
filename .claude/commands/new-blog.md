@@ -69,12 +69,12 @@ Match the voice of existing posts. Read `src/content/blog/training/functional-mo
 ### Voice rules (Jeffrey Sun)
 
 - First person, conversational, plainspoken
-- Anchors in real practice: "I've trained hundreds of desk workers in San Jose", specific client anecdotes (no names), specific numbers (12,000 sessions, "two or three weeks")
+- Anchors in real practice: "I've trained hundreds of desk workers in San Jose", specific client anecdotes (no names), specific numbers (13,000 sessions, "two or three weeks")
 - Short paragraphs (2–4 sentences)
 - Specific concrete details over vague claims ("2 PM backache" not "chronic discomfort")
 - Opinionated, not neutral — takes positions like "five minutes of stretching isn't going to undo this"
 - **Movement-positive, not prescriptive.** Avoid framing one method, frequency, or approach as objectively better than another. Different choices fit different lives — busy professionals, retirees, hobbyists, athletes — and the post should make that visible. Specific phrasings to avoid: "X is rarely worth it," "X isn't coming back," "X is wrong," "the right answer is always Y," "the intuition is wrong." Use context-dependent framings instead: "X works well for people with Y; for people with Z, the trade-offs change." When you must compare options, frame the comparison around the reader's context, not the option's intrinsic value.
-- Don't fabricate client percentages — never write "99 percent of my clients" or similar. Use plain "very few," "most," or specific known counts (12,000 sessions, 107 clients) only when grounded.
+- Don't fabricate client percentages — never write "99 percent of my clients" or similar. Use plain "very few," "most," or specific known counts (13,000 sessions, 127 clients) only when grounded.
 - No AI tells: no "it's worth noting", "in conclusion", "game-changer", "elevate", "navigate", "robust", "leverage", "delve", "tapestry", "landscape" (figurative), "unlock"
 - Minimal em dashes — prefer commas or periods
 - Vary sentence rhythm: mix short punchy with longer flowing

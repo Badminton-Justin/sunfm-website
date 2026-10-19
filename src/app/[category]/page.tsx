@@ -98,7 +98,7 @@ export default async function CategoryPage({ params }: Props) {
           </h2>
           <p className="text-gray-600 mb-6 max-w-lg mx-auto">
             Get personalized guidance from an ACE-certified trainer with
-            12,000+ sessions delivered in San Jose and the South Bay.
+            13,000+ sessions delivered in San Jose and the South Bay.
           </p>
           <TrackedCTALink
             href="/#apply"

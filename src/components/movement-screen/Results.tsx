@@ -389,7 +389,7 @@ export default function MovementScreenResults({ result, onRestart }: Props) {
             </button>
           </div>
           <p className="font-mono text-[10px] text-white/30 tracking-wider uppercase">
-            12,000+ sessions · ACE-Certified · No hard sell
+            13,000+ sessions · ACE-Certified · No hard sell
           </p>
         </div>
       </div>

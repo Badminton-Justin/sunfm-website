@@ -7,7 +7,7 @@ export const categoryLabels: Record<string, string> = {
 export const categoryDescriptions: Record<string, { intro: string; audience: string; cta: string }> = {
   training: {
     intro:
-      "Practical training guides written by an ACE-certified personal trainer in San Jose with 12,000+ sessions of experience. Whether you're a desk worker dealing with back pain, a beginner looking to build functional strength, or a professional over 30 focused on longevity — these articles break down what actually works.",
+      "Practical training guides written by an ACE-certified personal trainer in San Jose with 13,000+ sessions of experience. Whether you're a desk worker dealing with back pain, a beginner looking to build functional strength, or a professional over 30 focused on longevity — these articles break down what actually works.",
     audience:
       "Written for busy South Bay professionals who want evidence-based training advice without the fluff. Every article draws from real client work in San Jose, Sunnyvale, Cupertino, and Mountain View.",
     cta: "Want a program built specifically for your body and goals?",

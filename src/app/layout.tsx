@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Personal Trainer San Jose | Sun Functional Movement",
     description:
-      "Personal trainer in San Jose & South Bay Area. 12,000+ sessions delivered. Free consultation available.",
+      "Personal trainer in San Jose & South Bay Area. 13,000+ sessions delivered. Free consultation available.",
     type: "website",
     url: siteUrl,
     images: [
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Personal Trainer San Jose | Sun Functional Movement",
     description:
-      "Personal trainer in San Jose & South Bay Area. 12,000+ sessions delivered. Free consultation available.",
+      "Personal trainer in San Jose & South Bay Area. 13,000+ sessions delivered. Free consultation available.",
     images: [`${siteUrl}/images/jeffrey-sun-og.jpg`],
   },
 };

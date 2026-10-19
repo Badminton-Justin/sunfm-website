@@ -101,7 +101,7 @@ export default function BlogPage() {
           </h2>
           <p className="text-gray-600 mb-6 max-w-lg mx-auto">
             Get personalized guidance from an ACE-certified trainer with
-            12,000+ sessions delivered.
+            13,000+ sessions delivered.
           </p>
           <TrackedCTALink
             href="/#apply"

@@ -32,7 +32,7 @@ export default function Hero() {
         <div className="max-w-2xl">
           {/* Credential line */}
           <p className="hero-enter hero-enter-1 text-xs md:text-sm text-white/70 lg:text-gray-500 tracking-[0.15em] uppercase mb-6 md:mb-8 font-medium">
-            12,000+ Sessions &bull; 107+ Clients &bull; South Bay Area
+            13,000+ Sessions &bull; 127+ Clients &bull; South Bay Area
           </p>
 
           {/* Headline - massive display type */}

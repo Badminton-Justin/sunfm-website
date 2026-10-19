@@ -4,7 +4,7 @@ import StartLanding from "./StartLanding";
 export const metadata: Metadata = {
   title: "Free Personal Training Consultation in San Jose | Sun FM",
   description:
-    "ACE-certified personal trainer in San Jose for busy professionals over 30. 12,000+ sessions, 107+ clients. Book your free consultation today.",
+    "ACE-certified personal trainer in San Jose for busy professionals over 30. 13,000+ sessions, 127+ clients. Book your free consultation today.",
   // Paid-traffic landing page — exclude from organic index so it doesn't
   // cannibalize the homepage for the same intent queries.
   robots: { index: false, follow: false },

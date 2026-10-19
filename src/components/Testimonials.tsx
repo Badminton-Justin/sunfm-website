@@ -222,7 +222,7 @@ export default function Testimonials() {
           </div>
           <div className="px-4 sm:px-0">
             <div className="inline-block bg-[#FFD140] rounded-xl px-6 py-3 mb-6">
-              <p className="text-4xl md:text-5xl font-display text-[#1a1a1a]"><AnimatedCounter target={107} duration={1000} /></p>
+              <p className="text-4xl md:text-5xl font-display text-[#1a1a1a]"><AnimatedCounter target={127} duration={1000} /></p>
               <p className="text-sm text-black/60">clients trained</p>
             </div>
             <p className="text-gray-400 text-lg mb-6">

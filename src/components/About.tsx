@@ -28,7 +28,7 @@ export default function About() {
   ];
 
   const experience = [
-    "12,000+ training sessions delivered",
+    "13,000+ training sessions delivered",
     "Former Youth Gymnastics and Soccer Coach",
     "Former Emergency Medical Technician",
   ];
@@ -61,7 +61,7 @@ export default function About() {
               className="mt-4 md:mt-0 md:absolute md:-bottom-6 md:-right-8 bg-[#FFD140] rounded-xl px-6 py-4 shadow-lg reveal-scale inline-block"
               style={{ transitionDelay: '400ms' }}
             >
-              <p className="text-3xl md:text-4xl font-display text-[#1a1a1a]"><AnimatedCounter target={12000} duration={1400} /></p>
+              <p className="text-3xl md:text-4xl font-display text-[#1a1a1a]"><AnimatedCounter target={13000} duration={1400} /></p>
               <p className="text-sm text-black/60">sessions delivered</p>
             </div>
           </div>

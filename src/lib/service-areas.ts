@@ -110,12 +110,12 @@ export const serviceAreas: Record<string, ServiceArea> = {
     metaTitle:
       "Personal Trainer in San Jose | Sun Functional Movement",
     metaDescription:
-      "One-on-one personal training in San Jose. Private studio at 1401 Parkmoor Ave. 12,000+ sessions with Bay Area professionals. Free consultation.",
+      "One-on-one personal training in San Jose. Private studio at 1401 Parkmoor Ave. 13,000+ sessions with Bay Area professionals. Free consultation.",
     commuteText:
       "The studio is at 1401 Parkmoor Ave, just off the 880 interchange. Most San Jose clients are here in under ten minutes.",
     quickFacts: [
       { label: "Studio", value: "1401 Parkmoor Ave, Ste 100" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Certification", value: "ACE" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
@@ -129,7 +129,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
         heading: "What I focus on with San Jose clients",
         body: [
           "Most of the people who come to me are dealing with a version of the same problem. A body that used to feel fine and doesn't anymore. A schedule that doesn't have room for a two-hour gym routine. Usually a history of old injuries or years of sitting that the training has to work around.",
-          "We build training around all of that. Sessions are usually sixty minutes, covering compound strength, some conditioning, and mobility that targets whatever your body is asking for. Over twelve thousand sessions in, I've gotten pretty good at seeing what somebody needs within the first few minutes.",
+          "We build training around all of that. Sessions are usually sixty minutes, covering compound strength, some conditioning, and mobility that targets whatever your body is asking for. Over thirteen thousand sessions in, I've gotten pretty good at seeing what somebody needs within the first few minutes.",
         ],
       },
       {
@@ -204,7 +204,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
     quickFacts: [
       { label: "Drive time", value: "~10 min" },
       { label: "Route", value: "85 S to 880" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
@@ -286,7 +286,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
     quickFacts: [
       { label: "Drive time", value: "~15 min" },
       { label: "Route", value: "280 to 880" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
@@ -373,7 +373,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
     quickFacts: [
       { label: "Drive time", value: "~5-10 min" },
       { label: "Route", value: "880 or 101" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
@@ -458,7 +458,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
     quickFacts: [
       { label: "Drive time", value: "~15-20 min" },
       { label: "Route", value: "85 S" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
@@ -545,7 +545,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
     quickFacts: [
       { label: "Drive time", value: "~5 min" },
       { label: "Route", value: "Highway 17" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
@@ -632,7 +632,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
     quickFacts: [
       { label: "Drive time", value: "~10 min" },
       { label: "Route", value: "Saratoga-Sunnyvale Rd" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
@@ -720,7 +720,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
     quickFacts: [
       { label: "Drive time", value: "~15 min" },
       { label: "Route", value: "85 S" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
@@ -807,7 +807,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
     quickFacts: [
       { label: "Drive time", value: "~10-15 min" },
       { label: "Route", value: "880 S" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [
@@ -893,7 +893,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
     quickFacts: [
       { label: "Drive time", value: "~5 min" },
       { label: "Route", value: "17 or Hamilton" },
-      { label: "Sessions", value: "12,000+" },
+      { label: "Sessions", value: "13,000+" },
       { label: "Format", value: "1:1, Semi, Group" },
     ],
     intro: [

@@ -30,9 +30,9 @@ export const coaches: Coach[] = [
     slug: "jeffrey-sun",
     name: "Jeffrey Sun",
     title: "Founder / Head Coach",
-    highlight: "12,000+ sessions · ACE-certified · B.S. Human Biology",
+    highlight: "13,000+ sessions · ACE-certified · B.S. Human Biology",
     description:
-      "Jeffrey Sun is the founder and head coach of Sun Functional Movement in San Jose. ACE-certified personal trainer with a B.S. in Human Biology, 12,000+ sessions coached, and a background as an EMT and athletic trainer.",
+      "Jeffrey Sun is the founder and head coach of Sun Functional Movement in San Jose. ACE-certified personal trainer with a B.S. in Human Biology, 13,000+ sessions coached, and a background as an EMT and athletic trainer.",
     credentials: "ACE Certified Personal Trainer | B.S. Human Biology",
     bio: "As a certified personal trainer with a degree in Human Biology, Jeffrey specializes in helping busy professionals build bodies that last. His approach is rooted in physiology and focused on health longevity - not crash diets or unsustainable programs. With his background as an EMT and athletic trainer, he understands the body at a deeper level.",
     specialties: [
@@ -50,7 +50,7 @@ export const coaches: Coach[] = [
       "CPR/AED Certified",
     ],
     experience: [
-      "12,000+ training sessions delivered",
+      "13,000+ training sessions delivered",
       "7+ years of professional training",
       "Former Youth Gymnastics and Soccer Coach",
       "Former Emergency Medical Technician",
