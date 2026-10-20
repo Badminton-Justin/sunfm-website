@@ -126,6 +126,39 @@ export const coaches: Coach[] = [
     image: "/images/robert-zaharia.jpg",
     certification: "FRC Mobility Specialist (FRCms)",
   },
+  {
+    slug: "alan-morett",
+    name: "Alan Morett",
+    title: "Coach",
+    highlight: "NASM-CPT · B.S. Kinesiology, SJSU · Stanford Athletics alum",
+    description:
+      "Alan Morett is a coach at Sun Functional Movement in San Jose. NASM Certified Personal Trainer with a B.S. in Kinesiology from San Jose State, and a background supporting Stanford Athletics and the San Francisco 49ers.",
+    credentials: "NASM Certified Personal Trainer | B.S. Kinesiology — San Jose State University",
+    bio: "Alan came to coaching from the operations side of elite sport. Before he started training clients, he spent two years with Stanford Athletics, running team fuel stations and hydration testing alongside the sports nutrition staff and helping coordinate travel and matchdays for Stanford Men's Soccer. Before that he worked locker room and stadium operations for the San Francisco 49ers. Watching how high-level athletes are prepared, fueled and supported day to day shaped how he thinks about training: consistency and the small details are what make progress last.\n\nAlan holds a B.S. in Kinesiology from San Jose State and is a NASM Certified Personal Trainer. He also coaches at the Lockheed Martin fitness center in Sunnyvale, where he writes individual strength and cardio programs, runs movement and fitness assessments, and leads group classes including Core, TBC and Tabata. He's currently working toward his Movement Training Specialist certification.\n\nHis sessions are organized, encouraging and built around where you are today, whether you're new to the gym or getting back into a routine.",
+    specialties: [
+      "Strength Training",
+      "Conditioning",
+      "Core Training",
+      "Movement Assessment",
+      "Beginner-Friendly Training",
+      "Group Fitness",
+    ],
+    education: [
+      "B.S. Kinesiology — San Jose State University",
+      "NASM Certified Personal Trainer (NASM-CPT)",
+      "Red Cross CPR & AED Certified",
+    ],
+    experience: [
+      "Personal Trainer & Group Exercise Instructor — Lockheed Martin / Health Fitness",
+      "Sports Nutrition Fuel Station Assistant — Stanford Athletics",
+      "Operations Assistant — Stanford Men's Soccer",
+      "Locker Room & Stadium Operations — San Francisco 49ers",
+    ],
+    image: "/images/alan-morett.jpg",
+    alumniOf: "San Jose State University",
+    degree: "B.S. Kinesiology",
+    certification: "NASM Certified Personal Trainer (NASM-CPT)",
+  },
 ];
 
 export function getCoach(slug: string): Coach | undefined {
