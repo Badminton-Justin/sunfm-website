@@ -2,17 +2,11 @@ import posthog from "posthog-js";
 
 declare global {
   interface Window {
-    gtag: (...args: [string, string, Record<string, string | number>?]) => void;
+    // Undefined until the GA script loads, after hydration.
+    gtag?: (...args: [string, string, Record<string, string | number>?]) => void;
   }
 }
 
-// GA4 reserves `source`, `medium`, `campaign`, `term`, `content`, `campaign_id`
-// and `source_platform` as event parameters that feed session traffic-source
-// attribution. Passing any of them here silently overwrites the session's real
-// acquisition source -- a `source: "start_page"` on the /start form events sent
-// every paid conversion into the Unassigned channel with no gclid, so Google Ads
-// imported zero conversions for ~90 days. Prefix descriptive params instead
-// (`page_source`, `promo_name`).
 // gtag is defined by the GA script, which Next loads after hydration -- later
 // than the mount effects that fire start_page_view, banner_impression and the
 // first section check. Those used to be dropped on nearly every visit, so hold
@@ -42,6 +36,13 @@ function sendToGtag(eventName: string, params?: Record<string, string | number>)
   }, 100);
 }
 
+// GA4 reserves `source`, `medium`, `campaign`, `term`, `content`, `campaign_id`
+// and `source_platform` as event parameters that feed session traffic-source
+// attribution. Passing any of them here silently overwrites the session's real
+// acquisition source -- a `source: "start_page"` on the /start form events sent
+// every paid conversion into the Unassigned channel with no gclid, so Google Ads
+// imported zero conversions for ~90 days. Prefix descriptive params instead
+// (`page_source`, `promo_name`).
 export function trackEvent(eventName: string, params?: Record<string, string | number>) {
   if (typeof window === "undefined") return;
 
