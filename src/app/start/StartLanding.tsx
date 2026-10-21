@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect, ReactNode } from "react";
-import { flushSync } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
@@ -186,9 +185,10 @@ function goToForm(): boolean {
 // visitors skipped the headline and everything above the form. For those
 // visitors the page first renders this stand-in: the same labels and boxes
 // with the same classes, but no form controls for autofill to find. The first
-// press on it swaps the real form in (flushSync, so the real field is under
-// the finger before the tap finishes and gets focus natively), and autofill
-// then offers itself at the moment the visitor starts filling it in.
+// press on it swaps the real form in. React applies updates from a press
+// before the tap's click, so the real field is under the finger in time and
+// the tap focuses it natively; autofill then offers itself at the moment the
+// visitor starts filling the form in.
 function FormPreview({
   inputClasses,
   onActivate,
@@ -380,10 +380,19 @@ export default function StartLanding({
     return () => window.removeEventListener("start-form-open", open);
   }, [fieldsLive]);
 
+  const pendingFocus = useRef<string | null>(null);
+
   const activateFields = (fieldId?: string) => {
-    if (!fieldsLive) flushSync(() => setFieldsLive(true));
-    if (fieldId) document.getElementById(fieldId)?.focus();
+    if (fieldId) pendingFocus.current = fieldId;
+    setFieldsLive(true);
   };
+
+  // Keyboard path: tabbing onto a stand-in field moves focus to the real one.
+  useEffect(() => {
+    if (!fieldsLive || !pendingFocus.current) return;
+    document.getElementById(pendingFocus.current)?.focus();
+    pendingFocus.current = null;
+  }, [fieldsLive]);
 
   useEffect(() => {
     attributionRef.current = captureAttribution();
