@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, ReactNode } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
@@ -202,9 +202,10 @@ function FormPreview({
       <div
         role="textbox"
         aria-label={label}
+        data-field={id}
         tabIndex={0}
         onFocus={() => onActivate(id)}
-        className={`${inputClasses} text-gray-400 cursor-text${isSelect ? " appearance-none" : ""}`}
+        className={`${inputClasses} cursor-text${isSelect ? " appearance-none" : ""}`}
         style={
           isSelect
             ? {
@@ -214,9 +215,8 @@ function FormPreview({
                 backgroundPosition: "right 0.875rem center",
                 backgroundSize: "1.25rem",
                 paddingRight: "2.75rem",
-                color: "#1a1a1a",
               }
-            : undefined
+            : { color: "#9ca3af" } // placeholder-gray-400
         }
       >
         {placeholder}
@@ -225,7 +225,12 @@ function FormPreview({
   );
 
   return (
-    <div className="space-y-4" onPointerDown={() => onActivate()}>
+    <div
+      className="space-y-4"
+      onPointerDown={(e) =>
+        onActivate((e.target as HTMLElement).closest("[data-field]")?.getAttribute("data-field") ?? undefined)
+      }
+    >
       {field("name", "Your name", "Jane Doe")}
       {field("email", "Email", "jane@example.com")}
       {field("phone", "Phone", "(408) 555-0123")}
@@ -387,8 +392,10 @@ export default function StartLanding({
     setFieldsLive(true);
   };
 
-  // Keyboard path: tabbing onto a stand-in field moves focus to the real one.
-  useEffect(() => {
+  // Focus the real field that replaced the tapped (or tabbed-to) stand-in.
+  // A layout effect runs inside the press that caused the swap, which iOS
+  // needs before it will open the keyboard.
+  useLayoutEffect(() => {
     if (!fieldsLive || !pendingFocus.current) return;
     document.getElementById(pendingFocus.current)?.focus();
     pendingFocus.current = null;
