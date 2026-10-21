@@ -258,8 +258,24 @@ const STAR = (
   </svg>
 );
 
-export default function StartLanding({ themeKey }: { themeKey?: string }) {
+export default function StartLanding({
+  themeKey,
+  formTest,
+}: {
+  themeKey?: string;
+  formTest?: string;
+}) {
   const theme = resolveTheme(themeKey);
+  // Temporary ?ft= test versions for finding what makes Instagram's in-app
+  // browser scroll to the form: "noac" drops the autofill hints, "late" holds
+  // the fields back for 8 seconds. Remove with the scroll recorder.
+  const noAutofillHints = formTest === "noac";
+  const [fieldsReady, setFieldsReady] = useState(formTest !== "late");
+  useEffect(() => {
+    if (formTest !== "late") return;
+    const t = setTimeout(() => setFieldsReady(true), 8000);
+    return () => clearTimeout(t);
+  }, [formTest]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -586,6 +602,9 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
                   <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Your first session is free.</strong> You get a movement screen and a plan. Sign up by {getRollingPromoDeadline()} for a free home workout set.</p>
 
+                  {!fieldsReady ? (
+                    <div className="min-h-[420px] rounded-lg bg-gray-50" aria-hidden="true" />
+                  ) : (
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -596,7 +615,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                         id="name"
                         name="name"
                         required
-                        autoComplete="name"
+                        autoComplete={noAutofillHints ? "off" : "name"}
                         value={formData.name}
                         onChange={handleChange}
                         onFocus={() => handleFieldFocus("name")}
@@ -615,7 +634,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                         id="email"
                         name="email"
                         required
-                        autoComplete="email"
+                        autoComplete={noAutofillHints ? "off" : "email"}
                         inputMode="email"
                         value={formData.email}
                         onChange={handleChange}
@@ -635,7 +654,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                         id="phone"
                         name="phone"
                         required
-                        autoComplete="tel"
+                        autoComplete={noAutofillHints ? "off" : "tel"}
                         inputMode="tel"
                         value={formData.phone}
                         onChange={handleChange}
@@ -740,6 +759,7 @@ export default function StartLanding({ themeKey }: { themeKey?: string }) {
                     </p>
 
                   </form>
+                  )}
                 </>
               )}
             </div>

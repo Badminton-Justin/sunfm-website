@@ -41,8 +41,17 @@ export const SCROLL_DEBUG_SCRIPT = `(function(){
     var y = Math.round(window.scrollY);
     if (Math.abs(y - lastY) >= 40) { add("scrolled", touched ? "after touch" : "no touch yet"); lastY = y; }
   }, { passive: true, capture: true });
-  ["touchstart", "pointerdown", "wheel", "keydown"].forEach(function(e){
-    window.addEventListener(e, function(){ if (!touched) { touched = true; add("first " + e); } }, { capture: true, passive: true });
+  // Log every press, not just the first, with whether the browser marks it as
+  // a real user input and where it landed. A press the visitor didn't make
+  // points at the in-app browser synthesizing one.
+  var presses = 0;
+  ["touchstart", "pointerdown", "mousedown", "click", "wheel", "keydown"].forEach(function(e){
+    window.addEventListener(e, function(ev){
+      touched = true;
+      if (presses++ > 15) return;
+      var p = ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+      add(e, "trusted=" + ev.isTrusted + " ptype=" + (ev.pointerType || "") + " at=" + Math.round(p.clientX || 0) + "," + Math.round(p.clientY || 0) + " on=" + el(ev.target));
+    }, { capture: true, passive: true });
   });
   document.addEventListener("focusin", function(e){ add("focusin", el(e.target)); }, true);
   window.addEventListener("hashchange", function(){ add("hashchange", location.hash); });

@@ -39,9 +39,9 @@ const localBusinessSchema = {
 export default async function StartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ t?: string }>;
+  searchParams: Promise<{ t?: string; ft?: string }>;
 }) {
-  const { t } = await searchParams;
+  const { t, ft } = await searchParams;
 
   return (
     <>
@@ -51,7 +51,7 @@ export default async function StartPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
-      <StartLanding themeKey={t} />
+      <StartLanding themeKey={t} formTest={ft} />
     </>
   );
 }

@@ -44,9 +44,10 @@ export default function ScrollDebug() {
         final_y: Math.round(window.scrollY),
         touched: rec.touched(),
         log: JSON.stringify(rec.log),
+        form_test: new URLSearchParams(location.search).get("ft") ?? "",
         page_source: "start_page",
       });
-    }, 6000);
+    }, 12000);
 
     return () => {
       clearInterval(tick);
