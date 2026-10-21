@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, ReactNode } from "react";
+import { flushSync } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
@@ -166,6 +167,98 @@ function getRollingPromoDeadline(): string {
   return target.toLocaleDateString("en-US", { month: "long", day: "numeric" });
 }
 
+// Scroll to the form and put the cursor in the name field. Fires
+// start-form-open first so a deferred form (see FormPreview) swaps its real
+// fields in before the focus lands.
+function goToForm(): boolean {
+  window.dispatchEvent(new Event("start-form-open"));
+  const form = document.getElementById("start-form");
+  if (!form) return false;
+  form.scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(() => {
+    (form.querySelector('input[name="name"]') as HTMLInputElement | null)?.focus();
+  }, 600);
+  return true;
+}
+
+// Meta's in-app browser autofill looks for a contact form when an ad's landing
+// page opens, then scrolls the first field to the top of the screen -- so ad
+// visitors skipped the headline and everything above the form. For those
+// visitors the page first renders this stand-in: the same labels and boxes
+// with the same classes, but no form controls for autofill to find. The first
+// press on it swaps the real form in (flushSync, so the real field is under
+// the finger before the tap finishes and gets focus natively), and autofill
+// then offers itself at the moment the visitor starts filling it in.
+function FormPreview({
+  inputClasses,
+  onActivate,
+}: {
+  inputClasses: string;
+  onActivate: (fieldId?: string) => void;
+}) {
+  const field = (id: string, label: string, placeholder: string, isSelect = false) => (
+    <div>
+      <div className="block text-sm font-medium text-gray-700 mb-1.5">{label}</div>
+      <div
+        role="textbox"
+        aria-label={label}
+        tabIndex={0}
+        onFocus={() => onActivate(id)}
+        className={`${inputClasses} text-gray-400 cursor-text${isSelect ? " appearance-none" : ""}`}
+        style={
+          isSelect
+            ? {
+                backgroundImage:
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236b7280' stroke-width='1.5'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E\")",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 0.875rem center",
+                backgroundSize: "1.25rem",
+                paddingRight: "2.75rem",
+                color: "#1a1a1a",
+              }
+            : undefined
+        }
+      >
+        {placeholder}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4" onPointerDown={() => onActivate()}>
+      {field("name", "Your name", "Jane Doe")}
+      {field("email", "Email", "jane@example.com")}
+      {field("phone", "Phone", "(408) 555-0123")}
+      {field("goal", "What's your main goal?", "Pick one", true)}
+      <div>
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 h-5 w-5 shrink-0 rounded-[4px] border border-gray-400 bg-white" aria-hidden="true" />
+          <span className="text-sm text-gray-700 -my-2 py-2">{SMS_CONSENT_LABEL}</span>
+        </div>
+        <p className="text-xs text-gray-500 leading-relaxed mt-2 pl-8">{SMS_CONSENT_TEXT}</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => onActivate("name")}
+        className="w-full bg-[#CB4538] hover:bg-[#a83829] text-white font-semibold py-3.5 rounded-lg transition-colors text-base"
+      >
+        Request my free consultation
+      </button>
+      <p className="text-xs text-gray-500 leading-relaxed">
+        By submitting, you agree to be contacted about your consultation by email.{" "}
+        <Link href="/terms" className="underline hover:text-[#CB4538]">
+          Terms of Service
+        </Link>{" "}
+        |{" "}
+        <Link href="/privacy" className="underline hover:text-[#CB4538]">
+          Privacy Policy
+        </Link>
+        .
+      </p>
+    </div>
+  );
+}
+
 function LaunchBanner() {
   useEffect(() => {
     trackEvent("banner_impression", { promo_name: "launch_offer_rolling" });
@@ -173,12 +266,7 @@ function LaunchBanner() {
 
   const scrollToForm = () => {
     trackEvent("banner_click", { promo_name: "launch_offer_rolling" });
-    const form = document.getElementById("start-form");
-    if (form) {
-      form.scrollIntoView({ behavior: "smooth", block: "center" });
-      const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement | null;
-      setTimeout(() => nameInput?.focus(), 600);
-    }
+    goToForm();
   };
 
   const deadline = getRollingPromoDeadline();
@@ -260,22 +348,12 @@ const STAR = (
 
 export default function StartLanding({
   themeKey,
-  formTest,
+  deferFields = false,
 }: {
   themeKey?: string;
-  formTest?: string;
+  deferFields?: boolean;
 }) {
   const theme = resolveTheme(themeKey);
-  // Temporary ?ft= test versions for finding what makes Instagram's in-app
-  // browser scroll to the form: "noac" drops the autofill hints, "late" holds
-  // the fields back for 8 seconds. Remove with the scroll recorder.
-  const noAutofillHints = formTest === "noac";
-  const [fieldsReady, setFieldsReady] = useState(formTest !== "late");
-  useEffect(() => {
-    if (formTest !== "late") return;
-    const t = setTimeout(() => setFieldsReady(true), 8000);
-    return () => clearTimeout(t);
-  }, [formTest]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -293,7 +371,19 @@ export default function StartLanding({
   const videoSectionRef = useRef<HTMLDivElement>(null);
   const attributionRef = useRef<Record<string, string>>({});
   const formViewed = useRef(false);
-  const stickyPressed = useRef(false);
+  const [fieldsLive, setFieldsLive] = useState(!deferFields);
+
+  useEffect(() => {
+    if (fieldsLive) return;
+    const open = () => setFieldsLive(true);
+    window.addEventListener("start-form-open", open);
+    return () => window.removeEventListener("start-form-open", open);
+  }, [fieldsLive]);
+
+  const activateFields = (fieldId?: string) => {
+    if (!fieldsLive) flushSync(() => setFieldsLive(true));
+    if (fieldId) document.getElementById(fieldId)?.focus();
+  };
 
   useEffect(() => {
     attributionRef.current = captureAttribution();
@@ -602,8 +692,8 @@ export default function StartLanding({
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-1">Request your free consultation</h2>
                   <p className="text-sm text-gray-500 mb-6"><strong className="text-[#CB4538]">Your first session is free.</strong> You get a movement screen and a plan. Sign up by {getRollingPromoDeadline()} for a free home workout set.</p>
 
-                  {!fieldsReady ? (
-                    <div className="min-h-[420px] rounded-lg bg-gray-50" aria-hidden="true" />
+                  {!fieldsLive ? (
+                    <FormPreview inputClasses={inputClasses} onActivate={activateFields} />
                   ) : (
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -615,7 +705,7 @@ export default function StartLanding({
                         id="name"
                         name="name"
                         required
-                        autoComplete={noAutofillHints ? "off" : "name"}
+                        autoComplete="name"
                         value={formData.name}
                         onChange={handleChange}
                         onFocus={() => handleFieldFocus("name")}
@@ -634,7 +724,7 @@ export default function StartLanding({
                         id="email"
                         name="email"
                         required
-                        autoComplete={noAutofillHints ? "off" : "email"}
+                        autoComplete="email"
                         inputMode="email"
                         value={formData.email}
                         onChange={handleChange}
@@ -654,7 +744,7 @@ export default function StartLanding({
                         id="phone"
                         name="phone"
                         required
-                        autoComplete={noAutofillHints ? "off" : "tel"}
+                        autoComplete="tel"
                         inputMode="tel"
                         value={formData.phone}
                         onChange={handleChange}
@@ -926,14 +1016,7 @@ export default function StartLanding({
             type="button"
             onClick={() => {
               trackEvent("cta_click", { button_text: "Scroll to form", section: "start_closing" });
-              const form = document.getElementById("start-form");
-              if (form) {
-                form.scrollIntoView({ behavior: "smooth", block: "center" });
-                const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement | null;
-                setTimeout(() => nameInput?.focus(), 600);
-              } else {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }
+              if (!goToForm()) window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className="bg-[#CB4538] hover:bg-[#a83829] text-white font-semibold px-8 py-4 rounded-lg transition-colors text-base"
           >
@@ -968,33 +1051,9 @@ export default function StartLanding({
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-black/10 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
           <button
             type="button"
-            onPointerDown={() => {
-              stickyPressed.current = true;
-            }}
-            onClick={(e) => {
-              // Instagram's in-app browser can hand the tail of the ad's
-              // "Learn more" tap to this button, which sits in the same spot,
-              // and the page opens already scrolled to the form. Ignore a
-              // click that didn't start on this page: no pointerdown here, or
-              // within the first second. e.detail is 0 for keyboard presses.
-              const msSinceLoad = Math.round(performance.now());
-              if (e.detail > 0 && (!stickyPressed.current || msSinceLoad < 1000)) {
-                trackEvent("sticky_cta_ghost_click", {
-                  ms_since_load: msSinceLoad,
-                  had_pointerdown: stickyPressed.current ? "yes" : "no",
-                  page_source: "start_page",
-                });
-                stickyPressed.current = false;
-                return;
-              }
-              stickyPressed.current = false;
+            onClick={() => {
               trackEvent("cta_click", { button_text: "Sticky Book CTA", section: "start_sticky_mobile" });
-              const form = document.getElementById("start-form");
-              if (form) {
-                form.scrollIntoView({ behavior: "smooth", block: "center" });
-                const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement | null;
-                setTimeout(() => nameInput?.focus(), 600);
-              }
+              goToForm();
             }}
             className="w-full bg-[#CB4538] hover:bg-[#a83829] text-white font-semibold py-3 rounded-lg transition-colors text-base"
           >

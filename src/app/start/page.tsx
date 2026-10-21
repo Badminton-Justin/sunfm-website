@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import StartLanding from "./StartLanding";
 import ScrollDebug from "./ScrollDebug";
 import { SCROLL_DEBUG_SCRIPT } from "./scrollDebugScript";
@@ -39,9 +40,14 @@ const localBusinessSchema = {
 export default async function StartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ t?: string; ft?: string }>;
+  searchParams: Promise<{ t?: string }>;
 }) {
-  const { t, ft } = await searchParams;
+  const { t } = await searchParams;
+  // Facebook/Instagram in-app browser. Its autofill scrolls ad visitors
+  // straight to the form, so they get the stand-in form until they touch it
+  // (see FormPreview). Decided here so the first HTML already has no fields.
+  const userAgent = (await headers()).get("user-agent") ?? "";
+  const metaInAppBrowser = /Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(userAgent);
 
   return (
     <>
@@ -51,7 +57,7 @@ export default async function StartPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
-      <StartLanding themeKey={t} formTest={ft} />
+      <StartLanding themeKey={t} deferFields={metaInAppBrowser} />
     </>
   );
 }
