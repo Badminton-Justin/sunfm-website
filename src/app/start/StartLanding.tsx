@@ -394,11 +394,22 @@ export default function StartLanding({
 
   // Focus the real field that replaced the tapped (or tabbed-to) stand-in.
   // A layout effect runs inside the press that caused the swap, which iOS
-  // needs before it will open the keyboard.
+  // needs before it will open the keyboard. The press's own default action
+  // can still move focus off it afterwards (it targets the removed stand-in),
+  // so focus again when the press ends.
   useLayoutEffect(() => {
     if (!fieldsLive || !pendingFocus.current) return;
-    document.getElementById(pendingFocus.current)?.focus();
+    const el = document.getElementById(pendingFocus.current);
     pendingFocus.current = null;
+    if (!el) return;
+    el.focus();
+    const refocus = () => el.focus();
+    window.addEventListener("pointerup", refocus, { once: true, capture: true });
+    const t = setTimeout(() => window.removeEventListener("pointerup", refocus, true), 1500);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("pointerup", refocus, true);
+    };
   }, [fieldsLive]);
 
   useEffect(() => {
