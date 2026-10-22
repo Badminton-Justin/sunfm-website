@@ -22,6 +22,9 @@ if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
     capture_performance: true,
     // Don't capture rage clicks on the form submit button (it's expected when validation fails)
     rageclick: true,
+    // Send uncaught JavaScript errors to PostHog's Error tracking, so a
+    // broken page or form for some visitors doesn't go unnoticed.
+    capture_exceptions: true,
   });
 }
 
@@ -44,6 +47,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         },
         capture_performance: true,
         rageclick: true,
+        capture_exceptions: true,
       });
     }
   }, []);

@@ -170,13 +170,23 @@ function getRollingPromoDeadline(): string {
 // Scroll to the form and put the cursor in the name field. Fires
 // start-form-open first so a deferred form (see FormPreview) swaps its real
 // fields in before the focus lands.
+// True only while goToForm itself is focusing the name field, so that focus
+// isn't counted as form_start: a button tap shows interest in the form, not
+// that the visitor started filling it in (button taps are tracked as
+// cta_click/banner_click). Focus events fire synchronously inside .focus().
+let focusFromButton = false;
+
 function goToForm(): boolean {
   window.dispatchEvent(new Event("start-form-open"));
   const form = document.getElementById("start-form");
   if (!form) return false;
   form.scrollIntoView({ behavior: "smooth", block: "center" });
   setTimeout(() => {
-    (form.querySelector('input[name="name"]') as HTMLInputElement | null)?.focus();
+    const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement | null;
+    if (!nameInput) return;
+    focusFromButton = true;
+    nameInput.focus();
+    focusFromButton = false;
   }, 600);
   return true;
 }
@@ -522,11 +532,19 @@ export default function StartLanding({
     return () => observer.disconnect();
   }, []);
 
+  // form_start = the visitor started filling the form in: their own tap into a
+  // field, or their first input (which also covers typing after a button put
+  // the cursor in Name for them, and autofill). Primary metric of the
+  // start-headline experiment.
+  const markFormStart = (fieldName: string) => {
+    if (hasStarted.current) return;
+    hasStarted.current = true;
+    trackEvent("form_start", { first_field: fieldName, page_source: "start_page" });
+  };
+
   const handleFieldFocus = (fieldName: string) => {
-    if (!hasStarted.current) {
-      hasStarted.current = true;
-      trackEvent("form_start", { first_field: fieldName, page_source: "start_page" });
-    }
+    if (focusFromButton) return;
+    markFormStart(fieldName);
   };
 
   const handleFieldBlur = (fieldName: string, value: string) => {
@@ -539,6 +557,7 @@ export default function StartLanding({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    markFormStart(name);
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
