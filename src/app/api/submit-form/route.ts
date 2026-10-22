@@ -126,6 +126,18 @@ export async function POST(request: Request) {
 
     const recipients = process.env.NOTIFICATION_EMAILS || "";
 
+    // The /start form only asks for name, email, phone and goal, so the fields
+    // it never collects would just read as blank or "Not provided".
+    const isStartPage = data.landingPage === "/start";
+    const ageLine = isStartPage ? "" : `\nAge: ${data.age || "Not provided"}`;
+    const backgroundLines = isStartPage
+      ? ""
+      : `
+Experience: ${data.experience}
+Current Routine: ${data.currentRoutine || "Not provided"}
+Motivation: ${data.motivation || "Not provided"}
+Injuries/Pain: ${data.injuries || "None"}`;
+
     try {
       await transporter.sendMail({
         from: `"SunFM Notifications" <${process.env.GMAIL_USER}>`,
@@ -137,14 +149,9 @@ New consultation request from ${data.name}
 Name: ${data.name}
 Email: ${data.email}
 Phone: ${data.phone}
-SMS consent: ${smsConsentSummary}
-Age: ${data.age || "Not provided"}
+SMS consent: ${smsConsentSummary}${ageLine}
 
-Goal: ${data.goal}${data.goalDetails ? ` — ${data.goalDetails}` : ""}
-Experience: ${data.experience}
-Current Routine: ${data.currentRoutine || "Not provided"}
-Motivation: ${data.motivation || "Not provided"}
-Injuries/Pain: ${data.injuries || "None"}
+Goal: ${data.goal}${data.goalDetails ? ` — ${data.goalDetails}` : ""}${backgroundLines}
 
 How they heard about SunFM: ${data.referral}${data.referralDetails ? ` — ${data.referralDetails}` : ""}
 
