@@ -2,6 +2,40 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import StartLanding from "./StartLanding";
 
+// PostHog experiment on the headline. Evaluated here so the page arrives with
+// its variant in place (no swap after load); middleware supplies the visitor's
+// PostHog distinct_id. Any failure or slowness falls back to the current
+// headline, and an inactive flag returns no variant.
+const HEADLINE_FLAG = "start-headline";
+
+async function getHeadlineVariant(distinctId: string | null): Promise<string | undefined> {
+  const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+  if (!apiKey || !distinctId) return undefined;
+  const configured = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "";
+  const host = configured.startsWith("http") ? configured.replace(/\/$/, "") : "https://us.i.posthog.com";
+  try {
+    const res = await fetch(`${host}/flags/?v=2`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: apiKey,
+        distinct_id: distinctId,
+        flag_keys_to_evaluate: [HEADLINE_FLAG],
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(800),
+    });
+    if (!res.ok) return undefined;
+    const data = (await res.json()) as {
+      flags?: Record<string, { enabled?: boolean; variant?: string | null }>;
+    };
+    const flag = data.flags?.[HEADLINE_FLAG];
+    return flag?.enabled && flag.variant ? flag.variant : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export const metadata: Metadata = {
   title: "Free Personal Training Consultation in San Jose | Sun FM",
   description:
@@ -44,8 +78,11 @@ export default async function StartPage({
   // Facebook/Instagram in-app browser. Its autofill scrolls ad visitors
   // straight to the form, so they get the stand-in form until they touch it
   // (see FormPreview). Decided here so the first HTML already has no fields.
-  const userAgent = (await headers()).get("user-agent") ?? "";
+  const requestHeaders = await headers();
+  const userAgent = requestHeaders.get("user-agent") ?? "";
   const metaInAppBrowser = /Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(userAgent);
+  // Ad groups that pick their own copy with ?t= stay out of the test.
+  const headlineVariant = t ? undefined : await getHeadlineVariant(requestHeaders.get("x-ph-distinct-id"));
 
   return (
     <>
@@ -53,7 +90,7 @@ export default async function StartPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
-      <StartLanding themeKey={t} deferFields={metaInAppBrowser} />
+      <StartLanding themeKey={t} deferFields={metaInAppBrowser} headlineVariant={headlineVariant} />
     </>
   );
 }

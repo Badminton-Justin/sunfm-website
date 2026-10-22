@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useLayoutEffect, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import posthog from "posthog-js";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
 import { trackMetaLead } from "@/lib/meta-pixel";
@@ -354,11 +355,19 @@ const STAR = (
 export default function StartLanding({
   themeKey,
   deferFields = false,
+  headlineVariant,
 }: {
   themeKey?: string;
   deferFields?: boolean;
+  headlineVariant?: string;
 }) {
-  const theme = resolveTheme(themeKey);
+  // Headline experiment (PostHog flag "start-headline"), assigned on the
+  // server in page.tsx. Only the headline changes; eyebrow and subhead stay.
+  const baseTheme = resolveTheme(themeKey);
+  const theme =
+    headlineVariant === "desk"
+      ? { ...baseTheme, headline: START_THEMES["desk-worker"].headline }
+      : baseTheme;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -411,6 +420,17 @@ export default function StartLanding({
       window.removeEventListener("pointerup", refocus, true);
     };
   }, [fieldsLive]);
+
+  // Record the exposure with the variant the server rendered, so PostHog's
+  // experiment results count each visitor under the headline they saw.
+  useEffect(() => {
+    if (!headlineVariant || !posthog.__loaded) return;
+    posthog.register({ "$feature/start-headline": headlineVariant });
+    posthog.capture("$feature_flag_called", {
+      $feature_flag: "start-headline",
+      $feature_flag_response: headlineVariant,
+    });
+  }, [headlineVariant]);
 
   useEffect(() => {
     attributionRef.current = captureAttribution();
