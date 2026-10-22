@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import StartLanding from "./StartLanding";
-import ScrollDebug from "./ScrollDebug";
-import { SCROLL_DEBUG_SCRIPT } from "./scrollDebugScript";
 
 export const metadata: Metadata = {
   title: "Free Personal Training Consultation in San Jose | Sun FM",
@@ -51,8 +49,6 @@ export default async function StartPage({
 
   return (
     <>
-      <script dangerouslySetInnerHTML={{ __html: SCROLL_DEBUG_SCRIPT }} />
-      <ScrollDebug />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
