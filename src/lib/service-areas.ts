@@ -46,7 +46,12 @@ const commonServices: ServiceCard[] = [
   {
     title: "Strength and conditioning",
     description:
-      "Sessions mix compound strength work with conditioning and targeted mobility. The personal training studio has dumbbells, kettlebells, racks, a bench, bands, cardio equipment, and mobility tools.",
+      "Sessions mix compound strength work with conditioning and targeted mobility. The private training gym has dumbbells, kettlebells, racks, a bench, bands, cardio equipment, and mobility tools, and it's never crowded the way a commercial gym is.",
+  },
+  {
+    title: "Weight loss that lasts",
+    description:
+      "Strength training, more daily movement, and practical nutrition guidance, progressed at a pace you can actually keep. No crash diets or 30-day challenges. The goal is losing fat without losing the muscle you'll need in twenty years.",
   },
   {
     title: "Functional fitness that carries over",
@@ -62,6 +67,11 @@ const commonServices: ServiceCard[] = [
     title: "Programming for the days between sessions",
     description:
       "Training you do on your own the rest of the week, at home with whatever you have or at the studio where all the equipment is included. It's how the work compounds.",
+  },
+  {
+    title: "Online and hybrid personal training",
+    description:
+      "Online sessions for the weeks you can't make the drive. Most clients run a hybrid: in person most of the time, online when travel or work gets in the way. We start in-studio so your form is established before we go remote.",
   },
   {
     title: "Longevity-focused approach",
@@ -198,7 +208,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
       "Training built for Sunnyvale professionals and parents. Ten minutes from downtown Sunnyvale to a private studio in San Jose.",
     metaTitle: "Personal Trainer in Sunnyvale | Sun Functional Movement",
     metaDescription:
-      "Serving Sunnyvale with one-on-one training at a private San Jose studio. 15 minutes from Murphy Ave. Free consultation with an ACE-certified trainer.",
+      "Serving Sunnyvale with one-on-one training at a private San Jose studio. 10 minutes from Murphy Ave. Free consultation with an ACE-certified trainer.",
     commuteText:
       "Ten minutes on 85 South to the studio in San Jose. I reserve early morning and mid-morning slots for Sunnyvale clients who want to miss traffic.",
     quickFacts: [
@@ -280,7 +290,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
       "Structured training for Apple employees and Cupertino professionals. Built around long hours, high stakes, and bodies that have been ignored for too long.",
     metaTitle: "Personal Trainer in Cupertino | Sun Functional Movement",
     metaDescription:
-      "One-on-one training for Cupertino professionals and Apple employees. Private studio 20 minutes from Apple Park. Free consultation with an ACE-certified trainer.",
+      "One-on-one training for Cupertino professionals and Apple employees. Private studio 15 minutes from Apple Park. Free consultation with an ACE-certified trainer.",
     commuteText:
       "From Apple Park, 280 to 880 South is the cleanest route. Most Cupertino clients get to the studio in about fifteen minutes.",
     quickFacts: [
@@ -452,7 +462,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
       "Training for Googlers, Waymo engineers, and Mountain View residents who want something completely separate from their office gym.",
     metaTitle: "Personal Trainer in Mountain View | Sun Functional Movement",
     metaDescription:
-      "Private training for Mountain View residents and Google employees. 20-25 min drive, calendar-friendly for flexible tech schedules. Free consultation.",
+      "Private training for Mountain View residents and Google employees. 15-20 min drive, calendar-friendly for flexible tech schedules. Free consultation.",
     commuteText:
       "About fifteen to twenty minutes on 85 South. Morning and mid-day slots miss the worst of the commute.",
     quickFacts: [
@@ -595,6 +605,11 @@ export const serviceAreas: Record<string, ServiceArea> = {
         answer:
           "Yes. A decent portion of my Los Gatos clients are doing serious cycling or weekend hikes. I build programming that supports that work rather than fighting it, and we move session timing around long weekend efforts.",
       },
+      {
+        question: "Is the personal training studio in Los Gatos?",
+        answer:
+          "The studio is at 1401 Parkmoor Ave in San Jose, a short drive up Highway 17 from downtown Los Gatos. It's a private training gym, not a membership gym, so there's no crowd or wait for equipment. Los Gatos clients train there 1:1, semi-private, or in small groups, and some mix in online sessions on busy weeks.",
+      },
       ...sharedFAQs,
       {
         question: "Do you work with Netflix or other corporate wellness benefits?",
@@ -626,7 +641,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
       "Patient, professional training for established Saratoga residents. Ten minutes to the studio via Saratoga-Sunnyvale Road or 85.",
     metaTitle: "Personal Trainer in Saratoga | Sun Functional Movement",
     metaDescription:
-      "One-on-one personal training for Saratoga residents. 15 min from downtown via 85 or Saratoga-Sunnyvale Rd. Free consultation. ACE-certified.",
+      "One-on-one personal training for Saratoga residents. 10 min from downtown via 85 or Saratoga-Sunnyvale Rd. Free consultation. ACE-certified.",
     commuteText:
       "Ten minutes via Saratoga-Sunnyvale Road or 85 North. Most Saratoga clients prefer the surface streets through Prospect Road.",
     quickFacts: [
@@ -711,12 +726,12 @@ export const serviceAreas: Record<string, ServiceArea> = {
     heroTag: "Old Silicon Valley",
     heroHeadline: "Personal Trainer for Los Altos",
     heroSubheadline:
-      "Serious, low-drama training for Los Altos tech leaders and long-tenured residents. Twenty minutes from downtown Los Altos via 85.",
+      "Serious, low-drama training for Los Altos tech leaders and long-tenured residents. Fifteen minutes from downtown Los Altos via 85.",
     metaTitle: "Personal Trainer in Los Altos | Sun Functional Movement",
     metaDescription:
-      "Private personal training for Los Altos residents and tech executives. 20 min drive via 85. Free consultation with an ACE-certified trainer.",
+      "Private personal training for Los Altos residents and tech executives. 15 min drive via 85. Free consultation with an ACE-certified trainer.",
     commuteText:
-      "Twenty minutes via 85 South on a normal day. Most Los Altos clients book mid-morning or early afternoon for the easiest commute.",
+      "Fifteen minutes via 85 South on a normal day. Most Los Altos clients book mid-morning or early afternoon for the easiest commute.",
     quickFacts: [
       { label: "Drive time", value: "~15 min" },
       { label: "Route", value: "85 S" },
@@ -801,7 +816,7 @@ export const serviceAreas: Record<string, ServiceArea> = {
       "Patient, efficient training for Milpitas professionals balancing demanding tech jobs with family responsibilities. Ten to fifteen minutes up 880.",
     metaTitle: "Personal Trainer in Milpitas | Sun Functional Movement",
     metaDescription:
-      "One-on-one training for Milpitas professionals. 15-20 min from Great Mall area via 880. Free consultation with an ACE-certified trainer.",
+      "One-on-one training for Milpitas professionals. 10-15 min from Great Mall area via 880. Free consultation with an ACE-certified trainer.",
     commuteText:
       "Ten to fifteen minutes on 880 South. Early morning or mid-day slots avoid the worst of the commute.",
     quickFacts: [

@@ -24,8 +24,8 @@ export default function ServiceAreaSchema({ area }: { area: ServiceArea }) {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 37.31150,
-      longitude: -121.91920,
+      latitude: 37.31700,
+      longitude: -121.91273,
     },
     telephone: "+1-620-407-2893",
     openingHoursSpecification: [

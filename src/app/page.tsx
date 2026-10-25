@@ -46,8 +46,8 @@ const localBusinessSchema = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 37.3115,
-    longitude: -121.9192,
+    latitude: 37.317,
+    longitude: -121.9127,
   },
   email: "jeff@sunfm.fitness",
   telephone: "+1-620-407-2893",
