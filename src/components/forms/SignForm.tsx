@@ -13,7 +13,7 @@ type Field = {
   label: string;
   type?: string;
   autoComplete?: string;
-  inputMode?: "email" | "tel" | "numeric";
+  inputMode?: "email" | "tel";
 };
 
 const CONTACT_FIELDS: Field[] = [
@@ -21,15 +21,6 @@ const CONTACT_FIELDS: Field[] = [
   { name: "email", label: "Email", type: "email", autoComplete: "email", inputMode: "email" },
   { name: "phone", label: "Phone", type: "tel", autoComplete: "tel", inputMode: "tel" },
 ];
-
-// Separate address parts so browser and password-manager autofill can fill
-// each one; a combined "City & ZIP" box only ever received the ZIP.
-const ADDRESS_FIELDS = {
-  street: { name: "street", label: "Street address", autoComplete: "address-line1" },
-  city: { name: "city", label: "City", autoComplete: "address-level2" },
-  state: { name: "state", label: "State", autoComplete: "address-level1" },
-  zip: { name: "zip", label: "ZIP", autoComplete: "postal-code", inputMode: "numeric" },
-} satisfies Record<string, Field>;
 
 const EMERGENCY_FIELDS: Field[] = [
   { name: "emergencyName", label: "Emergency contact name", autoComplete: "off" },
@@ -117,17 +108,7 @@ export default function SignForm({ formId }: { formId: ClientFormId }) {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-[#1a1a1a]">Your details</h2>
         {CONTACT_FIELDS.map(field)}
-        {form.collectsContactDetails && (
-          <>
-            {field(ADDRESS_FIELDS.street)}
-            {field(ADDRESS_FIELDS.city)}
-            <div className="grid grid-cols-2 gap-4">
-              {field(ADDRESS_FIELDS.state)}
-              {field(ADDRESS_FIELDS.zip)}
-            </div>
-            {EMERGENCY_FIELDS.map(field)}
-          </>
-        )}
+        {form.collectsContactDetails && EMERGENCY_FIELDS.map(field)}
         {/* Honeypot: off-screen and skipped by keyboard and screen readers. */}
         <input
           type="text"

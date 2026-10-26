@@ -21,7 +21,7 @@ export interface ClientFormDefinition {
   // Used for the PDF filename in Drive, e.g. "2026-10-26 Waiver.pdf".
   shortName: string;
   intro: string;
-  // Whether the form collects address and emergency contact details.
+  // Whether the form collects emergency contact details.
   collectsContactDetails: boolean;
   sections: ClientFormSection[];
   agreement: string;
