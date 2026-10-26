@@ -372,21 +372,13 @@ const STAR = (
 export default function StartLanding({
   themeKey,
   deferFields = false,
-  headlineVariant,
   priceFaqVariant,
 }: {
   themeKey?: string;
   deferFields?: boolean;
-  headlineVariant?: string;
   priceFaqVariant?: string;
 }) {
-  // Headline experiment (PostHog flag "start-headline"), assigned on the
-  // server in page.tsx. Only the headline changes; eyebrow and subhead stay.
-  const baseTheme = resolveTheme(themeKey);
-  const theme =
-    headlineVariant === "desk"
-      ? { ...baseTheme, headline: START_THEMES["desk-worker"].headline }
-      : baseTheme;
+  const theme = resolveTheme(themeKey);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -440,17 +432,6 @@ export default function StartLanding({
       window.removeEventListener("pointerup", refocus, true);
     };
   }, [fieldsLive]);
-
-  // Record the exposure with the variant the server rendered, so PostHog's
-  // experiment results count each visitor under the headline they saw.
-  useEffect(() => {
-    if (!headlineVariant || !posthog.__loaded) return;
-    posthog.register({ "$feature/start-headline": headlineVariant });
-    posthog.capture("$feature_flag_called", {
-      $feature_flag: "start-headline",
-      $feature_flag_response: headlineVariant,
-    });
-  }, [headlineVariant]);
 
   useEffect(() => {
     attributionRef.current = captureAttribution();
@@ -544,8 +525,7 @@ export default function StartLanding({
 
   // form_start = the visitor started filling the form in: their own tap into a
   // field, or their first input (which also covers typing after a button put
-  // the cursor in Name for them, and autofill). Primary metric of the
-  // start-headline experiment.
+  // the cursor in Name for them, and autofill).
   const markFormStart = (fieldName: string) => {
     if (hasStarted.current) return;
     hasStarted.current = true;

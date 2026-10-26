@@ -6,9 +6,7 @@ import StartLanding from "./StartLanding";
 // variant in place (no swap after load); middleware supplies the visitor's
 // PostHog distinct_id. Any failure or slowness falls back to the current copy,
 // and an inactive flag returns no variant.
-//   start-headline:  the hero headline
 //   start-price-faq: the answer to "How much does training cost?"
-const HEADLINE_FLAG = "start-headline";
 const PRICE_FAQ_FLAG = "start-price-faq";
 
 async function getFlagVariants(
@@ -91,11 +89,7 @@ export default async function StartPage({
   const requestHeaders = await headers();
   const userAgent = requestHeaders.get("user-agent") ?? "";
   const metaInAppBrowser = /Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(userAgent);
-  // Ad groups that pick their own copy with ?t= stay out of the headline test.
-  const variants = await getFlagVariants(
-    requestHeaders.get("x-ph-distinct-id"),
-    t ? [PRICE_FAQ_FLAG] : [HEADLINE_FLAG, PRICE_FAQ_FLAG]
-  );
+  const variants = await getFlagVariants(requestHeaders.get("x-ph-distinct-id"), [PRICE_FAQ_FLAG]);
 
   return (
     <>
@@ -106,7 +100,6 @@ export default async function StartPage({
       <StartLanding
         themeKey={t}
         deferFields={metaInAppBrowser}
-        headlineVariant={variants[HEADLINE_FLAG]}
         priceFaqVariant={variants[PRICE_FAQ_FLAG]}
       />
     </>
