@@ -168,7 +168,7 @@ ${driveLink ? `Saved to Drive: ${driveLink}` : "NOT saved to Drive. Save the att
       text: `
 Hi ${name.split(" ")[0]},
 
-Thanks for signing. Your copy of the ${form.title} is attached for your records.
+Your copy of the ${form.title} is attached for your records.
 
 Sun Functional Movement
       `.trim(),
