@@ -26,24 +26,6 @@ const SIGNATURE_PREFIX = "data:image/png;base64,";
 // A drawn signature is a few tens of KB; anything near this is not one.
 const MAX_SIGNATURE_LENGTH = 1_000_000;
 
-// Signed forms always reach Jeff, on top of the shared notification list,
-// which may or may not include him. Deduped so he never gets it twice.
-const SIGNED_FORM_RECIPIENTS = ["jeff@sunfm.fitness"];
-
-function teamRecipients(): string[] {
-  const list = (process.env.NOTIFICATION_EMAILS || "")
-    .split(",")
-    .map((address) => address.trim())
-    .filter(Boolean);
-  const seen = new Set<string>();
-  return [...list, ...SIGNED_FORM_RECIPIENTS].filter((address) => {
-    const key = address.toLowerCase();
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -154,7 +136,7 @@ export async function POST(request: Request) {
   try {
     await transporter.sendMail({
       from: `"SunFM Notifications" <${process.env.GMAIL_USER}>`,
-      to: teamRecipients(),
+      to: process.env.NOTIFICATION_EMAILS || "",
       subject: `Signed ${form.shortName}: ${name}`,
       text: `
 ${name} signed the ${form.title} on ${formatSignedAt(signedAt)}.
