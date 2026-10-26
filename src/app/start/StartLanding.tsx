@@ -130,6 +130,13 @@ function resolveTheme(themeKey?: string): StartTheme {
   return START_THEMES[themeKey] || DEFAULT_THEME;
 }
 
+// PostHog experiment "start-price-faq": the "price" variant answers the cost
+// question with the real range. Exposure is recorded only when a visitor opens
+// that question, so the test compares the people who actually read an answer.
+const PRICE_FAQ_QUESTION = "How much does training cost?";
+const PRICE_FAQ_ANSWER_WITH_RANGE =
+  "Expect $100–130 per session, depending on how often you train and which package fits. Most of my clients train 2-3 times a week. Your first session is free, and I'll walk you through exact options once I know your schedule and goals.";
+
 const VIDEO_TESTIMONIALS = [
   { name: "Marshall", result: "4-year client · Pain-free strength", poster: "Marshall_Edited_Poster.jpg", video: "Marshall_Edited.mp4" },
   { name: "Sneha", result: "Structured health lifestyle", poster: "Sneha_Edited_Poster.jpg", video: "Sneha_Edited.mp4" },
@@ -366,10 +373,12 @@ export default function StartLanding({
   themeKey,
   deferFields = false,
   headlineVariant,
+  priceFaqVariant,
 }: {
   themeKey?: string;
   deferFields?: boolean;
   headlineVariant?: string;
+  priceFaqVariant?: string;
 }) {
   // Headline experiment (PostHog flag "start-headline"), assigned on the
   // server in page.tsx. Only the headline changes; eyebrow and subhead stay.
@@ -395,6 +404,7 @@ export default function StartLanding({
   const videoSectionRef = useRef<HTMLDivElement>(null);
   const attributionRef = useRef<Record<string, string>>({});
   const formViewed = useRef(false);
+  const priceFaqExposed = useRef(false);
   const [fieldsLive, setFieldsLive] = useState(!deferFields);
 
   useEffect(() => {
@@ -1046,6 +1056,19 @@ export default function StartLanding({
                     setOpenFaq(next);
                     if (next !== null) {
                       trackEvent("faq_open", { question: item.q, page_source: "start_page" });
+                      if (
+                        item.q === PRICE_FAQ_QUESTION &&
+                        priceFaqVariant &&
+                        !priceFaqExposed.current &&
+                        posthog.__loaded
+                      ) {
+                        priceFaqExposed.current = true;
+                        posthog.register({ "$feature/start-price-faq": priceFaqVariant });
+                        posthog.capture("$feature_flag_called", {
+                          $feature_flag: "start-price-faq",
+                          $feature_flag_response: priceFaqVariant,
+                        });
+                      }
                     }
                   }}
                   className="w-full px-5 py-4 text-left flex items-center justify-between transition-colors"
@@ -1061,7 +1084,11 @@ export default function StartLanding({
                   </svg>
                 </button>
                 {openFaq === i && (
-                  <div className="px-5 pb-5 text-gray-600 leading-relaxed">{item.a}</div>
+                  <div className="px-5 pb-5 text-gray-600 leading-relaxed">
+                    {item.q === PRICE_FAQ_QUESTION && priceFaqVariant === "price"
+                      ? PRICE_FAQ_ANSWER_WITH_RANGE
+                      : item.a}
+                  </div>
                 )}
               </div>
             ))}

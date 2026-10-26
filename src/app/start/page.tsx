@@ -2,15 +2,21 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import StartLanding from "./StartLanding";
 
-// PostHog experiment on the headline. Evaluated here so the page arrives with
-// its variant in place (no swap after load); middleware supplies the visitor's
-// PostHog distinct_id. Any failure or slowness falls back to the current
-// headline, and an inactive flag returns no variant.
+// PostHog experiments on /start, evaluated here so the page arrives with each
+// variant in place (no swap after load); middleware supplies the visitor's
+// PostHog distinct_id. Any failure or slowness falls back to the current copy,
+// and an inactive flag returns no variant.
+//   start-headline:  the hero headline
+//   start-price-faq: the answer to "How much does training cost?"
 const HEADLINE_FLAG = "start-headline";
+const PRICE_FAQ_FLAG = "start-price-faq";
 
-async function getHeadlineVariant(distinctId: string | null): Promise<string | undefined> {
+async function getFlagVariants(
+  distinctId: string | null,
+  keys: string[]
+): Promise<Record<string, string>> {
   const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-  if (!apiKey || !distinctId) return undefined;
+  if (!apiKey || !distinctId || keys.length === 0) return {};
   const configured = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "";
   const host = configured.startsWith("http") ? configured.replace(/\/$/, "") : "https://us.i.posthog.com";
   try {
@@ -20,19 +26,23 @@ async function getHeadlineVariant(distinctId: string | null): Promise<string | u
       body: JSON.stringify({
         api_key: apiKey,
         distinct_id: distinctId,
-        flag_keys_to_evaluate: [HEADLINE_FLAG],
+        flag_keys_to_evaluate: keys,
       }),
       cache: "no-store",
       signal: AbortSignal.timeout(800),
     });
-    if (!res.ok) return undefined;
+    if (!res.ok) return {};
     const data = (await res.json()) as {
       flags?: Record<string, { enabled?: boolean; variant?: string | null }>;
     };
-    const flag = data.flags?.[HEADLINE_FLAG];
-    return flag?.enabled && flag.variant ? flag.variant : undefined;
+    const variants: Record<string, string> = {};
+    for (const key of keys) {
+      const flag = data.flags?.[key];
+      if (flag?.enabled && flag.variant) variants[key] = flag.variant;
+    }
+    return variants;
   } catch {
-    return undefined;
+    return {};
   }
 }
 
@@ -81,8 +91,11 @@ export default async function StartPage({
   const requestHeaders = await headers();
   const userAgent = requestHeaders.get("user-agent") ?? "";
   const metaInAppBrowser = /Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(userAgent);
-  // Ad groups that pick their own copy with ?t= stay out of the test.
-  const headlineVariant = t ? undefined : await getHeadlineVariant(requestHeaders.get("x-ph-distinct-id"));
+  // Ad groups that pick their own copy with ?t= stay out of the headline test.
+  const variants = await getFlagVariants(
+    requestHeaders.get("x-ph-distinct-id"),
+    t ? [PRICE_FAQ_FLAG] : [HEADLINE_FLAG, PRICE_FAQ_FLAG]
+  );
 
   return (
     <>
@@ -90,7 +103,12 @@ export default async function StartPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
-      <StartLanding themeKey={t} deferFields={metaInAppBrowser} headlineVariant={headlineVariant} />
+      <StartLanding
+        themeKey={t}
+        deferFields={metaInAppBrowser}
+        headlineVariant={variants[HEADLINE_FLAG]}
+        priceFaqVariant={variants[PRICE_FAQ_FLAG]}
+      />
     </>
   );
 }
