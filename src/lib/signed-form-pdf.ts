@@ -124,7 +124,9 @@ export function generateSignedFormPdf(
   write("Signature", { size: 9, color: MUTED, gap: 1 });
   const sigW = 80;
   const sigH = sigW / 3;
-  doc.addImage(details.signature, "PNG", margin, y, sigW, sigH);
+  // jsPDF stores PNGs as raw pixels unless told to compress, which made a
+  // one-page form 1.5 MB. The signature is mostly white, so it shrinks to KB.
+  doc.addImage(details.signature, "PNG", margin, y, sigW, sigH, undefined, "FAST");
   y += sigH;
   doc.setDrawColor(150, 150, 150);
   doc.line(margin, y, margin + sigW, y);
