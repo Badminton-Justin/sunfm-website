@@ -22,7 +22,7 @@ export interface ClientFormDefinition {
   shortName: string;
   intro: string;
   // Whether the form collects emergency contact details.
-  collectsContactDetails: boolean;
+  collectsEmergencyContact: boolean;
   sections: ClientFormSection[];
   agreement: string;
 }
@@ -38,7 +38,7 @@ export const CLIENT_FORMS: Record<ClientFormId, ClientFormDefinition> = {
     shortName: "Waiver",
     intro:
       "Please fill this out before your first session. It takes about two minutes, and you'll get a signed copy by email.",
-    collectsContactDetails: true,
+    collectsEmergencyContact: false,
     sections: [
       {
         paragraphs: [
@@ -60,7 +60,7 @@ export const CLIENT_FORMS: Record<ClientFormId, ClientFormDefinition> = {
     shortName: "Client Agreement",
     intro:
       "Welcome aboard. Please read and sign our cancellation and refund policy. You'll get a signed copy by email.",
-    collectsContactDetails: false,
+    collectsEmergencyContact: true,
     sections: [
       {
         paragraphs: [

@@ -108,7 +108,7 @@ export default function SignForm({ formId }: { formId: ClientFormId }) {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-[#1a1a1a]">Your details</h2>
         {CONTACT_FIELDS.map(field)}
-        {form.collectsContactDetails && EMERGENCY_FIELDS.map(field)}
+        {form.collectsEmergencyContact && EMERGENCY_FIELDS.map(field)}
         {/* Honeypot: off-screen and skipped by keyboard and screen readers. */}
         <input
           type="text"

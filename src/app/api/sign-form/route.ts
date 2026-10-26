@@ -57,7 +57,7 @@ export async function POST(request: Request) {
   const name = clean(data.name);
   const email = clean(data.email).toLowerCase();
   const phone = clean(data.phone);
-  const contact = form.collectsContactDetails
+  const contact = form.collectsEmergencyContact
     ? {
         emergencyName: clean(data.emergencyName),
         emergencyPhone: clean(data.emergencyPhone),
