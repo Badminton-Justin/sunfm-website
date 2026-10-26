@@ -5,7 +5,7 @@ import { CLIENT_FORMS } from "@/lib/client-forms";
 const form = CLIENT_FORMS.agreement;
 
 export const metadata: Metadata = {
-  title: "Client Agreement | Sun Functional Movement",
+  title: "Terms & Agreements | Sun Functional Movement",
   // Only for clients we send the link to.
   robots: { index: false, follow: false },
 };

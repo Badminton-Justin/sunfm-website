@@ -56,13 +56,14 @@ export const CLIENT_FORMS: Record<ClientFormId, ClientFormDefinition> = {
   agreement: {
     id: "agreement",
     version: "agreement-2026-10-26",
-    title: "Cancellation and Refund Policy",
-    shortName: "Client Agreement",
+    title: "Terms & Agreements",
+    shortName: "Terms & Agreements",
     intro:
       "Welcome aboard. Please read and sign our cancellation and refund policy. You'll get a signed copy by email.",
     collectsEmergencyContact: true,
     sections: [
       {
+        heading: "Cancellation and Refund Policy",
         paragraphs: [
           {
             rule: "24 hour notice is required for cancellations.",
