@@ -9,8 +9,10 @@ interface SignFormRequest {
   name: string;
   email: string;
   phone: string;
-  address?: string;
-  cityZip?: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
   emergencyName?: string;
   emergencyPhone?: string;
   agreed: boolean;
@@ -61,8 +63,10 @@ export async function POST(request: Request) {
   const phone = clean(data.phone);
   const contact = form.collectsContactDetails
     ? {
-        address: clean(data.address),
-        cityZip: clean(data.cityZip),
+        street: clean(data.street),
+        city: clean(data.city),
+        state: clean(data.state),
+        zip: clean(data.zip),
         emergencyName: clean(data.emergencyName),
         emergencyPhone: clean(data.emergencyPhone),
       }

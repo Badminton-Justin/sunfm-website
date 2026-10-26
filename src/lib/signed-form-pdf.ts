@@ -5,8 +5,10 @@ export interface SignedFormDetails {
   name: string;
   email: string;
   phone: string;
-  address?: string;
-  cityZip?: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
   emergencyName?: string;
   emergencyPhone?: string;
   // PNG data URL from the signature pad.
@@ -86,8 +88,12 @@ export function generateSignedFormPdf(
     ["Name", details.name],
     ["Email", details.email],
     ["Phone", details.phone],
-    ["Address", details.address],
-    ["City & ZIP", details.cityZip],
+    [
+      "Address",
+      details.street === undefined
+        ? undefined
+        : `${details.street}, ${details.city}, ${details.state} ${details.zip}`,
+    ],
     ["Emergency contact", details.emergencyName],
     ["Emergency phone", details.emergencyPhone],
   ];

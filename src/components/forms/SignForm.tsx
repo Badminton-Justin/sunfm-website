@@ -13,7 +13,7 @@ type Field = {
   label: string;
   type?: string;
   autoComplete?: string;
-  inputMode?: "email" | "tel";
+  inputMode?: "email" | "tel" | "numeric";
 };
 
 const CONTACT_FIELDS: Field[] = [
@@ -22,9 +22,16 @@ const CONTACT_FIELDS: Field[] = [
   { name: "phone", label: "Phone", type: "tel", autoComplete: "tel", inputMode: "tel" },
 ];
 
-const DETAIL_FIELDS: Field[] = [
-  { name: "address", label: "Street address", autoComplete: "street-address" },
-  { name: "cityZip", label: "City & ZIP", autoComplete: "postal-code" },
+// Separate address parts so browser and password-manager autofill can fill
+// each one; a combined "City & ZIP" box only ever received the ZIP.
+const ADDRESS_FIELDS = {
+  street: { name: "street", label: "Street address", autoComplete: "address-line1" },
+  city: { name: "city", label: "City", autoComplete: "address-level2" },
+  state: { name: "state", label: "State", autoComplete: "address-level1" },
+  zip: { name: "zip", label: "ZIP", autoComplete: "postal-code", inputMode: "numeric" },
+} satisfies Record<string, Field>;
+
+const EMERGENCY_FIELDS: Field[] = [
   { name: "emergencyName", label: "Emergency contact name", autoComplete: "off" },
   { name: "emergencyPhone", label: "Emergency contact phone", type: "tel", autoComplete: "off", inputMode: "tel" },
 ];
@@ -110,7 +117,17 @@ export default function SignForm({ formId }: { formId: ClientFormId }) {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-[#1a1a1a]">Your details</h2>
         {CONTACT_FIELDS.map(field)}
-        {form.collectsContactDetails && DETAIL_FIELDS.map(field)}
+        {form.collectsContactDetails && (
+          <>
+            {field(ADDRESS_FIELDS.street)}
+            {field(ADDRESS_FIELDS.city)}
+            <div className="grid grid-cols-2 gap-4">
+              {field(ADDRESS_FIELDS.state)}
+              {field(ADDRESS_FIELDS.zip)}
+            </div>
+            {EMERGENCY_FIELDS.map(field)}
+          </>
+        )}
         {/* Honeypot: off-screen and skipped by keyboard and screen readers. */}
         <input
           type="text"
