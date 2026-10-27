@@ -71,10 +71,16 @@ export default function ServiceAreaSchema({ area }: { area: ServiceArea }) {
     provider: {
       "@id": `${pageUrl}#business`,
     },
-    areaServed: {
-      "@type": "City",
-      name: area.city,
-    },
+    areaServed: area.neighborhoodOf
+      ? {
+          "@type": "Place",
+          name: `${area.city}, ${area.neighborhoodOf}`,
+          containedInPlace: { "@type": "City", name: area.neighborhoodOf },
+        }
+      : {
+          "@type": "City",
+          name: area.city,
+        },
     offers: {
       "@type": "Offer",
       priceCurrency: "USD",

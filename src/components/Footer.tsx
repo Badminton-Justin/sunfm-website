@@ -69,7 +69,11 @@ export default function Footer() {
               <TrackedNavLink href="/san-jose-personal-trainer" section="footer_service_area" linkText="San Jose" className="underline hover:text-white">
                 San Jose
               </TrackedNavLink>
-              ,{" "}
+              {" "}(including{" "}
+              <TrackedNavLink href="/willow-glen-personal-trainer" section="footer_service_area" linkText="Willow Glen" className="underline hover:text-white">
+                Willow Glen
+              </TrackedNavLink>
+              ),{" "}
               <TrackedNavLink href="/sunnyvale-personal-trainer" section="footer_service_area" linkText="Sunnyvale" className="underline hover:text-white">
                 Sunnyvale
               </TrackedNavLink>

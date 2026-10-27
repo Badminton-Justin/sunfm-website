@@ -17,6 +17,9 @@ export interface ServiceArea {
   slug: string;
   urlPath: string;
   city: string;
+  // Set for neighborhood pages so schema can say "Willow Glen, San Jose"
+  // instead of claiming the neighborhood is its own city.
+  neighborhoodOf?: string;
   heroTag: string;
   heroHeadline: string;
   heroSubheadline: string;
@@ -31,7 +34,7 @@ export interface ServiceArea {
   relatedPostSlugs: { category: string; slug: string; label: string }[];
 }
 
-// These render on all 10 city pages. The titles deliberately use the phrasing
+// These render on every service-area page. The titles deliberately use the phrasing
 // people actually search ("strength and conditioning", not "strength,
 // conditioning, and mobility") — GSC showed the pages ranking 8-14 for service
 // terms they never spelled out, against 1-9 for the ones they did. Nothing here
@@ -969,6 +972,87 @@ export const serviceAreas: Record<string, ServiceArea> = {
         category: "nutrition",
         slug: "meal-prep-for-busy-professionals",
         label: "Meal prep for busy professionals",
+      },
+    ],
+  },
+
+  "willow-glen": {
+    slug: "willow-glen",
+    urlPath: "/willow-glen-personal-trainer",
+    city: "Willow Glen",
+    neighborhoodOf: "San Jose",
+    heroTag: "Willow Glen, San Jose",
+    heroHeadline: "Personal Trainer for Willow Glen",
+    heroSubheadline:
+      "Private one-on-one training a short drive up Lincoln or Meridian from downtown Willow Glen. Built for parents, professionals, and longtime neighbors who want steady work that lasts.",
+    metaTitle: "Personal Trainer in Willow Glen | Sun Functional Movement",
+    metaDescription:
+      "Personal training for Willow Glen residents. 5-10 min from Lincoln Ave to a private San Jose studio. ACE-certified, 13,000+ sessions. Free consultation.",
+    commuteText:
+      "From Lincoln Avenue, the studio is a straight shot north on Lincoln or Meridian. Most Willow Glen clients are here in five to ten minutes.",
+    quickFacts: [
+      { label: "Drive time", value: "5-10 min" },
+      { label: "Route", value: "Lincoln or Meridian" },
+      { label: "Sessions", value: "13,000+" },
+      { label: "Format", value: "1:1, Semi, Group" },
+    ],
+    intro: [
+      "Willow Glen is about as close as it gets to the studio without being in the same zip code. Head north on Lincoln or Meridian, cross under 280, and you're at 1401 Parkmoor Avenue before your coffee cools off.",
+      "The neighborhood has its own pace. People walk to dinner on Lincoln Avenue, know the names of the families three doors down, and stay in the same house for twenty years. The clients I train from here tend to want the same thing from their training: something steady they can keep doing for a long time, not a program that burns out by March.",
+    ],
+    sections: [
+      {
+        heading: "Training around a family schedule",
+        body: [
+          "A lot of Willow Glen clients are parents, and their week is built around school drop-off, pick-up, practices, and whatever gets added on short notice. The workout has to fit into the gaps without taking over the whole morning.",
+          "Because the drive is so short, a sixty-minute session costs you about an hour and fifteen minutes door to door. That's the difference between training that happens and training that keeps getting moved. Early mornings before the house wakes up and mid-morning slots right after drop-off are the most popular windows, and I keep both open for exactly this reason.",
+        ],
+      },
+      {
+        heading: "Staying active outside the studio",
+        body: [
+          "Willow Glen is a neighborhood where people actually move. Walking the dog down tree-lined streets, biking the Three Creeks Trail, weekend errands on foot, hiking trips that get planned months out. The training is built to support all of that, not compete with it.",
+          "That means strong hips and ankles so the long walks don't leave your knees sore, a back that tolerates gardening and carrying groceries up the steps of an older house, and enough conditioning that a hilly hike feels like a good day out instead of a recovery project. The movement screen at the start tells us where to focus first.",
+        ],
+      },
+      {
+        heading: "Built for the long run",
+        body: [
+          "Plenty of the people I work with from Willow Glen are in their forties and fifties and starting to notice the things that used to be automatic. Getting off the floor after playing with the kids. Sleeping wrong and feeling it for three days. An old injury that comes back every spring.",
+          "None of that is a reason to slow down. It's a reason to train with more intention. We build strength slowly, keep the joints moving well, and track progress so you can see it even when it's gradual. The goal is still feeling capable in twenty years, not just looking different in eight weeks.",
+        ],
+      },
+      {
+        heading: "Getting started",
+        body: [
+          "Fill out the short form and I'll reply the same day. We'll set up a free consultation at the studio, go through your history and goals, and run the movement screen. If it's a fit, sessions usually start the following week. If it isn't, I'll tell you and point you somewhere better suited.",
+        ],
+      },
+    ],
+    services: commonServices,
+    faqs: [
+      {
+        question: "How long is the drive from Willow Glen?",
+        answer:
+          "Five to ten minutes from most of the neighborhood. Lincoln Avenue and Meridian Avenue both run north under 280 toward Parkmoor, so you can skip the freeway entirely. Parking at the studio is easy and free.",
+      },
+      ...sharedFAQs,
+      {
+        question: "Can I train in the morning before school drop-off?",
+        answer:
+          "Yes. The studio opens at 6 AM, and early slots are the most common choice for Willow Glen parents. Mid-morning right after drop-off is the other popular window. We'll find a recurring time in the consultation that fits your week.",
+      },
+    ],
+    relatedPostSlugs: [
+      {
+        category: "training",
+        slug: "strength-training-for-longevity-beginners-guide-over-30",
+        label: "Strength training for longevity after 30",
+      },
+      {
+        category: "wellness",
+        slug: "personal-training-for-stress-relief-bay-area",
+        label: "Personal training for stress relief",
       },
     ],
   },
