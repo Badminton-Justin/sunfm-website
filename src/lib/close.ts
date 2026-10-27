@@ -32,6 +32,8 @@ const CF = {
   utmTerm: "cf_ZKldZ4wQ5wEttEeKT1LzxGs1cwth2dgTPsAaLSpJKae",
   utmContent: "cf_MQaZ5jWWmm9aSiCXkJ8mFTdeYdGvO2nTde1OC21rHRs",
   gclid: "cf_W2C8VQx46bohwawPv3JuoOublcwG0Fo4OY6e5otOs33",
+  metaFbc: "cf_lCwvmWd8YqBOwcDg5JxEBDybCV0UcBjTw696BZODcGl",
+  metaFbp: "cf_tXBonrzO35NIoFFtl3BOamMJC76kZYmTmg3z53aINQB",
 } as const;
 
 export interface CloseLeadInput {
@@ -50,6 +52,10 @@ export interface CloseLeadInput {
   referralDetails?: string;
   attribution?: Record<string, string>;
   landingPage?: string;
+  // Meta's click and browser cookies, kept so a later booking or purchase can
+  // be matched back to the ad (see meta-conversions.ts).
+  metaFbc?: string;
+  metaFbp?: string;
 }
 
 function authHeader(): string {
@@ -57,7 +63,7 @@ function authHeader(): string {
   return `Basic ${Buffer.from(`${key}:`).toString("base64")}`;
 }
 
-async function closeFetch(path: string, init?: RequestInit): Promise<Response> {
+export async function closeFetch(path: string, init?: RequestInit): Promise<Response> {
   return fetch(`${CLOSE_API}${path}`, {
     ...init,
     headers: {
@@ -100,6 +106,8 @@ function buildCustomFields(data: CloseLeadInput): Record<string, string> {
     [CF.utmTerm]: a.utm_term,
     [CF.utmContent]: a.utm_content,
     [CF.gclid]: a.gclid,
+    [CF.metaFbc]: data.metaFbc,
+    [CF.metaFbp]: data.metaFbp,
   };
 
   // Close rejects null and stores empty strings as visible blanks, so send only

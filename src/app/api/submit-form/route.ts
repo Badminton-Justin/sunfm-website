@@ -45,6 +45,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+function readCookie(request: Request, name: string): string | undefined {
+  const cookies = request.headers.get("cookie") ?? "";
+  const match = cookies.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : undefined;
+}
+
 export async function POST(request: Request) {
   try {
     const data: FormData = await request.json();
@@ -115,8 +121,14 @@ export async function POST(request: Request) {
     // Close is the system of record for follow-up, so a lead that reaches it is
     // captured even if the sheet and the notification email both fail.
     if (process.env.CLOSE_API_KEY) {
+      // The pixel sets _fbc only when it sees the fbclid itself, so fall back to
+      // building it from the fbclid the form captured (Meta's documented format).
+      const fbclid = data.attribution?.fbclid;
+      const metaFbc =
+        readCookie(request, "_fbc") ?? (fbclid ? `fb.1.${Date.now()}.${fbclid}` : undefined);
+      const metaFbp = readCookie(request, "_fbp");
       try {
-        if (await sendLeadToClose(data)) {
+        if (await sendLeadToClose({ ...data, metaFbc, metaFbp })) {
           leadCaptured = true;
         }
       } catch (closeError) {
