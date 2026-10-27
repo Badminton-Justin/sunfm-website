@@ -77,7 +77,7 @@ export default function About() {
 
             <p className="text-gray-600 mb-6 text-lg leading-relaxed">
               As a certified personal trainer with a degree in Human Biology, I
-              specialize in helping busy professionals in their 20s and 30s
+              specialize in helping busy professionals
               build bodies that last. My approach is rooted in physiology and
               focused on <strong className="text-[#1a1a1a]">health longevity</strong> - not crash diets or
               unsustainable programs.

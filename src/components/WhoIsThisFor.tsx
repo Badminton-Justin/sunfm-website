@@ -6,7 +6,7 @@ export default function WhoIsThisFor() {
   const revealRef = useReveal<HTMLDivElement>();
   const idealClients = [
     {
-      title: "Working professionals in their 20s and 30s",
+      title: "Working professionals",
       description: "Who want to invest in their long-term health and have the discipline to show up consistently.",
     },
     {
