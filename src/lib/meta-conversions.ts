@@ -70,6 +70,9 @@ async function fetchStageChanges(since: Date): Promise<StageChange[]> {
   // creation event, so read both.
   for (const action of ["created", "updated"]) {
     let cursor: string | undefined;
+    // A week is normally 2–3 pages; the cap stops a paging bug from running
+    // into the function timeout.
+    let pages = 0;
     do {
       const params = new URLSearchParams({
         object_type: "opportunity",
@@ -77,7 +80,7 @@ async function fetchStageChanges(since: Date): Promise<StageChange[]> {
         date_updated__gte: since.toISOString(),
         _limit: "50",
       });
-      if (cursor) params.set("cursor", cursor);
+      if (cursor) params.set("_cursor", cursor);
       const res = await closeFetch(`/event/?${params}`);
       if (!res.ok) {
         throw new Error(`Close event log returned ${res.status}: ${await res.text()}`);
@@ -95,7 +98,7 @@ async function fetchStageChanges(since: Date): Promise<StageChange[]> {
         });
       }
       cursor = body.cursor_next ?? undefined;
-    } while (cursor);
+    } while (cursor && ++pages < 20);
   }
   return changes;
 }
