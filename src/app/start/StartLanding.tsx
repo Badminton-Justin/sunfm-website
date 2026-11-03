@@ -721,7 +721,9 @@ export default function StartLanding({
                   </div>
                   <h2 className="text-2xl font-bold text-[#1a1a1a] mb-2">You&apos;re in.</h2>
                   {/* Matches the promise in step 1 of "How it works", and gives
-                      someone ready right now a way to reach Jeff without waiting. */}
+                      someone ready right now a way to reach Jeff without waiting.
+                      No Text button: the lead sequence texts them automatically,
+                      and a canned text from the lead arrived ahead of it. */}
                   <p className="text-gray-600 mb-6">
                     Jeff will reach out, usually within a few hours, to schedule your free consultation.
                   </p>
@@ -733,13 +735,6 @@ export default function StartLanding({
                       className="inline-flex items-center justify-center min-h-11 px-5 rounded-lg border border-black/10 font-semibold text-[#1a1a1a] hover:border-[#CB4538] hover:text-[#CB4538] transition-colors"
                     >
                       Call
-                    </a>
-                    <a
-                      href="sms:+16204072893?body=Hi%20Jeff%2C%20I%20just%20requested%20a%20free%20consultation."
-                      onClick={() => trackEvent("cta_click", { button_text: "Text", section: "start_success" })}
-                      className="inline-flex items-center justify-center min-h-11 px-5 rounded-lg border border-black/10 font-semibold text-[#1a1a1a] hover:border-[#CB4538] hover:text-[#CB4538] transition-colors"
-                    >
-                      Text
                     </a>
                   </div>
                 </div>
