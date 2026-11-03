@@ -170,12 +170,12 @@ export default function Footer() {
               </li>
               <li>
                 <TrackedLink
-                  href="tel:+16204072893"
+                  href="tel:+14085391682"
                   platform="phone"
                   section="footer"
                   className="hover:text-white transition-colors"
                 >
-                  (620) 407-2893
+                  (408) 539-1682
                 </TrackedLink>
               </li>
               <li>

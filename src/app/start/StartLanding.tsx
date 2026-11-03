@@ -635,15 +635,15 @@ export default function StartLanding({
                 gets a full 44px tap height even though the text stays small. */}
             <div className="flex items-center justify-end text-sm leading-tight -my-3">
               <a
-                href="tel:+16204072893"
+                href="tel:+14085391682"
                 onClick={() => trackEvent("cta_click", { button_text: "Call", section: "start_header" })}
                 className="inline-flex items-center min-h-11 px-1.5 font-medium text-[#1a1a1a] hover:text-[#CB4538] transition-colors"
               >
-                (620) 407-2893
+                (408) 539-1682
               </a>
               <span className="text-gray-300" aria-hidden="true">·</span>
               <a
-                href="sms:+16204072893?body=Hi%20Jeff%2C%20I%27d%20like%20to%20learn%20more%20about%20training%20at%20Sun%20FM."
+                href="sms:+14085391682?body=Hi%20Jeff%2C%20I%27d%20like%20to%20learn%20more%20about%20training%20at%20Sun%20FM."
                 onClick={() => trackEvent("cta_click", { button_text: "Text", section: "start_header" })}
                 className="inline-flex items-center min-h-11 pl-1.5 font-medium text-gray-600 hover:text-[#CB4538] transition-colors"
               >
@@ -730,7 +730,7 @@ export default function StartLanding({
                   <p className="text-sm text-gray-600 mb-3">Want to talk sooner?</p>
                   <div className="flex gap-3 justify-center">
                     <a
-                      href="tel:+16204072893"
+                      href="tel:+14085391682"
                       onClick={() => trackEvent("cta_click", { button_text: "Call", section: "start_success" })}
                       className="inline-flex items-center justify-center min-h-11 px-5 rounded-lg border border-black/10 font-semibold text-[#1a1a1a] hover:border-[#CB4538] hover:text-[#CB4538] transition-colors"
                     >
@@ -882,7 +882,7 @@ export default function StartLanding({
 
                     {submitStatus === "error" && (
                       <p className="text-sm text-red-600 text-center">
-                        Something went wrong. Try again, or text us at (620) 407-2893.
+                        Something went wrong. Try again, or text us at (408) 539-1682.
                       </p>
                     )}
 
@@ -1098,8 +1098,8 @@ export default function StartLanding({
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row gap-4 sm:gap-6 items-center justify-between">
           <p>&copy; {new Date().getFullYear()} Sun Functional Movement. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <a href="tel:+16204072893" className="hover:text-white transition-colors">
-              (620) 407-2893
+            <a href="tel:+14085391682" className="hover:text-white transition-colors">
+              (408) 539-1682
             </a>
             <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy
