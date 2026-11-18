@@ -1,257 +1,212 @@
 # Sun FM — SEO Health Audit
 
-**Audit date:** 2026-09-13
+**Audit date:** 2026-11-18
 **Site:** https://www.sunfm.fitness
-**Compared against:** 2026-07-11 audit (superseded by this version — ~9 weeks prior; previous text recoverable from git history)
+**Compared against:** 2026-09-13 audit (superseded by this version; previous text recoverable from git history, commit `7066955`)
+**Search window:** GSC Sep 11 – Nov 10, 2026 vs Jul 12 – Sep 10, 2026 (the exact window the September audit reported as "current", so the two reports line up)
 
 ---
 
 ## Health Score
 
 ```
-Overall SEO Health Score: 83/100 (Grade B) — ▲ +5 vs July 11
+Overall SEO Health Score: 82/100 (Grade B) — ▼ −1 vs Sep 13
 
-Technical SEO:     90/100  █████████░  (22%)  ▲ +2
-Content Quality:   85/100  ████████░░  (23%)  ▲ +1
-On-Page / Local:   82/100  ████████░░  (20%)  ▲ +17  ← July's headline problem, resolved
-Schema:            80/100  ████████░░  (10%)  ▲ +5   (9 fixes held; 1 new regression)
-Performance (CWV): 70/100  ███████░░░  (10%)  ★ FIRST MEASUREMENT (lab)
-AI Search (GEO):   86/100  ████████░░  (10%)  ▲ +8
-Images:            72/100  ███████░░░  (5%)   ★ FIRST MEASUREMENT
+Technical SEO:     80/100  ████████░░  (22%)  ▼ −10  ← indexing, see Critical #1
+Content Quality:   86/100  █████████░  (23%)  ▲ +1
+On-Page / Local:   80/100  ████████░░  (20%)  ▼ −2   (titles; city rankings up)
+Schema:            88/100  █████████░  (10%)  ▲ +8   (uploadDate fixed, LinkedIn added)
+Performance (CWV): 70/100  ███████░░░  (10%)  — not re-measured (carried)
+AI Search (GEO):   92/100  █████████░  (10%)  ▲ +6   (FAQ on 67/67, explicit AI bots)
+Images:            72/100  ███████░░░  (5%)   — carried
 ```
 
-**Read the headline number carefully.** 78 → 83 understates the progress. July's 78 was computed across only five categories, because Performance and Images were unmeasurable. Those two have now been measured and are the site's two *lowest* scores, so they drag the composite down even as everything else improved.
-
-On a like-for-like basis — the same five categories scored both times — the site went **78 → 85**. The composite is 83 because we can finally see the parts that were previously invisible.
-
-**One-line takeaway:** the July local-SEO crisis was real, was fixed, and has held for nine weeks. The new headline finding is a homepage LCP of 5.0 seconds caused by six unoptimized testimonial images, plus one schema regression where a later commit chose to fabricate video upload dates that the July audit had deliberately left blank.
+**One-line takeaway:** search traffic doubled and almost every September fix shipped and held, but **Google has chosen not to index 42 of the 89 URLs in the sitemap.** Most of them are the "self-test at home" posts. Publishing more posts in that format will not help until Google indexes the ones already live.
 
 ---
 
-## What's Changed Since 2026-07-11
+## Search Performance
 
-### Shipping velocity
+| | Jul 12 – Sep 10 | Sep 11 – Nov 10 | Change |
+|---|---|---|---|
+| Clicks | 78 | **165** | **+112%** |
+| Impressions | 15,792 | 11,700 | −26% |
+| CTR | 0.49% | **1.4%** | +0.9pp |
+| Avg position | 10.3 | **8.3** | +2.0 places |
 
-18 new posts (32 → 50) across 102 commits in nine weeks. Monthly cadence: July 9, August 8, September 4-and-counting. No month below 8. This is the most consistent input the site has.
+**Where the click growth came from:**
 
-### Confirmed fixed and holding (verified in live rendered HTML, not source)
+| Segment | Clicks (prior → now) | Impressions (prior → now) |
+|---|---|---|
+| Brand queries ("sun functional movement", "sunfm", …) | 17 → **64** | 74 → 132 |
+| Non-brand queries (named) | 12 → 7 | 12,445 → 8,993 |
+| City pages | 16 → **46** | 6,023 → 4,633 |
+| Blog posts | 9 → 17 | 1,397 → 1,657 |
+| `/team` | — → 16 | — → 278 |
 
-| July item | Status |
+Brand demand nearly quadrupled. That's the Meta and Google Ads spend and word of mouth showing up as people searching the name, so this growth comes from the ads, not from SEO. Named non-brand query clicks went *down*. (GSC hides low-volume queries, so roughly half of all clicks have no query attached; the direction still holds.)
+
+**City pages are the SEO win of this period.** The Oct 24 commit `7ee283c` (answering weight-loss / online / gym searches on city pages) lines up with large position gains:
+
+| Page | Position (prior → now) | Clicks |
+|---|---|---|
+| San Jose | 36.0 → **5.7** | 3 → 17 |
+| Sunnyvale | 34.8 → **8.1** | 2 → 6 |
+| Saratoga | 37.4 → 19.7 | 1 → 4 |
+| Campbell | 22.5 → **7.8** | 3 → 2 |
+| Milpitas | 18.5 → 9.5 | 1 → 2 |
+| Cupertino | 21.5 → 14.8 | 2 → 2 |
+| Los Gatos | 16.6 → 13.7 | 1 → 4 (still 1,427 impressions, mostly unrelated "boutique fitness / classes" queries) |
+| Willow Glen (new) | — | no impressions; **not indexed** |
+
+"personal trainer san jose" itself moved 46.8 → 21. That's still page 3, but it's moving.
+
+**Blog posts are still not earning search traffic.** 17 clicks across 67 posts in two months. Informational (non-local, non-brand) queries total 235 impressions and **0 clicks**. Of the 17 posts published since the last audit, 6 have any impressions (93 combined) and none has a click. The one post with real traction is `how-long-to-see-results-strength-training-after-40` (406 impressions, 6 clicks, pos 6.5).
+
+### The www / non-www "split" was misdiagnosed in September
+
+September blamed the two-hop redirect chain for `https://sunfm.fitness/` (non-www) carrying most of the site's impressions. The query data says otherwise. That URL's impressions come almost entirely from **"personal trainer near me" — 5,716 impressions at position 1.2 with 1 click.** A desktop organic result at position 1.2 does not get a 0.02% CTR. These are **Google Business Profile / local-pack impressions**, and they're attributed to `https://sunfm.fitness/` because **the GBP "Website" field points at the non-www URL.** The ~27 `/?rwg_token=…` rows in the Pages report (Reserve with Google links from the same profile) support this.
+
+**Fix:** in the Google Business Profile, set Website to `https://www.sunfm.fitness/` (optionally with `?utm_source=google&utm_medium=organic&utm_campaign=gbp` so GA4 can separate profile visits). This is a 30-second change in the GBP dashboard. It consolidates the reporting, and it's the fix for the problem September attributed to the redirect chain.
+
+### GA4 (first pull in any audit)
+
+GA4 only started recording around Sep 10 (18 sessions in the prior window), so there's no comparison yet. Current window:
+
+| Channel | Sessions | Engagement rate | Key events |
+|---|---|---|---|
+| Paid Social | 789 | 50% | 32 |
+| Direct | 736 | 25% | 15 |
+| **Organic Search** | **354** | **58%** | **12** |
+| Organic Social | 335 | 79% | 16 |
+| Paid Other | 126 | 29% | 0 |
+| AI Assistant | 19 | 89% | 1 |
+
+Organic search is 15% of sessions and 15% of key events. AI assistants (ChatGPT/Perplexity/etc.) now send a small but highly engaged trickle and already produced a conversion. The GEO work (llms.txt, FAQ schema, explicit AI-bot rules) has begun to pay off.
+
+---
+
+## What's Changed Since 2026-09-13
+
+17 new posts (50 → 67), 88 commits. Every one of the 17 is in `/training`; nutrition and wellness got nothing. New pages: `/team/*` bios (4) and `/willow-glen-personal-trainer`.
+
+### September items — status
+
+| Sept item | Status |
 |---|---|
-| Homepage `@type` → `ExerciseGym` | Holding |
-| City-page `@type` → `ExerciseGym` | Holding (spot-checked 5 of 10) |
-| Geo coordinates unified at `37.3115, -121.9192` | Holding — identical homepage and all sampled city pages |
-| City-page schema `name` → "Sun Functional Movement" | Holding |
-| `priceRange` `$$` everywhere | Holding |
-| Homepage `areaServed` all 10 cities | Holding |
-| `openingHoursSpecification` | Holding |
-| `aggregateRating` / reviewCount 107 | Holding (owner's deliberate value, not re-flagged) |
-| Blog `BlogPosting`, `/team` Person schema | Holding |
-| CSP + HSTS `max-age=63072000; includeSubDomains; preload` | Holding |
-| `/privacy` noindex,follow | Holding |
-| `/start` noindex + correctly absent from sitemap | Holding |
-
-### The llms.txt fix worked
-
-This is the one worth calling out. `public/llms.txt` drifted twice (June, July), each time silently missing posts. July replaced the static file with a dynamic route at `src/app/llms.txt/route.ts` sourced from `getAllPosts()`.
-
-Nine weeks and 18 posts later, both `llms.txt` and `llms-full.txt` serve all 50 posts with zero drift. Converting a recurring manual chore into a derived value permanently closed a problem that two prior audits had only patched. That pattern is worth reusing (see Medium #9).
-
-### Blog growth absorbed cleanly
-
-All 50 posts are in the live sitemap (67 URLs: 4 static + 10 service areas + 3 categories + 50 posts), server-rendered in initial HTML, canonical-correct, none accidentally noindexed.
-
-### Internal link graph — genuinely strong
-
-Across all 50 posts: **zero orphans, zero dead ends**, averaging 3.4 inbound and 3.4 outbound contextual links each. Every post is reachable from another post and passes equity onward. This is the conservative one-link-at-a-time discipline in `/new-blog` Step 4 and `docs/CONTENT-MAP.md` actually compounding, and it beats what most 50-post sites get from automated related-post widgets.
+| Critical #0 — sitemap not read since May | **Fixed.** Submitted Sep 30, last read **Nov 15**, 89/89 discovered. `scripts/submit-sitemap.py` is in `/new-blog`. |
+| Critical #1 — homepage posters / LCP | Fixed Sep 13 (`15e3b0d`); hero fade dropped (`4b8192f`). Not re-measured (see below). |
+| Critical #2 — fabricated video `uploadDate` | **Fixed and holding** (`page.tsx:113` comment explains why). |
+| High #3 — LinkedIn `sameAs` | **Done** (`88a4c2f`). |
+| High #4 — citation hyperlinks stopped | **Fixed, and the strongest change of the period.** All 17 new posts link sources (119 links, 7 per post on average). All 148 PubMed IDs on the site were checked against NCBI's E-utilities and every one resolves to a real paper on the claimed topic. |
+| Medium #5 — FAQ on 21/50 posts | **Done: 67/67** (`8a8f698`). |
+| Medium #6 — `updated` frontmatter | Still 1/67. Going-forward discipline, not a batch job. |
+| Medium #8 — bare-HTTP 2-hop redirect | **Still 2 hops** (`http://sunfm.fitness` → 308 → `https://sunfm.fitness` → 301 → www). Downgraded back to Low (see non-www section above). |
+| Medium #9 — hardcoded sitemap dates | **The risk materialized.** See High #3. |
+| Low #10 — stray IndexNow key | Done. |
+| Low #11 — explicit AI crawler rules | Done, 12 named agents in `robots.txt`. |
 
 ---
 
-## Critical (fix this week)
+## Critical
 
-### 0. Google has not downloaded the sitemap since 2026-05-30. Most new posts have never been crawled.
+### 1. 42 of 89 sitemap URLs are not indexed — and the list is mostly self-test posts
 
-*Added after GSC auth was restored later the same day. This supersedes everything below it in priority.*
+GSC → Pages: **45 indexed, 58 not indexed.** Excluding Next.js CSS files (harmless) and expected exclusions (redirects, `noindex` on `/privacy` and `/start`), that leaves **42 real pages Google has declined to index**:
 
-- **Evidence (GSC Sitemaps API):** `https://www.sunfm.fitness/sitemap.xml` — `lastSubmitted: 2026-05-25`, **`lastDownloaded: 2026-05-30`**, 0 errors, 0 warnings, `submitted=36`. The live sitemap now contains **67** URLs. Google's copy is 3.5 months and 31 URLs out of date.
-- **Evidence (GSC URL Inspection API):** seven posts published since July all return `coverageState: "URL is unknown to Google"`, `lastCrawlTime: never`:
-  - `strength-training-with-knee-osteoarthritis-after-50`, `alcohol-and-muscle-recovery-after-40`, `creatine-after-40-*`, `sitting-rising-test-at-home`, `cardio-fitness-test-at-home-after-40`, `balance-test-at-home-*`, `exercises-for-bone-density-after-40`
-  - By contrast `/` and `/tools/movement-screen` both return `PASS / Submitted and indexed`. The site is indexed; the new posts specifically are not.
-- **Corroborating:** of the 18 posts published since 2026-07-11, only 2 have any impressions at all (15 impressions, 0 clicks combined).
+**Crawled – currently not indexed (14):** Google fetched these, judged them, and dropped them.
+`shoulder-mobility-test-at-home`, `hip-mobility-test-at-home`, `hamstring-flexibility-test-at-home`, `ankle-mobility-test-at-home`, `thoracic-spine-mobility-test-at-home`, `push-up-test-at-home-…`, `grip-strength-test-at-home-…`, `frozen-shoulder-vs-shoulder-impingement-self-check`, `knee-pain-when-sitting-at-a-desk`, `neck-pain-when-sitting-at-a-desk`, `what-to-do-on-rest-days-strength-training`, and the category hubs `/training`, `/nutrition`, `/wellness`.
 
-**The sitemap itself is healthy.** It returns 200, contains all 67 URLs, has zero errors, and its `lastmod` values are accurate and current (newest 2026-09-09, derived per-post from frontmatter in `src/app/sitemap.ts:56`). Nothing is wrong with the file. Google has simply not re-fetched it, and nothing in the publishing pipeline forces it to.
+Several of these *were* indexed and ranking in the prior window and have since been dropped: `hamstring-flexibility-test-at-home` went 746 → 326 impressions and `shoulder-mobility-test-at-home` 154 → 27.
 
-This is also why the site may look healthier on Bing: `/new-blog` pings IndexNow after publish, which notifies Bing and Yandex. **Google does not participate in IndexNow.** For Google, the sitemap is the only announcement channel, and it has been stale since May.
+**Discovered – currently not indexed (28):** Google knows the URL and hasn't bothered to crawl it.
+All four `/team/*` bios, `/willow-glen-personal-trainer`, the three nutrition posts (`protein-intake-…`, `lose-fat-without-losing-muscle-…`, `hydration-and-electrolytes-…`), and 20 training posts, including 9 of the 17 new ones (achilles, buttock, glute activation, hip pain lying on side, hip OA, hypermobility, knee pain hiking, plantar fasciitis, standing desk).
+
+**Why this is most likely happening.** It is a quality/similarity judgement, not a technical block. Every one of these pages returns 200, is self-canonical, server-rendered, in the sitemap, and not noindexed. The pattern:
+
+- **About 30 posts share one template**: "[body part / symptom] self-test at home after 40", with a near-identical intro → test → scoring → what-it-means → FAQ structure. Each post is individually good. Seen together they look like scaled content to Google's systems, which index a few representatives and skip the rest. The posts being dropped are almost all from this cluster. The posts that hold are the ones that break the pattern (`how-long-to-see-results…`, `functional-movement-exercises-for-desk-workers`, `strength-training-for-longevity…`).
+- **New posts get almost no internal links.** Of the 17 new posts, 10 have exactly one inbound link from another post. September's "zero orphans" is technically still true, but one link from a post that is itself unindexed passes almost nothing.
+- **The hub pages that should distribute authority are themselves unindexed.** `/training`, `/nutrition`, `/wellness` are thin listing pages with "Crawled – not indexed" status, so the category layer gives Google no reason to crawl deeper.
+- The domain is ~6 months old with no measured backlink profile, so Google's crawl budget for it is small. It will not crawl 3 near-identical posts a week.
 
 **Fix, in order:**
-1. In Search Console → Sitemaps, re-enter `sitemap.xml` and Submit. This forces a re-fetch. (Cannot be done from here — the current ADC token holds `webmasters.readonly`; submitting needs the read-write `webmasters` scope.)
-2. Use URL Inspection → Request Indexing on the highest-value recent posts. Roughly 10/day.
-3. Add a post-deploy sitemap ping to the publish workflow alongside the IndexNow call, so this can't silently rot again.
-4. Re-inspect a sample in ~2 weeks to confirm crawling resumed.
-
-### 1. Homepage LCP is 5.0 seconds — six unoptimized testimonial posters
-
-- **Files:** `src/components/VideoTestimonials.tsx`, `src/components/Testimonials.tsx`
-- **Measurement:** Lighthouse 12.8.2, production build, lab. Homepage perf score 73, LCP 5.0s (poor), page weight 4,053 KiB.
-- **Cause:** six `<video poster>` JPGs load raw from the Cloudflare R2 bucket (`pub-46d372e7b4b84eaf8efe9f21cab9b2ba.r2.dev`), bypassing `next/image` entirely. Sizes: `Sneha_Edited_Poster.jpg` 836KB, `Kanth_Edited_Poster.jpg` 577KB, `Josh_Edited_Poster.jpg` 396KB, `Karson_Edited_Poster.jpg` 367KB, `Chen_Edited_Poster.jpg` 309KB, `Marshall_Edited_Poster.jpg` 289KB. Roughly 2.8MB of the 4MB homepage.
-- **Why it matters most:** this is the page that converts. Every other page tested is 635-802 KiB.
-- **Fix:** proxy the posters through `next/image`, or pre-resize at R2 to ~800px WebP/AVIF at ≤80KB each. Lazy-load posters below the fold; only the first visible one should be eager with `fetchpriority="high"`. Expected to bring LCP from 5.0s to sub-2.5s.
-
-### 2. Regression — VideoObject now fabricates `uploadDate`
-
-- **File:** `src/app/[category]/[slug]/page.tsx:113` — `uploadDate: post.date`
-- **Introduced:** commit `1d86eaa` (2026-07-26), "Fix missing uploadDate in VideoObject schema"
-- **What happened:** July deliberately omitted `uploadDate` rather than invent one, because these are third-party YouTube embeds and no YouTube Data API is configured. A later commit closed the "missing field" warning by substituting the blog post's publish date.
-- **Why it's wrong, concretely:** a blog post's publish date is not the video's upload date, and videos are reused across posts. Video `VBobkldqqvk` is embedded in three posts and now declares three different upload dates to Google:
-  - `functional-movement-exercises-for-desk-workers` → 2026-04-04
-  - `strength-training-for-longevity-beginners-guide-over-30` → 2026-04-12
-  - `grip-strength-test-at-home-build-after-40` → 2026-05-27
-- **Fix:** revert to omitting the field, or wire up the YouTube Data API for real dates. Satisfying a rich-result requirement with a value that isn't true is worse than forgoing the rich result.
+1. **Pause new self-test posts.** Publishing a 31st in the format adds to the problem.
+2. **Make the category hubs real pages.** Give `/training` (and the other two) 300–500 words of genuine intro plus *grouped* links: e.g., "Self-tests by body part", "Desk-worker pain", "Programming". This turns a list into a hub Google wants to index, and gives every post a strong inbound link.
+3. **Build one "at-home self-test" pillar page** that explains the battery, links every test, and gets linked from the homepage/nav. Then cross-link the tests to each other by body region (hip ↔ glute ↔ buttock ↔ SI joint; foot arch ↔ plantar ↔ achilles; etc.).
+4. **Consider merging the weakest overlaps.** E.g., `knee-pain-when-sitting-at-a-desk` / `neck-pain-when-sitting-at-a-desk` / `si-joint-pain-when-sitting-…` / `standing-desk-back-pain-…` could become one strong "desk pain self-check" with 301s. Fewer, stronger URLs beat many skipped ones.
+5. After 1–3 ship, use URL Inspection → Request Indexing on ~10/day starting with the dropped pages that previously ranked (hamstring, shoulder, hip mobility).
+6. Re-check GSC → Pages in 3–4 weeks. Success is "Crawled – not indexed" shrinking, not the sitemap count growing.
 
 ---
 
-## High Priority (this week)
+## High Priority
 
-### 3. LinkedIn `sameAs` — unblocked since July, still not added
+### 2. Two broken internal links (and they explain GSC's 404s)
 
-July listed this as blocked for lack of a URL. The company page now exists: `https://www.linkedin.com/company/sun-functional-movement`. Confirmed absent from every `sameAs` array in live HTML (no `linkedin.com` string anywhere in `src/`).
+GSC reports 2 "Not found (404)" pages. They are links from posts to slugs that never existed:
 
-Add to: `src/app/page.tsx`, `src/components/service-area/ServiceAreaSchema.tsx`, `src/app/team/page.tsx`, `src/app/[category]/[slug]/page.tsx` (author + publisher), and the visible links in `src/components/Footer.tsx`.
+- `src/content/blog/training/injury-vs-soreness-when-to-train-through-pain-over-30.mdx:136` → `/training/what-to-do-on-rest-days` (should be `…-strength-training`)
+- `src/content/blog/nutrition/hydration-and-electrolytes-for-strength-training-after-40.mdx:63` → `/training/warm-up-before-lifting` (should be `how-to-warm-up-before-lifting`)
 
-### 4. External citation links have disappeared from new posts
+Both date from May/June and were missed by the previous two audits, which counted links but didn't resolve them. Fix the two slugs. The `/new-blog` link step should also check that each internal link target exists.
 
-The prose citations got *better* over these nine weeks — named journals, sample sizes, stated limitations — but the hyperlinks stopped.
+### 3. Sitemap `lastmod` is now wrong for the pages that changed most
 
-| Window | Posts | External citation links |
-|---|---|---|
-| Before 2026-07-11 | 32 | 21 |
-| Since 2026-07-11 | 18 | 5 (all in the first four posts) |
+`src/app/sitemap.ts:10-13` still hardcodes `HOMEPAGE_LAST_MODIFIED = 2026-07-11` and `SERVICE_AREAS_LAST_MODIFIED = 2026-07-11`. Since then the homepage changed on Oct 18 and Nov 3, and every city page was rewritten on **Oct 24** (`7ee283c`), which is the change that drove the ranking gains above. Google is being told those pages haven't changed since July. Derive these from git history at build time (or from the data files' mtimes), the same way `llms.txt` was fixed.
 
-Every post since 2026-08-04 names its studies precisely and links none of them. Fourteen consecutive posts, zero outbound source links. July's audit item #9 specifically fixed 6 posts by adding verified PMC/PubMed links; the practice then lapsed.
+### 4. Post titles are too long for search results
 
-This is a process gap in the `/new-blog` workflow, not a writing problem. Fix: add a step that links each named study to its PubMed/DOI URL, verified 200 before insertion. Worth backfilling the 14 recent posts, since they're the most heavily cited on the site.
+Every post published since mid-July has a `<title>` over 65 characters, and recent ones run 95–121 (e.g., *"Test your muscle power at home after 40: three leg power tests you can score, and why power fades before strength - SunFM"*). Google cuts these at roughly 60 characters, so most of the title, including " - SunFM", never shows. Meta descriptions are similarly 200–270 chars against a ~160 display limit.
 
----
+The H1 can stay long and conversational. Add an optional `seoTitle` (≤60 chars) and `seoDescription` (≤155) frontmatter field, use them in `generateMetadata` at `src/app/[category]/[slug]/page.tsx:48`, and have `/new-blog` write them. Backfill the posts that have impressions first. A tighter title is the cheapest CTR lever for pages already sitting at position 6–9.
 
-## Medium Priority (this month)
+### 5. Team bio pages: thin and unindexed
 
-### 5. FAQ frontmatter covers only 21 of 50 posts (42%)
-
-FAQPage schema is confirmed rendering correctly and is the single heaviest extraction signal for Google AI Overviews and Bing Copilot. The 29 posts without it are leaving the site's best-performing GEO asset on the table. Template is proven; roughly 2-3 posts per sitting.
-
-### 6. `updated` frontmatter: 1 of 50 posts
-
-Unchanged in ratio from July's 1 of 32 (`hip-mobility-test-at-home.mdx` remains the only one). **Do not batch-stamp** — fabricating revision dates is the same integrity error as Critical #2 above. This is a going-forward discipline item: stamp it whenever a post gets a genuine substantive edit.
-
-### 7. Images — the pipeline is fine, the bypass is not
-
-Contrary to two audits' worth of assumption, `public/images/blog/` (99 JPGs, 23MB) **is** correctly optimized on blog pages via `src/components/blog/MDXImage.tsx` using `next/image` with explicit dimensions. Verified in the network trace: a source JPG served as a resized `_next/image` request at 29KB. CLS is 0.001-0.02 across all pages tested, so dimensions are being set correctly everywhere.
-
-The problem is only where the pipeline is bypassed (Critical #1). Largest on-disk originals if anything ever bypasses it again: `red-week-outdoor-walking-path.jpg` 1.16MB, `protein-eggs-skillet-breakfast.jpg` 588KB, `goblet-squat-plate-full-depth-gym.jpg` 536KB.
-
-### 8. Bare-HTTP redirect chain — still 2 hops
-
-Re-measured: `http://sunfm.fitness/` → 308 → `https://sunfm.fitness/` → 301 → `https://www.sunfm.fitness/`. Unchanged since June. Needs a DNS/host console change outside the repo. Low impact, but it's now been carried across three audits.
-
-### 9. Sitemap date constants still hardcoded
-
-`HOMEPAGE_LAST_MODIFIED` / `SERVICE_AREAS_LAST_MODIFIED` (`src/app/sitemap.ts:9,12`) did not drift this round — but only because those source files happened not to change. The risk is dormant, not fixed. Derive them from git mtime or file stat, the same way `llms.txt` was fixed.
+The four `/team/*` pages are 163–289 words and sit in "Discovered – not indexed". `/team` itself got 16 clicks, which shows people search for the coaches. Each bio should carry real substance: credentials, specialties, a client story, the posts that coach wrote. Person schema on a page Google won't crawl does nothing for E-E-A-T.
 
 ---
+
+## Medium Priority
+
+6. **Category balance.** All 17 recent posts are `/training`. Nutrition (3 posts) and wellness (4) are each unindexed or near it. If writing resumes after the pause in Critical #1, the next few posts should be outside the self-test format and outside `/training`.
+7. **Willow Glen city page** is unindexed with no impressions. Link it from the San Jose page (Willow Glen is a San Jose neighborhood, so that's the natural parent) and from the homepage service-area list if it isn't there already.
+8. **Verify the GBP phone number.** The site phone changed twice in three weeks (to (620) 407-2893 on Oct 17, then to (408) 539-1682 on Nov 3). The site and schema are now consistent on `+1-408-539-1682`. Confirm the Google Business Profile, Yelp and other citations match, since NAP mismatch is a local-ranking signal. (Not checkable from here.)
+9. **One dead citation link:** `core-stability-test-at-home.mdx` links `https://pmc.ncbi.nlm.nih.gov/articles/PMC5468830/`, which now returns 410 Gone. Swap it for the PubMed or DOI URL of the same paper. Five other citations return 403 to scripts (JAMA, OUP, two DOIs, thebarbellphysio.com). That's bot-blocking, and they almost certainly work in a browser.
+10. **`updated` frontmatter: 1 of 67.** Unchanged. Stamp it on genuine rewrites only. Several posts will get substantive edits if Critical #1 is acted on, and those edits should be stamped.
 
 ## Low Priority
 
-10. **Stray IndexNow key file.** `public/cf24bdc6ff229de3c09f8bfc0f48c697.txt` (commit `a9ed936`, 2026-05-24) is unreferenced but still served at the site root. The active key is `0e90bd4ba68b258605def64e9af5bfb9.txt`. Harmless; delete for cleanliness.
-11. **AI crawler permissions are now implicit.** `robots.txt` is just `User-Agent: * / Allow: /`. Functionally every named AI crawler is still allowed, so this is not a regression, but the explicit named blocks are gone. Adding them back signals intent and hedges against future default changes.
-12. **Campbell city page still thinnest** at 727 words of page-specific copy (San Jose is highest at 918). All 10 are comfortably above the 500-600 floor. Not urgent.
-13. **`aggregateRating` duplicated identically on all 10 city pages** with no visible rating UI on those pages. Cosmetic schema-without-corroboration risk; consider a small visible rating cue or trimming to the homepage.
-
----
-
-## Noted, No Action Recommended
-
-Per the owner's standing decisions (2026-05-25), recorded here factually rather than as findings:
-
-- **reviewCount 107** stays as-is.
-- **The San Jose schema vs Sunnyvale GBP split** remains intentionally deferred until the GBP is claimed and reconciled, including the homepage FAQ copy that says in-person sessions are held in Sunnyvale while the address block says San Jose. Current factual state: the `sameAs` Google Maps link (`maps.app.goo.gl/XyrnsHXu9K1xYqXw5`, used in `page.tsx`, `ServiceAreaSchema.tsx`, and `Footer.tsx`) resolves to a listing named **"Jeff Sun Fitness"** at `37.3939, -122.0283`, while the footer contact link (`maps.app.goo.gl/19dXxEMB8WddyoyJ6`) resolves to 1401 Parkmoor Ave, San Jose. Unchanged from the known state. No recommendation made.
-
-**New information that may affect that deferred decision:** the company is currently recruiting for a role advertised as full-time on-site in **Cupertino**. No file in the repo claims Cupertino as the studio location — `/cupertino-personal-trainer` is correctly a service-area page with no address override — so this is not a site bug. But if the physical studio has moved or is moving, that changes the calculus on the deferred GBP reconciliation, and it's worth deciding deliberately rather than by drift. Flagging for the owner, not recommending a change.
+11. **Bare-HTTP 2-hop redirect** — still `http://sunfm.fitness` → 308 → https non-www → 301 → www. Now that the non-www impressions are explained by GBP, this goes back to cosmetic. It needs a host/DNS change outside the repo.
+12. **Los Gatos** still surfaces for broad "classes / boutique fitness" queries it doesn't answer (1,427 impressions, 4 clicks). Low value, no action needed.
+13. **`aggregateRating` on city pages without visible rating UI** — unchanged from September.
 
 ---
 
 ## Content Quality Detail
 
-- **Citation integrity: clean.** Spot-checked the six most heavily-cited recent posts. Every numeric and clinical claim carries attribution with sample size, dose, or comparator stated alongside the source.
-- **E-E-A-T: load-bearing, not decorative.** The distinguishing pattern is that posts state each study's *limits* (LIFTMOR's 101 postmenopausal women not generalizing to a 44-year-old; the push-up cohort's wide CI and non-monotonic dose-response). That requires reading the paper rather than the abstract, and it's what separates this from citation-stuffing. Caveat: nothing in the repo enforces it structurally — it's a discipline strength today, not a guaranteed one.
-- **No cannibalization** across the 18-post self-test cluster. Titles and target queries are cleanly segmented by body part and test type. `docs/CONTENT-MAP.md`'s overlap-checking is holding in practice.
-- **City pages are not doorway pages.** `src/lib/service-areas.ts` gives each city unique intro, sections, client anecdotes, and 1-2 extra FAQs; only the 4 service cards and 5 shared FAQs are byte-identical, which is normal local-business pattern.
+- **Citations: best they've been.** 17/17 new posts link sources; 148/148 PubMed IDs verified real and on-topic via NCBI. Prose still states each study's limits, so the E-E-A-T strength September noted has held.
+- **FAQ schema: 67/67.** Renders correctly in live HTML on every post checked.
+- **Length:** new posts average ~2,700 words. Length isn't the problem. Sameness of format is (Critical #1).
+- **City pages:** 1,072–1,303 words, distinct per city, now with answers to the weight-loss/online/gym query variants. Clearly working.
 
 ---
 
-## Search Performance — first field data in three audits
+## What Couldn't Be Measured
 
-ADC was re-authenticated with the `webmasters.readonly` scope on 2026-09-13. Two matched 61-day windows, `sc-domain:sunfm.fitness`:
-
-| | Prior (May 12 – Jul 11) | Current (Jul 12 – Sep 10) | Change |
-|---|---|---|---|
-| Clicks | 42 | 78 | **+86%** |
-| Impressions | 5,895 | 15,792 | **+168%** |
-| CTR | 0.71% | 0.49% | −0.22pp |
-| Avg position | 18.4 | 10.3 | **+8.1 places** |
-
-Growth is real and the position gain is substantial. CTR fell because impressions grew faster than clicks, which is the expected shape when a site starts surfacing for many more mid-position queries.
-
-**Where the traffic sits (current window):**
-
-| Section | Clicks | Impressions |
-|---|---|---|
-| Blog posts | 32 | 10,155 |
-| City pages | 16 | 6,021 |
-| Homepage | 26 | 296 |
-| Movement screen | 0 | 10 |
-
-Three things fall out of that:
-
-**The www / non-www split is costing real visibility.** The homepage exists as two entities in Google's index:
-
-| URL | Clicks | Impressions | Avg position |
-|---|---|---|---|
-| `https://sunfm.fitness/` (non-www) | 23 | 8,756 | **1.4** |
-| `https://www.sunfm.fitness/` (www) | 26 | 296 | 13.4 |
-
-Non-www is a single URL carrying more impressions than all 40 www URLs combined, and it ranks at position 1.4 while the canonical www version sits at 13.4. This is the two-hop redirect chain (Medium #8) showing its actual cost. It has been carried as "low priority" across three audits; this data says otherwise and it should be reclassified.
-
-**`/tools/movement-screen` is effectively invisible in search** — 10 impressions, 0 clicks, position 21.9 over 61 days. The primary conversion asset gets its traffic entirely from internal links. Worth deciding whether that's acceptable (it's a tool, not a content page) or whether it deserves its own query targeting.
-
-**The Los Gatos page is ranking broadly but shallowly** — 2,512 impressions, 1 click. Its queries are "athletic training los gatos," "boutique fitness los gatos," "cardio classes los gatos," "beginner fitness classes los gatos," at positions 13-35. It surfaces for a wide net of local fitness terms the page doesn't actually answer. High impressions here are a vanity signal, not an opportunity.
-
-**Brand vs non-brand:** "sun functional movement" alone is 16 of 78 clicks (21%) at position 1.5. The commercial head term "personal trainer san jose" sits at position 46.8.
-
----
-
-## What Still Couldn't Be Measured
-
-**GA4 / CrUX field data.** GSC is now working (see above); GA4 organic and CrUX field CWV were not pulled this round.
-
-Re-auth is scripted at `scripts/auth-google-apis.sh` — it builds the scope string internally, then test-queries GSC and reports pass or fail. Google expires refresh tokens on unverified OAuth clients roughly weekly, which is why this died before all three prior audits. A service account would not expire: create one in project `focal-elf-497403-c0`, add its email as a Full user in Search Console and a Viewer in GA4, then point the scripts at the key file.
-
-The current token is `webmasters.readonly`. It can read everything but cannot submit a sitemap, so Critical #0 needs either the read-write `webmasters` scope or a manual submit in the GSC UI.
-
-**Core Web Vitals are lab, not field.** PageSpeed/CrUX need a `GOOGLE_API_KEY` that isn't configured. Lab numbers are directionally reliable for the homepage LCP finding (a 4MB payload is slow for everyone) but real-user INP in particular remains unconfirmed.
-
-**Backlink profile:** skipped again. Tier 0 (Common Crawl only, 0 cached domains), no Moz or Bing Webmaster keys. Site is ~5 months old; the June note to revisit at month 6 is nearly due.
-
-**LinkedIn and Yelp NAP:** both bot-blocked to automated fetch. Needs a manual eyeball.
+- **Core Web Vitals.** Node isn't installed on this Mac (no local Lighthouse), and the keyless PageSpeed Insights API quota was exhausted. Homepage performance after the Sep 13 poster fix and hero-fade removal is therefore unconfirmed. A `GOOGLE_API_KEY` for PageSpeed would make this repeatable.
+- **API access to GSC/GA4.** `scripts/auth-google-apis.sh` fails because `~/sunfm-oauth-client.json` no longer exists. This audit read GSC and GA4 through the web UI in Chrome (signed in as the GBP/GSC account) instead. `/seo-analytics` weekly updates will also be broken until the client file is restored (re-download it from GCP project `focal-elf-497403-c0` → APIs & Services → Credentials).
+- **Backlinks** — still no tool. At ~6 months this is now worth a look, since low authority compounds the indexing problem.
+- **GBP insights / NAP on Yelp & LinkedIn** — manual check needed (see Medium #8).
 
 ---
 
 ## Recommended Order of Work
 
-1. **Resubmit the sitemap in GSC (Critical #0)** — nothing else here matters while 31 URLs are unknown to Google. Then Request Indexing on the strongest recent posts.
-2. ~~Homepage testimonial posters (Critical #1)~~ — **done 2026-09-13**, commit `15e3b0d`. Posters 3,280KB → 254KB, homepage 4,053 → 1,030 KiB, perf 73 → 82, LCP 5.0s → 4.1s. The remaining LCP is render delay from the `.hero-enter` staggered fade, a design decision left untouched.
-3. ~~Revert the fabricated `uploadDate` (Critical #2)~~ — **done 2026-09-13**, same commit.
-4. Fix the www/non-www redirect chain — reclassified upward from Medium; the GSC split is real and costly.
-5. Add a sitemap ping to the publish workflow so Critical #0 can't recur silently.
-6. LinkedIn `sameAs` (High #3) — one line, five files.
-7. Add source links to `/new-blog`, then backfill the 14 recent posts (High #4).
-8. FAQ frontmatter for the 29 posts missing it (Medium #5) — steady background work.
+1. **Change the GBP Website URL to `https://www.sunfm.fitness/`** — 30 seconds, dashboard only.
+2. ~~Fix the two broken internal links (High #2)~~ — **done 2026-11-18.**
+3. ~~Derive sitemap `lastmod` for homepage and city pages from git (High #3)~~ — **done 2026-11-18.** `scripts/update-sitemap-dates.py` writes `src/lib/sitemap-dates.json` from git history; `.githooks/pre-commit` runs it on every commit (enabled locally with `git config core.hooksPath .githooks`, which needs re-running on any fresh clone). City pages now report 2026-11-03 instead of 2026-07-11.
+4. **Pause self-test posts; rebuild `/training` (and siblings) as real hubs, plus a self-test pillar page** (Critical #1, steps 1–3).
+5. **Short `seoTitle` / `seoDescription` fields**, backfill posts with impressions first (High #4).
+6. **Request indexing on the dropped pages**, re-check GSC Pages in 3–4 weeks.
+7. Flesh out team bios; link Willow Glen; swap the dead PMC link.
+8. Restore the OAuth client file so `/seo-analytics` and API-based audits work again.

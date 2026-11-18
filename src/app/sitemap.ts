@@ -2,15 +2,17 @@ import { MetadataRoute } from "next";
 import { getAllPosts, getAllCategories } from "@/lib/blog";
 import { getAllServiceAreas } from "@/lib/service-areas";
 import { coaches } from "@/lib/coaches";
+import sitemapDates from "@/lib/sitemap-dates.json";
 
-// Hard-coded dates for pages whose content doesn't change frequently.
-// Bump these when the page actually changes — Google uses lastmod as a
-// crawl-priority signal, so "modified today" on every fetch gets a page
-// deprioritized as low-signal churn.
-const HOMEPAGE_LAST_MODIFIED = new Date("2026-07-11");
-const TEAM_LAST_MODIFIED = new Date("2026-10-18");
-const MOVEMENT_SCREEN_LAST_MODIFIED = new Date("2026-04-30");
-const SERVICE_AREAS_LAST_MODIFIED = new Date("2026-07-11");
+// Last real change date of each non-blog page group, from git history.
+// Written by scripts/update-sitemap-dates.py, which the pre-commit hook runs
+// on every commit — don't edit the JSON by hand. Google uses lastmod as a
+// crawl-priority signal, so it has to track actual content changes: never
+// "now" on every fetch, never a constant that someone forgets to bump.
+const HOMEPAGE_LAST_MODIFIED = new Date(sitemapDates.homepage);
+const TEAM_LAST_MODIFIED = new Date(sitemapDates.team);
+const MOVEMENT_SCREEN_LAST_MODIFIED = new Date(sitemapDates.movementScreen);
+const SERVICE_AREAS_LAST_MODIFIED = new Date(sitemapDates.serviceAreas);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.sunfm.fitness";

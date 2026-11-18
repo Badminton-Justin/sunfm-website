@@ -1,0 +1,5 @@
+#!/bin/sh
+# Keep sitemap lastmod dates for the homepage, city pages, team and movement
+# screen in step with real changes. See scripts/update-sitemap-dates.py.
+python3 scripts/update-sitemap-dates.py --staged || exit 1
+git add src/lib/sitemap-dates.json
