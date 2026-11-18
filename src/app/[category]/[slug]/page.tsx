@@ -44,9 +44,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const canonicalUrl = `https://www.sunfm.fitness/${category}/${slug}`;
 
+  // Google shows ~60 characters of a title. Long conversational H1s get a
+  // shorter `seoTitle`; the brand suffix is added only when it still fits.
+  const searchTitle = post.seoTitle || post.title;
+  const titleTag =
+    searchTitle.length + " - SunFM".length <= 60 ? `${searchTitle} - SunFM` : searchTitle;
+
   return {
-    title: `${post.title} - SunFM`,
-    description: post.description,
+    title: titleTag,
+    description: post.seoDescription || post.description,
     alternates: {
       canonical: canonicalUrl,
     },

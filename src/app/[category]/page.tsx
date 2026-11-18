@@ -6,6 +6,8 @@ import {
   categoryLabels,
 } from "@/lib/blog";
 import { categoryDescriptions } from "@/lib/blog-constants";
+import { categoryHubs } from "@/lib/category-hubs";
+import PostCardLink from "@/components/blog/PostCardLink";
 import PostCard from "@/components/blog/PostCard";
 import CategoryFilter from "@/components/blog/CategoryFilter";
 import Breadcrumbs from "@/components/blog/Breadcrumbs";
@@ -25,9 +27,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category } = await params;
   const label = categoryLabels[category] || category;
+  const hub = categoryHubs[category];
   return {
-    title: `${label} Tips for Busy Professionals - SunFM Blog`,
-    description: `Read expert ${label.toLowerCase()} articles from personal trainer Jeffrey Sun in San Jose. Practical tips for busy professionals in the South Bay Area.`,
+    title: hub?.metaTitle ?? `${label} Tips for Busy Professionals - SunFM Blog`,
+    description:
+      hub?.metaDescription ??
+      `Read expert ${label.toLowerCase()} articles from personal trainer Jeffrey Sun in San Jose. Practical tips for busy professionals in the South Bay Area.`,
     alternates: {
       canonical: `https://www.sunfm.fitness/${category}`,
     },
@@ -52,6 +57,16 @@ export default async function CategoryPage({ params }: Props) {
   const posts = getPostsByCategory(category);
   const label = categoryLabels[category] || category;
   const desc = categoryDescriptions[category];
+  const hub = categoryHubs[category];
+
+  const postsBySlug = new Map(posts.map((p) => [p.slug, p]));
+  const sections = (hub?.sections ?? []).map((section) => {
+    const missing = section.slugs.filter((s) => !postsBySlug.has(s));
+    if (missing.length > 0) {
+      console.warn(`[category-hubs] ${category} / "${section.heading}": no post for ${missing.join(", ")}`);
+    }
+    return { ...section, posts: section.slugs.flatMap((s) => postsBySlug.get(s) ?? []) };
+  });
 
   return (
     <>
@@ -69,7 +84,43 @@ export default async function CategoryPage({ params }: Props) {
               <p className="text-gray-500 leading-relaxed">{desc.audience}</p>
             </div>
           )}
+          {hub?.guide.map((para) => (
+            <p key={para.slice(0, 32)} className="max-w-3xl text-gray-700 leading-relaxed mt-3">
+              {para}
+            </p>
+          ))}
         </div>
+
+        {sections.length > 0 && (
+          <div className="mb-14 space-y-10">
+            {sections.map((section) => (
+              <section key={section.heading} className="max-w-4xl">
+                <h2 className="text-2xl md:text-3xl font-bold mb-2">{section.heading}</h2>
+                <p className="text-gray-600 leading-relaxed mb-4">{section.blurb}</p>
+                <ul className="grid md:grid-cols-2 gap-x-8 gap-y-3">
+                  {section.posts.map((post) => (
+                    <li key={post.slug}>
+                      <PostCardLink
+                        href={`/${post.category}/${post.slug}`}
+                        source="category_hub_section"
+                        slug={post.slug}
+                        category={post.category}
+                        className="group block"
+                      >
+                        <span className="font-semibold text-gray-900 group-hover:text-[#CB4538] transition-colors">
+                          {post.seoTitle || post.title}
+                        </span>
+                        <span className="block text-sm text-gray-500 leading-snug mt-0.5 line-clamp-2">
+                          {post.seoDescription || post.description}
+                        </span>
+                      </PostCardLink>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        )}
 
         <div className="mb-10">
           <CategoryFilter
@@ -77,6 +128,10 @@ export default async function CategoryPage({ params }: Props) {
             activeCategory={category}
           />
         </div>
+
+        {sections.length > 0 && (
+          <h2 className="text-2xl md:text-3xl font-bold mb-6">All {label.toLowerCase()} articles</h2>
+        )}
 
         {posts.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -12,6 +12,10 @@ export interface Post {
   category: string;
   title: string;
   description: string;
+  /** Short <title> for search results (≤52 chars so " - SunFM" fits in ~60). The H1 keeps `title`. */
+  seoTitle?: string;
+  /** Meta description for search results (≤155 chars). Social cards keep `description`. */
+  seoDescription?: string;
   date: string;
   updated?: string;
   author: string;
@@ -53,6 +57,8 @@ export function getAllPosts(): Post[] {
         category,
         title: data.title,
         description: data.description,
+        seoTitle: data.seoTitle,
+        seoDescription: data.seoDescription,
         date: data.date,
         updated: data.updated,
         author: data.author,

@@ -54,7 +54,7 @@ Evaluation criteria for the winner:
 4. Reinforces mobility / movement / strength-for-longevity positioning
 5. National reach fine; Bay Area / San Jose angle if it fits naturally
 
-Bias toward topics where the Movement Screen is a perfect next step — e.g. anything shaped like "test your X at home" or "how to tell if your X is tight."
+Bias toward topics where the Movement Screen is a perfect next step, but **avoid another "[body part] self-test at home" post** until Search Console shows the existing ones indexed. As of the 2026-11-18 audit (`docs/SEO-AUDIT-REPORT.md`, Critical #1) there are ~30 posts in that template and Google is declining to index many of them, likely as near-duplicates. Prefer formats that break the pattern (timelines, comparisons, programs, "does X work" reads of the research) and the thin categories, nutrition and wellness. Check GSC → Pages before choosing.
 
 ### 1c. Confirm with user
 
@@ -88,6 +88,8 @@ Match the voice of existing posts. Read `src/content/blog/training/functional-mo
 ---
 title: "Concrete Title With Target Keyword"
 description: "1–2 sentence hook that includes a secondary keyword and ends with Bay Area / San Jose credibility when it fits naturally."
+seoTitle: "Primary Keyword First, ≤52 Characters"
+seoDescription: "≤155 characters. What the reader gets, in plain words, with the primary keyword early."
 category: "training" # or nutrition, wellness
 date: "YYYY-MM-DD" # today
 author: "Jeffrey Sun"
@@ -95,6 +97,8 @@ image: "/images/blog/<filename>.jpg"
 tags: ["primary keyword", "secondary keyword", "desk workers", "San Jose", "mobility", "..."] # 5–7 tags
 ---
 ```
+
+`title` is the on-page H1 and can be long and conversational. `seoTitle` is the `<title>` Google shows: put the primary keyword first and keep it to **52 characters or fewer** so " - SunFM" still fits in the ~60 Google displays. Include it whenever `title` is longer than 52 characters. `seoDescription` is the meta description: **155 characters or fewer**, and include it whenever `description` is over 155. Count both with `python3 -c 'print(len("..."))'` rather than estimating.
 
 ### Structure
 
@@ -266,6 +270,8 @@ Into the new post (update existing posts):
 - Do not add links to existing posts that are already link-dense
 - Do not link from the homepage or the movement-screen tool page — those are self-contained
 
+Every internal link must point at a post that exists. Before saving, check each `](/<category>/<slug>)` target against `src/content/blog/<category>/<slug>.mdx`. Two links to slugs that never existed went unnoticed for six months before the November 2026 audit caught them as 404s in Search Console.
+
 Run `npx tsc --noEmit` after edits to make sure nothing broke.
 
 ---
@@ -276,6 +282,8 @@ Write the final MDX to:
 ```
 src/content/blog/<category>/<slug>.mdx
 ```
+
+Add the new slug to the right group in `src/lib/category-hubs.ts` (the sections on `/training`, `/nutrition`, `/wellness`). The hub pages are how Google finds and ranks posts, so a post left out of the hub only shows up in the "All articles" grid. If no group fits, say so in the report rather than forcing it.
 
 Update `docs/CONTENT-MAP.md`: add the new post to the cluster it belongs in (or start a new cluster section if it genuinely doesn't fit an existing one — that's rare, since Step 1a should have already placed it). This is what keeps the map useful for the next post instead of drifting stale.
 
