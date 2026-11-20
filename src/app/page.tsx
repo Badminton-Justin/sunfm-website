@@ -70,6 +70,11 @@ const localBusinessSchema = {
     { "@type": "City", name: "Los Altos" },
     { "@type": "City", name: "Milpitas" },
     { "@type": "City", name: "Campbell" },
+    {
+      "@type": "Place",
+      name: "Willow Glen, San Jose",
+      containedInPlace: { "@type": "City", name: "San Jose" },
+    },
   ],
   priceRange: "$$",
   aggregateRating: {

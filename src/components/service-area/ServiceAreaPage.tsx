@@ -9,6 +9,21 @@ import ServiceAreaMap from "./ServiceAreaMap";
 import ServiceAreaSchema from "./ServiceAreaSchema";
 import { getAllServiceAreas, type ServiceArea } from "@/lib/service-areas";
 
+// Intro paragraphs are plain strings; `[text](/path)` inside one becomes an
+// internal link, so a city page can link a neighborhood it mentions by name.
+function renderInlineLinks(text: string) {
+  return text.split(/(\[[^\]]+\]\(\/[^)]*\))/g).map((part, i) => {
+    const m = part.match(/^\[([^\]]+)\]\((\/[^)]*)\)$/);
+    return m ? (
+      <Link key={i} href={m[2]}>
+        {m[1]}
+      </Link>
+    ) : (
+      part
+    );
+  });
+}
+
 export default function ServiceAreaPage({ area }: { area: ServiceArea }) {
   const nearbyAreas = getAllServiceAreas().filter((a) => a.slug !== area.slug);
 
@@ -35,7 +50,7 @@ export default function ServiceAreaPage({ area }: { area: ServiceArea }) {
                       key={i}
                       className={`reveal reveal-delay-${Math.min(i + 1, 5)}`}
                     >
-                      {p}
+                      {renderInlineLinks(p)}
                     </p>
                   ))}
                 </div>

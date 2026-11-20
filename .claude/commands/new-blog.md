@@ -121,6 +121,15 @@ curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&te
 
 Then link as `https://pubmed.ncbi.nlm.nih.gov/<pmid>/`.
 
+**A 200 response does not prove the citation is right.** PubMed and PMC answer scripts with a bot-check page (203, or 200 with a reCAPTCHA) whatever the ID is. Confirm every ID through E-utilities, and read the abstract before writing the sentence that cites it:
+
+```bash
+curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=<pmid>&retmode=json"   # title, journal, year
+curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=<pmid>&rettype=abstract&retmode=text"
+```
+
+For a PMC link use `db=pmc&id=<number without "PMC">`; "cannot get document summary" means the ID doesn't exist. The November 2026 audit found two April posts citing PMC IDs that don't exist, one of them attached to a claim the real paper didn't support. Never write a citation from memory.
+
 Why this is a hard rule: the September 2026 audit found the practice had silently lapsed. The 32 posts before 2026-07-11 carried 21 external citation links; the 18 after carried 5, all in the first four. Fourteen consecutive posts named real studies and linked none of them. The prose got more rigorous while the verifiability got worse, which is precisely backwards for E-E-A-T and for AI answer engines deciding whether a passage is citable.
 
 These links do not count against the internal-linking budget in Step 4. That budget is about links to other SunFM pages.
