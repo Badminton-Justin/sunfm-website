@@ -159,6 +159,37 @@ export const coaches: Coach[] = [
     image: "/images/robert-zaharia.jpg",
     certification: "FRC Mobility Specialist (FRCms)",
   },
+  {
+    slug: "elliott-coquia",
+    name: "Elliott Coquia",
+    title: "Coach",
+    highlight: "NASM-CPT · FMS Level 1 · Boxing instructor",
+    description:
+      "Elliott Coquia is a coach at Sun Functional Movement in San Jose. NASM Certified Personal Trainer and FMS Level 1 certified, with a background as an exercise specialist at the LinkedIn Wellness Center and as a private boxing instructor.",
+    credentials: "NASM Certified Personal Trainer | Functional Movement Screen (FMS) Level 1",
+    bio: "Elliott is a San Jose local who got into coaching through boxing. He started teaching the sport privately in 2023, working mostly with people who had never boxed or done any martial art, and found he liked the teaching as much as the training: breaking a skill down, watching someone get it, and adjusting for what each person's body can and can't do that day.\n\nThat led him to his NASM personal trainer certification and then to the LinkedIn Wellness Center, where he works as an exercise specialist with Plus One, an Optum company. There he runs fitness consultations with movement screens and InBody scans, writes individual programs for people ranging from fully sedentary to experienced lifters, works around old injuries and movement restrictions, and teaches kickboxing and boot camp classes. He's also Functional Movement Screen (FMS) Level 1 certified, so the first thing he looks at is how you move before deciding what to load.\n\nElliott's sessions are coaching-heavy. He'll explain why a lift is set up the way it is, so you leave knowing how to do it well on your own.",
+    specialties: [
+      "Movement Screening",
+      "Strength Training",
+      "Boxing & Kickboxing",
+      "Training Around Past Injuries",
+      "Beginner-Friendly Training",
+      "Group Fitness",
+    ],
+    education: [
+      "NASM Certified Personal Trainer (NASM-CPT)",
+      "Functional Movement Screen (FMS) Level 1",
+      "A.A. Communication — De Anza College",
+    ],
+    experience: [
+      "Exercise Specialist — Plus One (Optum), LinkedIn Wellness Center",
+      "Kickboxing & Boot Camp Group Fitness Instructor",
+      "Private Boxing Instructor since 2023",
+    ],
+    image: "/images/elliott-coquia.jpg",
+    alumniOf: "De Anza College",
+    certification: "NASM Certified Personal Trainer (NASM-CPT)",
+  },
 ];
 
 export function getCoach(slug: string): Coach | undefined {
