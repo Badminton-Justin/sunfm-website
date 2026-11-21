@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
+import { getCameFrom } from "@/lib/came-from";
 import { useReveal } from "@/hooks/useReveal";
 import { SMS_CONSENT_LABEL, SMS_CONSENT_TEXT } from "@/lib/sms-consent";
 
@@ -100,6 +101,7 @@ export default function ApplicationForm() {
           ...formData,
           smsConsent,
           attribution: attributionRef.current,
+          cameFrom: getCameFrom(),
           landingPage: "/",
         }),
       });

@@ -18,15 +18,19 @@ interface FormData {
   referral: string;
   referralDetails: string;
   attribution?: Record<string, string>;
+  // Referrer hostname + first page, from src/lib/came-from.ts
+  cameFrom?: string;
   landingPage?: string;
 }
 
 function formatAttribution(
   attribution: Record<string, string> | undefined,
-  landingPage: string | undefined
+  landingPage: string | undefined,
+  cameFrom: string | undefined
 ): string {
   const parts: string[] = [];
   if (landingPage) parts.push(`landing: ${landingPage}`);
+  if (cameFrom) parts.push(`came from: ${cameFrom}`);
   if (attribution) {
     for (const [key, value] of Object.entries(attribution)) {
       if (value) parts.push(`${key}: ${value}`);
@@ -54,6 +58,9 @@ function readCookie(request: Request, name: string): string | undefined {
 export async function POST(request: Request) {
   try {
     const data: FormData = await request.json();
+    // Client-supplied free text: keep it a short string.
+    data.cameFrom =
+      typeof data.cameFrom === "string" ? data.cameFrom.slice(0, 200) : undefined;
 
     if (!data.name || !data.email || !data.phone || !data.goal || !data.referral) {
       return NextResponse.json(
@@ -64,7 +71,8 @@ export async function POST(request: Request) {
 
     const attributionSummary = formatAttribution(
       data.attribution,
-      data.landingPage
+      data.landingPage,
+      data.cameFrom
     );
 
     // Carrier review can ask us to produce proof of opt-in for any number we
@@ -96,6 +104,7 @@ export async function POST(request: Request) {
             howTheyHeard: data.referral + (data.referralDetails ? ` — ${data.referralDetails}` : ""),
             attribution: attributionSummary,
             landingPage: data.landingPage || "",
+            cameFrom: data.cameFrom || "",
             gclid: data.attribution?.gclid || "",
             utmSource: data.attribution?.utm_source || "",
             utmMedium: data.attribution?.utm_medium || "",

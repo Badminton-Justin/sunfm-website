@@ -34,6 +34,7 @@ const CF = {
   gclid: "cf_W2C8VQx46bohwawPv3JuoOublcwG0Fo4OY6e5otOs33",
   metaFbc: "cf_lCwvmWd8YqBOwcDg5JxEBDybCV0UcBjTw696BZODcGl",
   metaFbp: "cf_tXBonrzO35NIoFFtl3BOamMJC76kZYmTmg3z53aINQB",
+  cameFrom: "cf_qRy1VeZinQPweClGIaeEEbwYI1070OjXdXL2sLLk6hD",
 } as const;
 
 export interface CloseLeadInput {
@@ -51,6 +52,8 @@ export interface CloseLeadInput {
   referral: string;
   referralDetails?: string;
   attribution?: Record<string, string>;
+  // Referrer hostname + first page, e.g. "www.google.com · first page /blog/x"
+  cameFrom?: string;
   landingPage?: string;
   // Meta's click and browser cookies, kept so a later booking or purchase can
   // be matched back to the ad (see meta-conversions.ts).
@@ -100,6 +103,7 @@ function buildCustomFields(data: CloseLeadInput): Record<string, string> {
     [CF.howTheyHeard]:
       data.referral + (data.referralDetails ? ` — ${data.referralDetails}` : ""),
     [CF.landingPage]: data.landingPage,
+    [CF.cameFrom]: data.cameFrom,
     [CF.utmSource]: a.utm_source,
     [CF.utmMedium]: a.utm_medium,
     [CF.utmCampaign]: a.utm_campaign,
@@ -137,6 +141,7 @@ function buildNoteBody(data: CloseLeadInput): string {
     "",
     `How they heard: ${data.referral}${data.referralDetails ? ` — ${data.referralDetails}` : ""}`,
   ];
+  if (data.cameFrom) lines.push(`Came from: ${data.cameFrom}`);
 
   const a = data.attribution ?? {};
   const attribution = Object.entries(a)

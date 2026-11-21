@@ -3,6 +3,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { PostHogProvider } from "@/providers/PostHogProvider";
 import { PostHogPageView } from "@/providers/PostHogPageView";
 import { MetaPixel } from "@/providers/MetaPixel";
+import { CameFromRecorder } from "@/providers/CameFromRecorder";
 import "./globals.css";
 
 const siteUrl = "https://www.sunfm.fitness";
@@ -64,6 +65,7 @@ export default function RootLayout({
           {children}
         </PostHogProvider>
         <MetaPixel />
+        <CameFromRecorder />
       </body>
       <GoogleAnalytics gaId="G-FVFDW7GH4Y" />
     </html>

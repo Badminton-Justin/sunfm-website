@@ -183,8 +183,10 @@ export default function PrivacyPage() {
               The site uses cookies and similar technologies for analytics,
               advertising attribution, and improving your experience. This
               includes Google Ads and Meta Pixel conversion tracking (which use
-              click identifiers such as gclid and fbclid) and PostHog session
-              analytics. You can
+              click identifiers such as gclid and fbclid), PostHog session
+              analytics, and a note in your browser of which website sent you
+              here and the first page you viewed, which is included if you
+              submit a consultation request. You can
               disable cookies in your browser settings, but some site features
               may not work properly.
             </p>

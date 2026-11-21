@@ -6,6 +6,7 @@ import Link from "next/link";
 import posthog from "posthog-js";
 import { trackEvent, setEnhancedConversionUserData } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/attribution";
+import { getCameFrom } from "@/lib/came-from";
 import { trackMetaLead } from "@/lib/meta-pixel";
 import { SMS_CONSENT_LABEL, SMS_CONSENT_TEXT } from "@/lib/sms-consent";
 import { studioPhotos } from "@/lib/studio";
@@ -579,6 +580,7 @@ export default function StartLanding({
           referral: "meta-ads",
           referralDetails: "Submitted from /start landing page",
           attribution,
+          cameFrom: getCameFrom(),
           landingPage: "/start",
         }),
       });
