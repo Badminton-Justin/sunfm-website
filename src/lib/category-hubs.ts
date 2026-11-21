@@ -149,11 +149,12 @@ export const categoryHubs: Record<string, CategoryHub> = {
       {
         heading: "Protein, body composition and supplements",
         blurb:
-          "How much protein to eat, why the scale stalls, and how to tell whether creatine is doing anything for you.",
+          "How much protein to eat, why the scale stalls, how to tell whether creatine is doing anything for you, and how to keep muscle on a GLP-1.",
         slugs: [
           "protein-intake-for-muscle-after-40",
           "lose-fat-without-losing-muscle-after-40",
           "creatine-after-40-what-it-does-and-how-to-tell-if-its-working",
+          "strength-training-on-glp-1-after-40-how-to-keep-your-muscle",
         ],
       },
       {
